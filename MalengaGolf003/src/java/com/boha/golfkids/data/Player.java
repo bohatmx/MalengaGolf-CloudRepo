@@ -44,6 +44,12 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Player.findByCellphone", query = "SELECT p FROM Player p WHERE p.cellphone = :cellphone"),
     @NamedQuery(name = "Player.findByPin", query = "SELECT p FROM Player p WHERE p.pin = :pin")})
 public class Player implements Serializable {
+    @Column(name = "gender")
+    private Integer gender;
+    @Column(name = "yearJoined")
+    private Integer yearJoined;
+    @Column(name = "parentID")
+    private Integer parentID;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,13 +68,9 @@ public class Player implements Serializable {
     @Column(name = "dateOfBirth")
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
-    @Column(name = "gender")
-    private int gender;
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @Column(name = "yearJoined")
-    private int yearJoined;
     @Size(max = 95)
     @Column(name = "email")
     private String email;
@@ -133,28 +135,12 @@ public class Player implements Serializable {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public int getGender() {
-        return gender;
-    }
-
-    public void setGender(int gender) {
-        this.gender = gender;
-    }
-
     public Date getDateRegistered() {
         return dateRegistered;
     }
 
     public void setDateRegistered(Date dateRegistered) {
         this.dateRegistered = dateRegistered;
-    }
-
-    public int getYearJoined() {
-        return yearJoined;
-    }
-
-    public void setYearJoined(int yearJoined) {
-        this.yearJoined = yearJoined;
     }
 
     public String getEmail() {
@@ -212,6 +198,30 @@ public class Player implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Player[ playerID=" + playerID + " ]";
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Integer getYearJoined() {
+        return yearJoined;
+    }
+
+    public void setYearJoined(Integer yearJoined) {
+        this.yearJoined = yearJoined;
+    }
+
+    public Integer getParentID() {
+        return parentID;
+    }
+
+    public void setParentID(Integer parentID) {
+        this.parentID = parentID;
     }
     
 }

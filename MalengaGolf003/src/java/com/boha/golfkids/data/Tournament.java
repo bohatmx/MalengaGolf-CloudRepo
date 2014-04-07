@@ -40,6 +40,16 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Tournament.findByStartDate", query = "SELECT t FROM Tournament t WHERE t.startDate = :startDate"),
     @NamedQuery(name = "Tournament.findByGolfRounds", query = "SELECT t FROM Tournament t WHERE t.golfRounds = :golfRounds")})
 public class Tournament implements Serializable {
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "clubID")
+    private int clubID;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "golfGroupID")
+    private int golfGroupID;
+    @Column(name = "clubCourseID")
+    private Integer clubCourseID;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -197,6 +207,30 @@ public class Tournament implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Tournament[ tournamentID=" + tournamentID + " ]";
+    }
+
+    public int getClubID() {
+        return clubID;
+    }
+
+    public void setClubID(int clubID) {
+        this.clubID = clubID;
+    }
+
+    public int getGolfGroupID() {
+        return golfGroupID;
+    }
+
+    public void setGolfGroupID(int golfGroupID) {
+        this.golfGroupID = golfGroupID;
+    }
+
+    public Integer getClubCourseID() {
+        return clubCourseID;
+    }
+
+    public void setClubCourseID(Integer clubCourseID) {
+        this.clubCourseID = clubCourseID;
     }
     
 }

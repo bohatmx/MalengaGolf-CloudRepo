@@ -38,8 +38,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.validation.ConstraintViolationException;
 
@@ -47,18 +50,19 @@ import javax.validation.ConstraintViolationException;
  *
  * @author Aubrey Malabie
  */
+@Stateless
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class DataUtil {
-
-    //private static EntityManager em;
-    public static List<ClubDTO> getClubsByCountry(int countryID) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        List<ClubDTO> cList = new ArrayList<ClubDTO>();
+@PersistenceContext
+    EntityManager em;
+    //private  EntityManager em;
+    public  List<ClubDTO> getClubsByCountry(int countryID) throws DataException {
+        
+        List<ClubDTO> cList = new ArrayList<>();
         try {
-            Query q = em.createQuery("select a from Club a where a.province.country.countryID = : id "
-                    + " order by a.clubName ");
+            Query q = em.createNamedQuery("Club.findByCountry", Club.class);
             q.setParameter("id", countryID);
             List<Club> list = q.getResultList();
-
             for (Club club : list) {
                 cList.add(new ClubDTO(club));
             }
@@ -68,15 +72,13 @@ public class DataUtil {
         return cList;
     }
 
-    public static List<ClubDTO> getClubsByProvince(int provinceID) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        List<ClubDTO> cList = new ArrayList<ClubDTO>();
+    public  List<ClubDTO> getClubsByProvince(int provinceID) throws DataException {
+        
+        List<ClubDTO> cList = new ArrayList<>();
         try {
-            Query q = em.createQuery("select a from Club a where a.province.provinceID= : id "
-                    + " order by a.clubName ");
+            Query q = em.createNamedQuery("Club.findByProvince", Club.class);
             q.setParameter("id", provinceID);
             List<Club> list = q.getResultList();
-
             for (Club club : list) {
                 cList.add(new ClubDTO(club));
             }
@@ -86,12 +88,49 @@ public class DataUtil {
         return cList;
     }
 
-    public static List<AgeGroupDTO> getAgeGroups() throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        List<AgeGroupDTO> cList = new ArrayList<AgeGroupDTO>();
+    public  List<AgeGroupDTO> getAgeGroups(int golfGroupID) 
+            throws DataException {
+        
+        List<AgeGroupDTO> cList = new ArrayList<>();
         try {
-            Query q = em.createQuery("select a from AgeGroup a  "
-                    + " order by a.ageGroupName ");
+            Query q = em.createNamedQuery("AgeGroup.findByGolfGroup",
+                    AgeGroup.class);
+            q.setParameter("id", golfGroupID);
+            List<AgeGroup> list = q.getResultList();
+            for (AgeGroup g : list) {
+                cList.add(new AgeGroupDTO(g));
+            }
+        } catch (Exception e) {
+            throw new DataException();
+        }
+        return cList;
+    }
+
+    public  List<AgeGroupDTO> getAgeGroupsBoys(int golfGroupID) throws DataException {
+        
+        List<AgeGroupDTO> cList = new ArrayList<>();
+        try {
+            Query q = em.createNamedQuery("AgeGroup.findByGender",AgeGroup.class);
+            q.setParameter("id", golfGroupID);
+            q.setParameter("gender", 1);
+            List<AgeGroup> list = q.getResultList();
+
+            for (AgeGroup g : list) {
+                cList.add(new AgeGroupDTO(g));
+            }
+        } catch (Exception e) {
+            throw new DataException();
+        }
+        return cList;
+    }
+
+    public  List<AgeGroupDTO> getAgeGroupsGirls(int golfGroupID) throws DataException {
+        
+        List<AgeGroupDTO> cList = new ArrayList<>();
+        try {
+            Query q = em.createNamedQuery("AgeGroup.findByGender",AgeGroup.class);
+            q.setParameter("id", golfGroupID);
+            q.setParameter("gender", 2);
 
             List<AgeGroup> list = q.getResultList();
 
@@ -104,51 +143,12 @@ public class DataUtil {
         return cList;
     }
 
-    public static List<AgeGroupDTO> getAgeGroupsBoys() throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        List<AgeGroupDTO> cList = new ArrayList<AgeGroupDTO>();
+    public  List<TeeTimeDTO> getTeeTimes(int tournamentID) throws DataException {
+        
+        List<TeeTimeDTO> cList = new ArrayList<>();
         try {
-            Query q = em.createQuery("select a from AgeGroup a  where a.gender = 1 "
-                    + " order by a.ageGroupID ");
-
-            List<AgeGroup> list = q.getResultList();
-
-            for (AgeGroup g : list) {
-                cList.add(new AgeGroupDTO(g));
-            }
-        } catch (Exception e) {
-            throw new DataException();
-        }
-        return cList;
-    }
-
-    public static List<AgeGroupDTO> getAgeGroupsGirls() throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        List<AgeGroupDTO> cList = new ArrayList<AgeGroupDTO>();
-        try {
-            Query q = em.createQuery("select a from AgeGroup a  where a.gender = 2 "
-                    + " order by a.ageGroupID ");
-
-            List<AgeGroup> list = q.getResultList();
-
-            for (AgeGroup g : list) {
-                cList.add(new AgeGroupDTO(g));
-            }
-        } catch (Exception e) {
-            throw new DataException();
-        }
-        return cList;
-    }
-
-    public static List<TeeTimeDTO> getTeeTimes(int tournamentID) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        List<TeeTimeDTO> cList = new ArrayList<TeeTimeDTO>();
-        Tournament tn = getTournamentByID(tournamentID);
-        try {
-            Query q = em.createQuery("select a from TeeTime a   "
-                    + " where a.tourneyPlayerScore.tournament = :t "
-                    + " order by a.teeTime ");
-            q.setParameter("t", tn);
+            Query q = em.createNamedQuery("TeeTime.findByTournament",TeeTime.class);
+            q.setParameter("id", tournamentID);
             List<TeeTime> list = q.getResultList();
             for (TeeTime g : list) {
                 cList.add(new TeeTimeDTO(g));
@@ -159,12 +159,11 @@ public class DataUtil {
         logger.log(Level.OFF, "teetime list found: {0}", cList.size());
         return cList;
     }
-    public static List<CountryDTO> getCountries() throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        List<CountryDTO> cList = new ArrayList<CountryDTO>();
+    public  List<CountryDTO> getCountries() throws DataException {
+        
+        List<CountryDTO> cList = new ArrayList<>();
         try {
-            Query q = em.createQuery("select a from Country a   "
-                    + " order by a.countryName ");
+            Query q = em.createNamedQuery("Country.findAll",Country.class);
             List<Country> list = q.getResultList();
             for (Country g : list) {
                 cList.add(new CountryDTO(g));
@@ -176,10 +175,10 @@ public class DataUtil {
         return cList;
     }
 
-    public static AdministratorDTO getAdminLoggedIn(String email, String pin) throws LoginException, DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        Query q = em.createQuery("select a from Administrator a where a.email = : email "
-                + " and a.pin = :pin");
+    public  AdministratorDTO getAdminLoggedIn(String email, 
+            String pin) throws LoginException, DataException {
+        
+        Query q = em.createNamedQuery("Administrator.login",Administrator.class);
         q.setMaxResults(1);
         q.setParameter("email", email);
         q.setParameter("pin", pin);
@@ -192,10 +191,10 @@ public class DataUtil {
 
     }
 
-    public static List<TourneyPlayerScoreDTO> getScoresByTournament(int tournamentID, boolean orderByName) {
+    public  List<TourneyPlayerScoreDTO> getScoresByTournament(int tournamentID, boolean orderByName) {
 
         Tournament t = getTournamentByID(tournamentID);
-        List<TourneyPlayerScoreDTO> list = new ArrayList<TourneyPlayerScoreDTO>();
+        List<TourneyPlayerScoreDTO> list = new ArrayList<>();
         List<TourneyPlayerScore> tpList = t.getTourneyPlayerScoreList();
         for (TourneyPlayerScore tourneyPlayerScore : tpList) {
             list.add(new TourneyPlayerScoreDTO(tourneyPlayerScore, true, orderByName));
@@ -204,10 +203,10 @@ public class DataUtil {
         return list;
     }
 
-    public static List<TourneyPlayerScoreDTO> getScoresByTournamentBoys(int tournamentID, boolean orderByName) {
+    public  List<TourneyPlayerScoreDTO> getScoresByTournamentBoys(int tournamentID, boolean orderByName) {
 
         Tournament t = getTournamentByID(tournamentID);
-        List<TourneyPlayerScoreDTO> list = new ArrayList<TourneyPlayerScoreDTO>();
+        List<TourneyPlayerScoreDTO> list = new ArrayList<>();
         List<TourneyPlayerScore> tpList = t.getTourneyPlayerScoreList();
         for (TourneyPlayerScore tourneyPlayerScore : tpList) {
             if (tourneyPlayerScore.getAgeGroup().getGender() == 1) {
@@ -218,10 +217,10 @@ public class DataUtil {
         return list;
     }
 
-    public static List<TourneyPlayerScoreDTO> getScoresByTournamentGirls(int tournamentID, boolean orderByName) {
+    public  List<TourneyPlayerScoreDTO> getScoresByTournamentGirls(int tournamentID, boolean orderByName) {
 
         Tournament t = getTournamentByID(tournamentID);
-        List<TourneyPlayerScoreDTO> list = new ArrayList<TourneyPlayerScoreDTO>();
+        List<TourneyPlayerScoreDTO> list = new ArrayList<>();
         List<TourneyPlayerScore> tpList = t.getTourneyPlayerScoreList();
         for (TourneyPlayerScore tourneyPlayerScore : tpList) {
             if (tourneyPlayerScore.getAgeGroup().getGender() == 2) {
@@ -232,9 +231,9 @@ public class DataUtil {
         return list;
     }
 
-    public static List<TournamentDTO> getTournamentByGroup(int groupID) {
-        EntityManager em = EMUtil.getEntityManager();
-        List<TournamentDTO> list = new ArrayList<TournamentDTO>();
+    public  List<TournamentDTO> getTournamentByGroup(int groupID) {
+        
+        List<TournamentDTO> list = new ArrayList<>();
         GolfGroup t = em.find(GolfGroup.class, groupID);
         if (t != null) {
             for (Tournament tournament : t.getTournamentList()) {
@@ -245,16 +244,16 @@ public class DataUtil {
         return list;
     }
 
-    public static Tournament getTournamentByID(int tournamentID) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  Tournament getTournamentByID(int tournamentID) {
+        
         Tournament t = em.find(Tournament.class, tournamentID);
         return t;
     }
 
-    public static void addTournamentScoreByRound(List<TourneyScoreByRoundDTO> scoreByRoundList) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+    public  void addTournamentScoreByRound(List<TourneyScoreByRoundDTO> scoreByRoundList) throws DataException {
+        
+        
+        
         try {
 
             for (TourneyScoreByRoundDTO tsbr : scoreByRoundList) {
@@ -322,17 +321,16 @@ public class DataUtil {
 
             }
         } catch (Exception e) {
-
             logger.log(Level.INFO, "Unable to add score", e);
             throw new DataException();
 
         }
     }
 
-    public static void updateTournamentScoreByRound(List<TourneyScoreByRoundDTO> scoreByRoundList) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+    public  void updateTournamentScoreByRound(List<TourneyScoreByRoundDTO> scoreByRoundList) throws DataException {
+        
+        
+        
 
         try {
             for (TourneyScoreByRoundDTO tsbr : scoreByRoundList) {
@@ -395,17 +393,16 @@ public class DataUtil {
                 em.merge(t);
                 scoreTotals(tps, em);
             }
-            tran.commit();
+            
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update score", e);
             throw new DataException();
         }
     }
 
-    public static void scoreTotals(TourneyPlayerScore tpScore, EntityManager em) throws DataException {
+    public  void scoreTotals(TourneyPlayerScore tpScore, EntityManager em) throws DataException {
         Query q = null;
-        q = em.createQuery("select a from TourneyScoreByRound a "
-                + " where a.tourneyPlayerScore = :t");
+        q = em.createNamedQuery("TourneyScoreByRound.getScoreTotals",TourneyScoreByRound.class);
         q.setParameter("t", tpScore);
         List<TourneyScoreByRound> xlist = q.getResultList();
         for (TourneyScoreByRound tsbr : xlist) {
@@ -436,28 +433,28 @@ public class DataUtil {
         }
     }
 
-    public static TourneyScoreByRound getTourneyScoreByRoundByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  TourneyScoreByRound getTourneyScoreByRoundByID(int id) {
+        
         TourneyScoreByRound tsbr = em.find(TourneyScoreByRound.class, id);
 
         return tsbr;
     }
 
-    public static void updateTourneyPlayerScores(List<TourneyPlayerScoreDTO> tourneyPlayers) throws DataException {
+    public  void updateTourneyPlayerScores(List<TourneyPlayerScoreDTO> tourneyPlayers) throws DataException {
 
         for (TourneyPlayerScoreDTO dto : tourneyPlayers) {
             updateTournamentScore(dto);
         }
     }
 
-    public static TourneyPlayerScore getTourneyPlayerScoreByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  TourneyPlayerScore getTourneyPlayerScoreByID(int id) {
+        
         TourneyPlayerScore t = em.find(TourneyPlayerScore.class, id);
         return t;
     }
 
-    public static void updateTournamentScore(TourneyPlayerScoreDTO d) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void updateTournamentScore(TourneyPlayerScoreDTO d) throws DataException {
+        
         TourneyPlayerScore s = em.find(TourneyPlayerScore.class, d.getTourneyPlayerScoreID());
         s.setAdministrator(em.find(Administrator.class, d.getAdministrator().getAdministratorID()));
         s.setAgeGroup(em.find(AgeGroup.class, d.getAgeGroup().getAgeGroupID()));
@@ -470,11 +467,11 @@ public class DataUtil {
         s.setTotalScore(d.getScoreRound1() + d.getScoreRound2() + d.getScoreRound3() + d.getScoreRound4());
         s.setTourneyPosition(d.getTourneyPosition());
         s.setTourneyPositionTied(d.getTourneyPositionTied());
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.merge(s);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Updated Tournament player score: {0} {1} to {2}",
                     new Object[]{s.getPlayer().getFirstName(), s.getPlayer().getLastName(), s.getTournament().getTourneyName()});
         } catch (Exception e) {
@@ -483,19 +480,19 @@ public class DataUtil {
         }
     }
 
-    public static void updateGolfGroup(GolfGroupDTO group) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void updateGolfGroup(GolfGroupDTO group) throws DataException {
+        
 
         GolfGroup g = getGroupByID(group.getGolfGroupID());
         g.setGolfGroupName(group.getGolfGroupName());
         g.setEmail(group.getEmail());
         g.setCellphone(group.getCellphone());
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.merge(g);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Updated golf group: {0} ",
                     new Object[]{g.getGolfGroupName()});
         } catch (Exception e) {
@@ -504,17 +501,17 @@ public class DataUtil {
         }
     }
 
-    public static void removeParentInPlayer(PlayerDTO p) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void removeParentInPlayer(PlayerDTO p) throws DataException {
+        
 
         Player g = getPlayerByID(p.getPlayerID());
         g.setParent(null);
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.merge(g);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Updated player: '{'0'}' {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update player", e);
@@ -522,8 +519,8 @@ public class DataUtil {
         }
     }
 
-    public static void updatePlayer(PlayerDTO player) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void updatePlayer(PlayerDTO player) throws DataException {
+        
 
         Player g = getPlayerByID(player.getPlayerID());
         g.setCellphone(player.getCellphone());
@@ -540,11 +537,11 @@ public class DataUtil {
             g.setParent(parent);
         }
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.merge(g);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Updated player: '{'0'}' {0} {1}", new Object[]{player.getFirstName(), player.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update player", e);
@@ -552,8 +549,8 @@ public class DataUtil {
         }
     }
 
-    public static void updateParent(ParentDTO dto) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void updateParent(ParentDTO dto) throws DataException {
+        
 
         Parent g = getParentByID(dto.getParentID());
         g.setCellphone(dto.getCellphone());
@@ -563,11 +560,11 @@ public class DataUtil {
         g.setMiddleName(dto.getMiddleName());
 
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.merge(g);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Updated parent: '{'0'}' {0} {1}", new Object[]{dto.getFirstName(), dto.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update parent", e);
@@ -575,8 +572,8 @@ public class DataUtil {
         }
     }
 
-    public static void updateClub(ClubDTO dto) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void updateClub(ClubDTO dto) throws DataException {
+        
 
         Club g = getClubByID(dto.getClubID());
         g.setTelephone(dto.getTelephone());
@@ -592,11 +589,11 @@ public class DataUtil {
         }
 
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.merge(g);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Updated club: {0}", new Object[]{dto.getClubName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update club", e);
@@ -604,8 +601,8 @@ public class DataUtil {
         }
     }
 
-    public static void updateAdmin(AdministratorDTO d) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void updateAdmin(AdministratorDTO d) throws DataException {
+        
 
         Administrator g = em.find(Administrator.class, d.getAdministratorID());
         g.setCellphone(d.getCellphone());
@@ -614,11 +611,11 @@ public class DataUtil {
         g.setLastName(d.getLastName());
 
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.merge(g);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Updated admin: {0}", new Object[]{d.getFirstName() + " " + d.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update admin", e);
@@ -626,8 +623,8 @@ public class DataUtil {
         }
     }
 
-    public static void updateClubCourse(ClubCourseDTO d) throws DataException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void updateClubCourse(ClubCourseDTO d) throws DataException {
+        
 
         ClubCourse s = getClubCourseByID(d.getClubCourseID());
         s.setCourseName(d.getCourseName());
@@ -654,11 +651,11 @@ public class DataUtil {
         s.setPar18(d.getPar1());
 
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.merge(s);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Updated clubCourse: {0}",
                     new Object[]{d.getCourseName()});
         } catch (Exception e) {
@@ -667,62 +664,62 @@ public class DataUtil {
         }
     }
 
-    public static AgeGroup getAgeGroupByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  AgeGroup getAgeGroupByID(int id) {
+        
         AgeGroup g = em.find(AgeGroup.class, id);
         return g;
     }
 
-    public static ClubCourse getClubCourseByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  ClubCourse getClubCourseByID(int id) {
+        
         ClubCourse g = em.find(ClubCourse.class, id);
         return g;
     }
 
-    public static Administrator getAdministratorByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  Administrator getAdministratorByID(int id) {
+        
         Administrator g = em.find(Administrator.class, id);
         return g;
     }
 
    
-    public static Club getClubByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  Club getClubByID(int id) {
+        
         Club g = em.find(Club.class, id);
         return g;
     }
 
-    public static Country getCountryByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  Country getCountryByID(int id) {
+        
         Country g = em.find(Country.class, id);
         return g;
     }
 
-    public static Province getProvinceByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  Province getProvinceByID(int id) {
+        
         Province g = em.find(Province.class, id);
         return g;
     }
 
-    public static GolfGroup getGroupByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  GolfGroup getGroupByID(int id) {
+        
         GolfGroup g = em.find(GolfGroup.class, id);
         return g;
     }
 
-    public static Player getPlayerByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  Player getPlayerByID(int id) {
+        
         Player g = em.find(Player.class, id);
         return g;
     }
 
-    public static Parent getParentByID(int id) {
-        EntityManager em = EMUtil.getEntityManager();
+    public  Parent getParentByID(int id) {
+        
         Parent g = em.find(Parent.class, id);
         return g;
     }
 
-    public static ResponseDTO addTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
+    public  ResponseDTO addTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
         ResponseDTO resp = new ResponseDTO();
         resp.setTeeTimeList(new ArrayList<TeeTimeDTO>());
         for (TeeTimeDTO t : list) {
@@ -733,19 +730,19 @@ public class DataUtil {
         return resp;
     }
 
-    public static TeeTimeDTO addTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  TeeTimeDTO addTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
+        
 
         TeeTime s = new TeeTime();
         s.setGolfRound(d.getGolfRound());
         s.setTeeTime(new Date(d.getTeeTime()));
         s.setTourneyPlayerScore(getTourneyPlayerScoreByID(d.getTourneyPlayerScoreID()));
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.persist(s);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Added Tournament tee time");
         } catch (ConstraintViolationException e) {
             throw new DuplicateException();
@@ -756,33 +753,30 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Tournament teetime", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
         return new TeeTimeDTO(s);
     }
 
-    public static void updateTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
+    public  void updateTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
         for (TeeTimeDTO t : list) {
             updateTeeTime(t);
         }
     }
 
-    public static void updateTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void updateTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
+        
 
         TeeTime s = em.find(TeeTime.class, d.getTeeTimeID());
         s.setGolfRound(d.getGolfRound());
         s.setTeeTime(new Date(d.getTeeTime()));
         //s.setTourneyPlayerScore(getTourneyPlayerScoreByID(d.getTourneyPlayerScoreID()));
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.merge(s);
-            tran.commit();
+            
 
             logger.log(Level.INFO, "\n### updated Tournament player tee time");
         } catch (ConstraintViolationException e) {
@@ -794,15 +788,12 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** upd Tournament teetime", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
 
     }
 
-    public static ResponseDTO addTournamentPlayers(List<TourneyPlayerScoreDTO> list) throws DataException, DuplicateException {
+    public  ResponseDTO addTournamentPlayers(List<TourneyPlayerScoreDTO> list) throws DataException, DuplicateException {
         ResponseDTO d = new ResponseDTO();
         d.setTourneyPlayers(new ArrayList<TourneyPlayerScoreDTO>());
         for (TourneyPlayerScoreDTO s : list) {
@@ -813,8 +804,8 @@ public class DataUtil {
         return d;
     }
 
-    public static TourneyPlayerScoreDTO addTournamentPlayer(TourneyPlayerScoreDTO d) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  TourneyPlayerScoreDTO addTournamentPlayer(TourneyPlayerScoreDTO d) throws DataException, DuplicateException {
+        
 
         TourneyPlayerScore s = new TourneyPlayerScore();
         s.setAgeGroup(em.find(AgeGroup.class, d.getAgeGroup().getAgeGroupID()));
@@ -823,11 +814,11 @@ public class DataUtil {
         s.setPlayer(getPlayerByID(d.getPlayer().getPlayerID()));
         s.setTournament(getTournamentByID(d.getTournamentID()));
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.persist(s);
-            tran.commit();
+            
             List<TourneyScoreByRoundDTO> list = new ArrayList<TourneyScoreByRoundDTO>();
             for (int i = 0; i < s.getTournament().getGolfRounds(); i++) {
                 TourneyScoreByRoundDTO dto = new TourneyScoreByRoundDTO();
@@ -847,16 +838,13 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Tournament player", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
         return new TourneyPlayerScoreDTO(s, false, false);
     }
 
-    public static void addClubCourse(ClubCourseDTO d) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  void addClubCourse(ClubCourseDTO d) throws DataException, DuplicateException {
+        
 
         ClubCourse s = new ClubCourse();
         s.setClub(getClubByID(d.getClubID()));
@@ -883,11 +871,11 @@ public class DataUtil {
         s.setPar17(d.getPar1());
         s.setPar18(d.getPar1());
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.persist(s);
-            tran.commit();
+            
             d = new ClubCourseDTO(s);
             logger.log(Level.INFO, "\n### Added ClubCourse: {0}", d.getCourseName());
         } catch (ConstraintViolationException e) {
@@ -899,16 +887,13 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding ClubCourse", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
 
     }
 
-    public static TournamentDTO addTournament(TournamentDTO dto) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  TournamentDTO addTournament(TournamentDTO dto) throws DataException, DuplicateException {
+        
         Tournament t = new Tournament();
         if (dto.getClosingDate() > 0) {
             t.setClosingDate(new Date(dto.getClosingDate()));
@@ -924,11 +909,11 @@ public class DataUtil {
         t.setGolfRounds(dto.getGolfRounds());
         t.setGolfGroup(getGroupByID(dto.getGolfGroupID()));
         t.setTourneyName(dto.getTourneyName());
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.persist(t);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Added Tournament {0} group: {1}",
                     new Object[]{t.getTourneyName(), t.getGolfGroup().getGolfGroupName()});
         } catch (ConstraintViolationException e) {
@@ -940,16 +925,13 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Tournament", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+           
         }
         return new TournamentDTO(t);
     }
 
-    public static ParentDTO addParent(ParentDTO dto, int golfGroupID) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  ParentDTO addParent(ParentDTO dto, int golfGroupID) throws DataException, DuplicateException {
+        
         Parent p = new Parent();
         p.setCellphone(dto.getCellphone());
         p.setEmail(dto.getEmail());
@@ -959,11 +941,11 @@ public class DataUtil {
         p.setParentType(dto.getParentType());
         p.setPin(dto.getPin());
 
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.persist(p);
-            tran.commit();
+            
             addGolfGroupParent(p.getParentID(), golfGroupID);
             logger.log(Level.INFO, "\n### Added Parent {0}  {1}", new Object[]{p.getFirstName(), p.getLastName()});
 
@@ -976,26 +958,24 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Parent", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
         return new ParentDTO(p, true);
     }
 
-    public static void addGolfGroupParent(int parentID, int golfGroupID) throws DuplicateException, DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        GolfGroup group = DataUtil.getGroupByID(golfGroupID);
+    public  void addGolfGroupParent(int parentID, int golfGroupID
+            ) throws DuplicateException, DataException {
+        
+        GolfGroup group = getGroupByID(golfGroupID);
         GolfGroupParent gg = new GolfGroupParent();
         gg.setDateRegistered(new Date());
         gg.setGolfGroup(group);
-        gg.setParent(DataUtil.getParentByID(parentID));
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        gg.setParent(getParentByID(parentID));
+        
+        
         try {
             em.persist(gg);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Added Parent to GolfGroup");
 
         } catch (ConstraintViolationException e) {
@@ -1007,25 +987,22 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding GGParent", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
     }
 
-    public static void addGolfGroupPlayer(int playerID, int golfGroupID) throws DuplicateException, DataException {
-        EntityManager em = EMUtil.getEntityManager();
-        GolfGroup group = DataUtil.getGroupByID(golfGroupID);
+    public  void addGolfGroupPlayer(int playerID, int golfGroupID) throws DuplicateException, DataException {
+        
+        GolfGroup group = getGroupByID(golfGroupID);
         GolfGroupPlayer gg = new GolfGroupPlayer();
         gg.setDateRegistered(new Date());
         gg.setGolfGroup(group);
-        gg.setPlayer(DataUtil.getPlayerByID(playerID));
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        gg.setPlayer(getPlayerByID(playerID));
+        
+        
         try {
             em.persist(gg);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Added Player to GolfGroup");
 
         } catch (ConstraintViolationException e) {
@@ -1037,15 +1014,12 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding GGPlayer", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
     }
 
-    public static ClubDTO addClub(ClubDTO d) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  ClubDTO addClub(ClubDTO d) throws DataException, DuplicateException {
+        
         Club club = new Club();
         club.setAddress(d.getAddress());
         club.setClubName(d.getClubName());
@@ -1056,11 +1030,11 @@ public class DataUtil {
         if (d.getProvinceID() > 0) {
             club.setProvince(getProvinceByID(d.getProvinceID()));
         }
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.persist(club);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Added Club {0}", club.getClubName() + " - " + club.getProvince().getProvinceName());
         } catch (ConstraintViolationException e) {
             throw new DuplicateException();
@@ -1071,16 +1045,13 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Club", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
         return new ClubDTO(club);
 
     }
 
-    public static List<PlayerDTO> addPlayers(List<PlayerDTO> list, int golfGroupID) throws DataException, DuplicateException {
+    public  List<PlayerDTO> addPlayers(List<PlayerDTO> list, int golfGroupID) throws DataException, DuplicateException {
         List<PlayerDTO> pList = new ArrayList<PlayerDTO>();
 
         for (PlayerDTO playerDTO : list) {
@@ -1090,8 +1061,8 @@ public class DataUtil {
         return pList;
     }
 
-    private static PlayerDTO addPlayer(PlayerDTO d, int golfGroupID) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    private  PlayerDTO addPlayer(PlayerDTO d, int golfGroupID) throws DataException, DuplicateException {
+        
         Player p = new Player();
         p.setCellphone(d.getCellphone());
         p.setDateOfBirth(new Date(d.getDateOfBirth()));
@@ -1107,11 +1078,11 @@ public class DataUtil {
             Parent parent = getParentByID(d.getParent().getParentID());
             p.setParent(parent);
         }
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.persist(p);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Added Player {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
             addGolfGroupPlayer(p.getPlayerID(), golfGroupID);
         } catch (ConstraintViolationException e) {
@@ -1123,16 +1094,13 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Player", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
         return new PlayerDTO(p, false);
     }
 
-    public static AdministratorDTO addGolfGroupAdmin(AdministratorDTO d) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  AdministratorDTO addGolfGroupAdmin(AdministratorDTO d) throws DataException, DuplicateException {
+        
         Administrator a = new Administrator();
         a.setCellphone(d.getCellphone());
         a.setEmail(d.getEmail());
@@ -1143,11 +1111,11 @@ public class DataUtil {
             GolfGroup gg = getGroupByID(d.getGolfGroup().getGolfGroupID());
             a.setGolfGroup(gg);
         }
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.persist(a);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Added Admin {0} {1} group: {2}",
                     new Object[]{a.getFirstName(), a.getLastName(), a.getGolfGroup().getGolfGroupName()});
         } catch (ConstraintViolationException e) {
@@ -1159,16 +1127,13 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Admin", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
         return new AdministratorDTO(a);
     }
 
-    public static GolfGroupDTO addGolfGroup(GolfGroupDTO d) throws DataException, DuplicateException {
-        EntityManager em = EMUtil.getEntityManager();
+    public  GolfGroupDTO addGolfGroup(GolfGroupDTO d) throws DataException, DuplicateException {
+        
         GolfGroup g = new GolfGroup();
         g.setCellphone(d.getCellphone());
         g.setDateRegistered(new Date());
@@ -1177,11 +1142,11 @@ public class DataUtil {
         if (d.getCountryID() > 0) {
             g.setCountry(getCountryByID(d.getCountryID()));
         }
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
+        
+        
         try {
             em.persist(g);
-            tran.commit();
+            
             logger.log(Level.INFO, "\n### Added GolfGroup {0}", g.getGolfGroupName());
             return new GolfGroupDTO(g);
         } catch (ConstraintViolationException e) {
@@ -1193,12 +1158,9 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding GolfGroup", e);
             throw new DataException();
         } finally {
-            if (tran.isActive()) {
-                tran.rollback();
-            }
-            em.close();
+            
         }
 
     }
-    private static final Logger logger = Logger.getLogger("DataUtil");
+    private  final Logger logger = Logger.getLogger("DataUtil");
 }

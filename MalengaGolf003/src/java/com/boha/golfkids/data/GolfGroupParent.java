@@ -32,6 +32,14 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "GolfGroupParent.findByGolfGroupParentID", query = "SELECT g FROM GolfGroupParent g WHERE g.golfGroupParentID = :golfGroupParentID"),
     @NamedQuery(name = "GolfGroupParent.findByDateRegistered", query = "SELECT g FROM GolfGroupParent g WHERE g.dateRegistered = :dateRegistered")})
 public class GolfGroupParent implements Serializable {
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "golfGroupID")
+    private int golfGroupID;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "parentID")
+    private int parentID;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -99,6 +107,22 @@ public class GolfGroupParent implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.GolfGroupParent[ golfGroupParentID=" + golfGroupParentID + " ]";
+    }
+
+    public int getGolfGroupID() {
+        return golfGroupID;
+    }
+
+    public void setGolfGroupID(int golfGroupID) {
+        this.golfGroupID = golfGroupID;
+    }
+
+    public int getParentID() {
+        return parentID;
+    }
+
+    public void setParentID(int parentID) {
+        this.parentID = parentID;
     }
     
 }

@@ -11,6 +11,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,6 +40,10 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "GolfGroup.findByCellphone", query = "SELECT g FROM GolfGroup g WHERE g.cellphone = :cellphone"),
     @NamedQuery(name = "GolfGroup.findByDateRegistered", query = "SELECT g FROM GolfGroup g WHERE g.dateRegistered = :dateRegistered")})
 public class GolfGroup implements Serializable {
+    @Column(name = "countryID")
+    private Integer countryID;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroupID", fetch = FetchType.EAGER)
+    private List<AgeGroup> ageGroupList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -184,6 +189,22 @@ public class GolfGroup implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.GolfGroup[ golfGroupID=" + golfGroupID + " ]";
+    }
+
+    public Integer getCountryID() {
+        return countryID;
+    }
+
+    public void setCountryID(Integer countryID) {
+        this.countryID = countryID;
+    }
+
+    public List<AgeGroup> getAgeGroupList() {
+        return ageGroupList;
+    }
+
+    public void setAgeGroupList(List<AgeGroup> ageGroupList) {
+        this.ageGroupList = ageGroupList;
     }
     
 }

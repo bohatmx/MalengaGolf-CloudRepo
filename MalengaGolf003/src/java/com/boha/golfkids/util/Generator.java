@@ -33,7 +33,8 @@ import javax.persistence.Query;
  */
 public class Generator {
 
-    public static String generateTournament(GenRequest genRequest) throws DataException {
+    public static String generateTournament(GenRequest genRequest,
+            DataUtil dataUtil) throws DataException {
         StringBuilder sb = new StringBuilder();
         sb.append("#### GENERATING TOURNAMENT\n\n");
         Calendar cal = GregorianCalendar.getInstance();
@@ -55,9 +56,9 @@ public class Generator {
         } else {
             tournament.setEndDate(startDate);
         }
-        tournament.setClub(DataUtil.getClubByID(genRequest.getClubID()));
+        tournament.setClub(dataUtil.getClubByID(genRequest.getClubID()));
         tournament.setGolfRounds(genRequest.getRounds());
-        tournament.setGolfGroup(DataUtil.getGroupByID(genRequest.getGolfGroupID()));
+        tournament.setGolfGroup(dataUtil.getGroupByID(genRequest.getGolfGroupID()));
 
         try {
             EntityTransaction tran = em.getTransaction();
@@ -66,7 +67,7 @@ public class Generator {
             tran.commit();
             sb.append("### Tournament generated: ").append(tournament.getTourneyName()).append("\n");
             //add players to tournament 
-            GolfGroup gg = DataUtil.getGroupByID(genRequest.getGolfGroupID());
+            GolfGroup gg = dataUtil.getGroupByID(genRequest.getGolfGroupID());
             Query q = em.createQuery("select a from GolfGroupPlayer a "
                     + " where a.golfGroup = :group");
             q.setParameter("group", gg);
@@ -75,11 +76,11 @@ public class Generator {
             for (GolfGroupPlayer ggplayer : list) {
                 TourneyPlayerScore score = new TourneyPlayerScore();
                 score.setDateRegistered(startDate);
-                score.setAgeGroup(getPlayersAgeGroup(ggplayer));
+                score.setAgeGroup(getPlayersAgeGroup(ggplayer, dataUtil));
                 score.setPaidFlag(1);
                 score.setPlayer(ggplayer.getPlayer());
                 score.setTournament(tournament);
-                score.setAdministrator(DataUtil.getAdministratorByID(genRequest.getAdministratorID()));
+                score.setAdministrator(dataUtil.getAdministratorByID(genRequest.getAdministratorID()));
                 em.persist(score);
 
             }
@@ -108,9 +109,9 @@ public class Generator {
                             em.persist(tsbr);
                         }
                     } else {
-                        Logger.getLogger("Generator").log(Level.WARNING,
-                                "Player has null AgeGroup, tourneyPlayerScoreID: "
-                                + tpScore.getTourneyPlayerScoreID());
+                        Logger.getLogger("Generator").log(Level.WARNING, 
+                                "Player has null AgeGroup, tourneyPlayerScoreID: {0}", 
+                                tpScore.getTourneyPlayerScoreID());
                     }
                 }
             }
@@ -690,31 +691,32 @@ public class Generator {
         tsbr.setScore18(score18);
     }
 
-    private static AgeGroup getPlayersAgeGroup(GolfGroupPlayer ggPlayer) {
+    private static AgeGroup getPlayersAgeGroup(GolfGroupPlayer ggPlayer,
+            DataUtil dataUtil) {
         Date today = new Date();
         Date bDate = ggPlayer.getPlayer().getDateOfBirth();
 
         int age = getDiffYears(bDate, today);
         if (age == 5 || age == 6) {
-            return DataUtil.getAgeGroupByID(1);
+            return dataUtil.getAgeGroupByID(1);
         }
         if (age == 7 || age == 8) {
-            return DataUtil.getAgeGroupByID(2);
+            return dataUtil.getAgeGroupByID(2);
         }
         if (age == 9 || age == 10) {
-            return DataUtil.getAgeGroupByID(3);
+            return dataUtil.getAgeGroupByID(3);
         }
         if (age == 11 || age == 12) {
-            return DataUtil.getAgeGroupByID(4);
+            return dataUtil.getAgeGroupByID(4);
         }
         if (age == 13 || age == 14) {
-            return DataUtil.getAgeGroupByID(5);
+            return dataUtil.getAgeGroupByID(5);
         }
         if (age == 15 || age == 16) {
-            return DataUtil.getAgeGroupByID(6);
+            return dataUtil.getAgeGroupByID(6);
         }
         if (age == 17 || age == 18) {
-            return DataUtil.getAgeGroupByID(7);
+            return dataUtil.getAgeGroupByID(7);
         }
         return null;
     }
@@ -737,11 +739,12 @@ public class Generator {
         return cal;
     }
 
-    public static String generatePlayers(int golfGroupID) throws DataException {
+    public static String generatePlayers(int golfGroupID,
+            DataUtil dataUtil) throws DataException {
         Random rand = new Random(System.currentTimeMillis());
         StringBuilder sb = new StringBuilder();
-        GolfGroup gg = DataUtil.getGroupByID(golfGroupID);
-        sb.append("#### GNERATED PLAYERS AND PARENTS\n\n");
+        GolfGroup gg = dataUtil.getGroupByID(golfGroupID);
+        sb.append("#### GENERATED PLAYERS AND PARENTS\n\n");
         //generate players in each age group
         EntityManager em = EMUtil.getEntityManager();
         List<AgeGroup> list = getAgeGroupsBoys();
@@ -864,7 +867,7 @@ public class Generator {
 
     public static List<AgeGroup> getAgeGroupsBoys() throws DataException {
         EntityManager em = EMUtil.getEntityManager();
-        List<AgeGroup> cList = new ArrayList<AgeGroup>();
+        List<AgeGroup> cList = new ArrayList<>();
         try {
             Query q = em.createQuery("select a from AgeGroup a  where a.gender = 1 "
                     + " order by a.ageGroupID ");

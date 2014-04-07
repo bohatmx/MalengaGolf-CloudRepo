@@ -13,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -21,6 +23,11 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "tourneyScoreByRound")
+@NamedQueries({
+    @NamedQuery(name = "TourneyScoreByRound.getScoreTotals", 
+        query = "select a from TourneyScoreByRound a "
+                + " where a.tourneyPlayerScore = :t")
+    })
 public class TourneyScoreByRound implements Serializable {
 
     private static final long serialVersionUID = 1L;

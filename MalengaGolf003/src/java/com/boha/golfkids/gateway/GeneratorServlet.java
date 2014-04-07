@@ -5,12 +5,14 @@
 package com.boha.golfkids.gateway;
 
 import com.boha.golfkids.util.DataException;
+import com.boha.golfkids.util.DataUtil;
 import com.boha.golfkids.util.Generator;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,7 +25,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "GeneratorServlet", urlPatterns = {"/generate"})
 public class GeneratorServlet extends HttpServlet {
-
+    @EJB
+    DataUtil dataUtil;
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -49,10 +52,10 @@ public class GeneratorServlet extends HttpServlet {
             String sb = "";
             switch(req.getRequestType()) {
                 case GenRequest.GENERATE_PLAYERS:
-                    sb = Generator.generatePlayers(req.getGolfGroupID());
+                    sb = Generator.generatePlayers(req.getGolfGroupID(),dataUtil);
                     break;
                 case GenRequest.GENERATE_TOURNAMENT:
-                    sb = Generator.generateTournament(req);
+                    sb = Generator.generateTournament(req, dataUtil);
                     break;
             }
             out.println("<!DOCTYPE html>");

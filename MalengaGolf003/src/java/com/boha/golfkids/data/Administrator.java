@@ -27,13 +27,11 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "administrator")
 @NamedQueries({
-    @NamedQuery(name = "Administrator.findAll", query = "SELECT a FROM Administrator a"),
-    @NamedQuery(name = "Administrator.findByAdministratorID", query = "SELECT a FROM Administrator a WHERE a.administratorID = :administratorID"),
-    @NamedQuery(name = "Administrator.findByCellphone", query = "SELECT a FROM Administrator a WHERE a.cellphone = :cellphone"),
-    @NamedQuery(name = "Administrator.findByEmail", query = "SELECT a FROM Administrator a WHERE a.email = :email"),
-    @NamedQuery(name = "Administrator.findByPin", query = "SELECT a FROM Administrator a WHERE a.pin = :pin"),
-    @NamedQuery(name = "Administrator.findByFirstName", query = "SELECT a FROM Administrator a WHERE a.firstName = :firstName"),
-    @NamedQuery(name = "Administrator.findByLastName", query = "SELECT a FROM Administrator a WHERE a.lastName = :lastName")})
+    @NamedQuery(name = "Administrator.login", 
+        query = "select a from Administrator a "
+                + "where a.email = : email "
+                + " and a.pin = :pin")
+    })
 public class Administrator implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

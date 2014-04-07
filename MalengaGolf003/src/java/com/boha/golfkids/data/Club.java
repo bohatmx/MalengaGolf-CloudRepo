@@ -28,14 +28,13 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "club")
 @NamedQueries({
-    @NamedQuery(name = "Club.findAll", query = "SELECT c FROM Club c"),
-    @NamedQuery(name = "Club.findByClubID", query = "SELECT c FROM Club c WHERE c.clubID = :clubID"),
-    @NamedQuery(name = "Club.findByClubName", query = "SELECT c FROM Club c WHERE c.clubName = :clubName"),
-    @NamedQuery(name = "Club.findByEmail", query = "SELECT c FROM Club c WHERE c.email = :email"),
-    @NamedQuery(name = "Club.findByTelephone", query = "SELECT c FROM Club c WHERE c.telephone = :telephone"),
-    @NamedQuery(name = "Club.findByLatitude", query = "SELECT c FROM Club c WHERE c.latitude = :latitude"),
-    @NamedQuery(name = "Club.findByLongitude", query = "SELECT c FROM Club c WHERE c.longitude = :longitude"),
-    @NamedQuery(name = "Club.findByAddress", query = "SELECT c FROM Club c WHERE c.address = :address")})
+    @NamedQuery(name = "Club.findByCountry", 
+        query = "select a from Club a where a.province.country.countryID = : id "
+                    + " order by a.clubName "),
+    @NamedQuery(name = "Club.findByProvince", 
+        query = "select a from Club a where a.province.provinceID= : id "
+                    + " order by a.clubName "),
+    })
 public class Club implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

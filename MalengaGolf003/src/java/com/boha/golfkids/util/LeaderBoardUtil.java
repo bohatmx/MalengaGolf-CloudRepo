@@ -13,18 +13,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 
 /**
  *
  * @author Aubrey Malabie
  */
+@Stateless
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class LeaderBoardUtil {
 
-    public static List<LeaderBoardDTO> getLeaderBoard(int tournamentID) throws DataException {
+    public  List<LeaderBoardDTO> getLeaderBoard(int tournamentID,
+            DataUtil dataUtil) throws DataException {
 
-        List<LeaderBoardDTO> list = new ArrayList<LeaderBoardDTO>();
+        List<LeaderBoardDTO> list = new ArrayList<>();
         try {
-            Tournament t = DataUtil.getTournamentByID(tournamentID);
+            Tournament t = dataUtil.getTournamentByID(tournamentID);
             if (t != null) {
                 for (TourneyPlayerScore s : t.getTourneyPlayerScoreList()) {
                     LeaderBoardDTO d = new LeaderBoardDTO();
@@ -40,7 +46,7 @@ public class LeaderBoardUtil {
             Collections.sort(list);
 
             //set positions
-            HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+            HashMap<Integer, Integer> map = new HashMap<>();
             int pos = 1;
             for (LeaderBoardDTO board : list) {
                 if (map.containsKey(board.getTotalScore())) {
@@ -60,11 +66,12 @@ public class LeaderBoardUtil {
         return list;
     }
 
-    public static List<LeaderBoardDTO> getLeaderBoardBoys(int tournamentID) throws DataException {
+    public  List<LeaderBoardDTO> getLeaderBoardBoys(int tournamentID,
+            DataUtil dataUtil) throws DataException {
 
-        List<LeaderBoardDTO> list = new ArrayList<LeaderBoardDTO>();
+        List<LeaderBoardDTO> list = new ArrayList<>();
         try {
-            List<TourneyPlayerScoreDTO> listx = DataUtil.getScoresByTournamentBoys(tournamentID, false);
+            List<TourneyPlayerScoreDTO> listx = dataUtil.getScoresByTournamentBoys(tournamentID, false);
 
             for (TourneyPlayerScoreDTO s : listx) {
                 LeaderBoardDTO d = new LeaderBoardDTO();
@@ -80,7 +87,7 @@ public class LeaderBoardUtil {
             Collections.sort(list);
 
             //set positions
-            HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+            HashMap<Integer, Integer> map = new HashMap<>();
             int pos = 1;
             for (LeaderBoardDTO board : list) {
                 if (map.containsKey(board.getTotalScore())) {
@@ -100,11 +107,12 @@ public class LeaderBoardUtil {
         return list;
     }
 
-    public static List<LeaderBoardDTO> getLeaderBoardGirls(int tournamentID) throws DataException {
+    public  List<LeaderBoardDTO> getLeaderBoardGirls(int tournamentID,
+            DataUtil dataUtil) throws DataException {
 
-        List<LeaderBoardDTO> list = new ArrayList<LeaderBoardDTO>();
+        List<LeaderBoardDTO> list = new ArrayList<>();
         try {
-            List<TourneyPlayerScoreDTO> listx = DataUtil.getScoresByTournamentGirls(tournamentID, false);
+            List<TourneyPlayerScoreDTO> listx = dataUtil.getScoresByTournamentGirls(tournamentID, false);
 
             for (TourneyPlayerScoreDTO s : listx) {
                 LeaderBoardDTO d = new LeaderBoardDTO();
@@ -120,7 +128,7 @@ public class LeaderBoardUtil {
             Collections.sort(list);
 
             //set positions
-            HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+            HashMap<Integer, Integer> map = new HashMap<>();
             int pos = 1;
             for (LeaderBoardDTO board : list) {
                 if (map.containsKey(board.getTotalScore())) {

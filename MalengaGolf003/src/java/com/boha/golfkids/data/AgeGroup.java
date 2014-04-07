@@ -9,9 +9,12 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -23,20 +26,24 @@ import javax.validation.constraints.Size;
  * @author aubreyM
  */
 @Entity
-@Table(name = "ageGroup")
+@Table(name = "agegroup")
 @NamedQueries({
-    @NamedQuery(name = "AgeGroup.findAll", query = "SELECT a FROM AgeGroup a"),
-    @NamedQuery(name = "AgeGroup.findByAgeGroupID", query = "SELECT a FROM AgeGroup a WHERE a.ageGroupID = :ageGroupID"),
-    @NamedQuery(name = "AgeGroup.findByGroupName", query = "SELECT a FROM AgeGroup a WHERE a.groupName = :groupName"),
-    @NamedQuery(name = "AgeGroup.findByGender", query = "SELECT a FROM AgeGroup a WHERE a.gender = :gender"),
-    @NamedQuery(name = "AgeGroup.findByNumberOfHolesPerRound", query = "SELECT a FROM AgeGroup a WHERE a.numberOfHolesPerRound = :numberOfHolesPerRound")})
-public class AgeGroup implements Serializable {
+    @NamedQuery(name = "AgeGroup.findByGolfGroup", 
+        query = "select a from AgeGroup a  where a.golfGroup.golfGroupID = :id"
+                    + " order by a.ageGroupName "),
+     @NamedQuery(name = "AgeGroup.findByGender", 
+        query = "select a from AgeGroup a "
+                    + "where a.golfGroup.golfGroupID = :id "
+                    + "and a.gender = :gender "
+                    + " order by a.ageGroupID "
+          )})
+public class AgeGroup implements  Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ageGroupID")
-    private int ageGroupID;
+    private Integer ageGroupID;
     @Size(max = 50)
     @Column(name = "groupName")
     private String groupName;
@@ -44,6 +51,10 @@ public class AgeGroup implements Serializable {
     private int gender;
     @Column(name = "numberOfHolesPerRound")
     private int numberOfHolesPerRound;
+    @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    private GolfGroup golfGroup;
+    
     @OneToMany(mappedBy = "ageGroup")
     private List<TourneyPlayerScore> tourneyPlayerScoreList;
 
@@ -70,9 +81,6 @@ public class AgeGroup implements Serializable {
         this.groupName = groupName;
     }
 
-    public int getGender() {
-        return gender;
-    }
 
     public void setGender(int gender) {
         this.gender = gender;
@@ -92,6 +100,62 @@ public class AgeGroup implements Serializable {
 
     public void setTourneyPlayerScoreList(List<TourneyPlayerScore> tourneyPlayerScoreList) {
         this.tourneyPlayerScoreList = tourneyPlayerScoreList;
+    }
+
+    
+    public void setAgeGroupID(Integer ageGroupID) {
+        this.ageGroupID = ageGroupID;
+    }
+
+   
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+   
+
+    
+
+    public GolfGroup getGolfGroup() {
+        return golfGroup;
+    }
+
+    
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGolfGroup(GolfGroup golfGroup) {
+        this.golfGroup = golfGroup;
+    }
+
+   
+    
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (ageGroupID != null ? ageGroupID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof AgeGroup)) {
+            return false;
+        }
+        AgeGroup other = (AgeGroup) object;
+        if ((this.ageGroupID == null && other.ageGroupID != null) || (this.ageGroupID != null && !this.ageGroupID.equals(other.ageGroupID))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "com.boha.golfkids.data.AgeGroup[ ageGroupID=" + ageGroupID + " ]";
     }
 
     

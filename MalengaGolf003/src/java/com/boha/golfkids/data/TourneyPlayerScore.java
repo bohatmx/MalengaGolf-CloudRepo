@@ -29,37 +29,44 @@ import javax.persistence.TemporalType;
 @Table(name = "tourneyPlayerScore")
 
 public class TourneyPlayerScore implements Serializable {
+    @Column(name = "scoreRound1")
+    private Integer scoreRound1;
+    @Column(name = "scoreRound2")
+    private Integer scoreRound2;
+    @Column(name = "scoreRound3")
+    private Integer scoreRound3;
+    @Column(name = "scoreRound4")
+    private Integer scoreRound4;
+    @Column(name = "tourneyPosition")
+    private Integer tourneyPosition;
+    @Column(name = "tourneyPositionTied")
+    private Integer tourneyPositionTied;
+    @Column(name = "winnerFlag")
+    private Integer winnerFlag;
+    @Column(name = "playerID")
+    private Integer playerID;
+    @Column(name = "tournamentID")
+    private Integer tournamentID;
+    @Column(name = "ageGroupID")
+    private Integer ageGroupID;
+    @Column(name = "administratorID")
+    private Integer administratorID;
+    @Column(name = "paidFlag")
+    private Integer paidFlag;
+    @Column(name = "totalScore")
+    private Integer totalScore;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "tourneyPlayerScoreID")
     private int tourneyPlayerScoreID;
-    @Column(name = "scoreRound1")
-    private int scoreRound1;
-    @Column(name = "scoreRound2")
-    private int scoreRound2;
-    @Column(name = "scoreRound3")
-    private int scoreRound3;
-    @Column(name = "scoreRound4")
-    private int scoreRound4;
-    @Column(name = "tourneyPosition")
-    private int tourneyPosition;
-    @Column(name = "tourneyPositionTied")
-    private int tourneyPositionTied;
-    @Column(name = "winnerFlag")
-    private int winnerFlag;
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
     @Column(name = "dateUpdated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
-    
-    @Column(name = "paidFlag")
-    private int paidFlag;
-    @Column(name = "totalScore")
-    private int totalScore;
     
     @JoinColumn(name = "administratorID", referencedColumnName = "administratorID")
     @ManyToOne
@@ -103,62 +110,6 @@ public class TourneyPlayerScore implements Serializable {
         this.tourneyPlayerScoreID = tourneyPlayerScoreID;
     }
 
-    public int getScoreRound1() {
-        return scoreRound1;
-    }
-
-    public void setScoreRound1(int scoreRound1) {
-        this.scoreRound1 = scoreRound1;
-    }
-
-    public int getScoreRound2() {
-        return scoreRound2;
-    }
-
-    public void setScoreRound2(int scoreRound2) {
-        this.scoreRound2 = scoreRound2;
-    }
-
-    public int getScoreRound3() {
-        return scoreRound3;
-    }
-
-    public void setScoreRound3(int scoreRound3) {
-        this.scoreRound3 = scoreRound3;
-    }
-
-    public int getScoreRound4() {
-        return scoreRound4;
-    }
-
-    public void setScoreRound4(int scoreRound4) {
-        this.scoreRound4 = scoreRound4;
-    }
-
-    public int getTourneyPosition() {
-        return tourneyPosition;
-    }
-
-    public void setTourneyPosition(int tourneyPosition) {
-        this.tourneyPosition = tourneyPosition;
-    }
-
-    public int getTourneyPositionTied() {
-        return tourneyPositionTied;
-    }
-
-    public void setTourneyPositionTied(int tourneyPositionTied) {
-        this.tourneyPositionTied = tourneyPositionTied;
-    }
-
-    public int getWinnerFlag() {
-        return winnerFlag;
-    }
-
-    public void setWinnerFlag(int winnerFlag) {
-        this.winnerFlag = winnerFlag;
-    }
-
     public List<TourneyScoreByRound> getTourneyScoreByRounds() {
         return tourneyScoreByRounds;
     }
@@ -181,23 +132,6 @@ public class TourneyPlayerScore implements Serializable {
 
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
-    }
-
-
-    public int getPaidFlag() {
-        return paidFlag;
-    }
-
-    public void setPaidFlag(int paidFlag) {
-        this.paidFlag = paidFlag;
-    }
-
-    public int getTotalScore() {
-        return totalScore;
-    }
-
-    public void setTotalScore(int totalScore) {
-        this.totalScore = totalScore;
     }
 
    
@@ -232,6 +166,110 @@ public class TourneyPlayerScore implements Serializable {
 
     public void setTournament(Tournament tournament) {
         this.tournament = tournament;
+    }
+
+    public Integer getScoreRound1() {
+        return scoreRound1;
+    }
+
+    public void setScoreRound1(Integer scoreRound1) {
+        this.scoreRound1 = scoreRound1;
+    }
+
+    public Integer getScoreRound2() {
+        return scoreRound2;
+    }
+
+    public void setScoreRound2(Integer scoreRound2) {
+        this.scoreRound2 = scoreRound2;
+    }
+
+    public Integer getScoreRound3() {
+        return scoreRound3;
+    }
+
+    public void setScoreRound3(Integer scoreRound3) {
+        this.scoreRound3 = scoreRound3;
+    }
+
+    public Integer getScoreRound4() {
+        return scoreRound4;
+    }
+
+    public void setScoreRound4(Integer scoreRound4) {
+        this.scoreRound4 = scoreRound4;
+    }
+
+    public Integer getTourneyPosition() {
+        return tourneyPosition;
+    }
+
+    public void setTourneyPosition(Integer tourneyPosition) {
+        this.tourneyPosition = tourneyPosition;
+    }
+
+    public Integer getTourneyPositionTied() {
+        return tourneyPositionTied;
+    }
+
+    public void setTourneyPositionTied(Integer tourneyPositionTied) {
+        this.tourneyPositionTied = tourneyPositionTied;
+    }
+
+    public Integer getWinnerFlag() {
+        return winnerFlag;
+    }
+
+    public void setWinnerFlag(Integer winnerFlag) {
+        this.winnerFlag = winnerFlag;
+    }
+
+    public Integer getPlayerID() {
+        return playerID;
+    }
+
+    public void setPlayerID(Integer playerID) {
+        this.playerID = playerID;
+    }
+
+    public Integer getTournamentID() {
+        return tournamentID;
+    }
+
+    public void setTournamentID(Integer tournamentID) {
+        this.tournamentID = tournamentID;
+    }
+
+    public Integer getAgeGroupID() {
+        return ageGroupID;
+    }
+
+    public void setAgeGroupID(Integer ageGroupID) {
+        this.ageGroupID = ageGroupID;
+    }
+
+    public Integer getAdministratorID() {
+        return administratorID;
+    }
+
+    public void setAdministratorID(Integer administratorID) {
+        this.administratorID = administratorID;
+    }
+
+    public Integer getPaidFlag() {
+        return paidFlag;
+    }
+
+    public void setPaidFlag(Integer paidFlag) {
+        this.paidFlag = paidFlag;
+    }
+
+    public Integer getTotalScore() {
+        return totalScore;
+    }
+
+    public void setTotalScore(Integer totalScore) {
+        this.totalScore = totalScore;
     }
 
     

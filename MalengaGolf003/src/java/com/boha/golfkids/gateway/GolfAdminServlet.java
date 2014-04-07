@@ -18,10 +18,8 @@ import com.boha.golfkids.dto.RequestDTO;
 import com.boha.golfkids.dto.ResponseDTO;
 import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;
-import com.boha.golfkids.util.DuplicateException;
 import com.boha.golfkids.util.GZipUtility;
 import com.boha.golfkids.util.LeaderBoardUtil;
-import com.boha.golfkids.util.LoginException;
 import com.google.gson.Gson;
 import com.oreilly.servlet.ServletUtils;
 import java.io.File;
@@ -32,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -40,10 +39,15 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author malengatiger
+ * @author AubreyM
  */
 @WebServlet(name = "GolfAdminServlet", urlPatterns = {"/golf"})
 public class GolfAdminServlet extends HttpServlet {
+
+    @EJB
+    DataUtil dataUtil;
+    @EJB
+    LeaderBoardUtil leaderBoardUtil;
 
     /**
      * Processes requests for both HTTP
@@ -75,143 +79,136 @@ public class GolfAdminServlet extends HttpServlet {
             try {
                 switch (gr.getRequestCode()) {
                     case RequestDTO.GET_TEE_TIMES:
-                        resp.setTeeTimeList(DataUtil.getTeeTimes(gr.getTournamentID()));
+                        resp.setTeeTimeList(dataUtil.getTeeTimes(gr.getTournamentID()));
                         break;
                     case RequestDTO.GET_LEADERBOARD:
-                        List<LeaderBoardDTO> bd = LeaderBoardUtil.getLeaderBoard(gr.getTournamentID());
+                        List<LeaderBoardDTO> bd = leaderBoardUtil.getLeaderBoard(gr.getTournamentID(),dataUtil);
                         resp.setLeaderBoard(bd);
                         break;
                     case RequestDTO.GET_LEADERBOARD_BOYS:
-                        List<LeaderBoardDTO> bdb = LeaderBoardUtil.getLeaderBoardBoys(gr.getTournamentID());
+                        List<LeaderBoardDTO> bdb = leaderBoardUtil.getLeaderBoardBoys(gr.getTournamentID(),dataUtil);
                         resp.setLeaderBoard(bdb);
                         break;
                     case RequestDTO.GET_LEADERBOARD_GIRLS:
-                        List<LeaderBoardDTO> bdg = LeaderBoardUtil.getLeaderBoardGirls(gr.getTournamentID());
+                        List<LeaderBoardDTO> bdg = leaderBoardUtil.getLeaderBoardGirls(gr.getTournamentID(),dataUtil);
                         resp.setLeaderBoard(bdg);
                         break;
                     case RequestDTO.UPDATE_TOURNAMENT_SCORES:
-                        DataUtil.updateTournamentScoreByRound(gr.getTourneyScoreByRoundList());
+                        dataUtil.updateTournamentScoreByRound(gr.getTourneyScoreByRoundList());
                         break;
                     case RequestDTO.UPDATE_TOURNAMENT_SCORE_TOTALS:
-                        DataUtil.updateTourneyPlayerScores(gr.getPlayers());
+                        dataUtil.updateTourneyPlayerScores(gr.getPlayers());
                         break;
                     case RequestDTO.ADD_TOURNAMENT_PLAYERS:
-                        resp = DataUtil.addTournamentPlayers(gr.getPlayers());
+                        resp = dataUtil.addTournamentPlayers(gr.getPlayers());
                         break;
                     case RequestDTO.ADD_TEE_TIMES:
-                        resp = DataUtil.addTeeTimes(gr.getTeeTimeList());
+                        resp = dataUtil.addTeeTimes(gr.getTeeTimeList());
                         break;
                     case RequestDTO.UPDATE_TEE_TIMES:
-                        DataUtil.updateTeeTimes(gr.getTeeTimeList());
+                        dataUtil.updateTeeTimes(gr.getTeeTimeList());
                         break;
                     case RequestDTO.ADD_TOURNAMENT:
-                        TournamentDTO t = DataUtil.addTournament(gr.getTournament());
+                        TournamentDTO t = dataUtil.addTournament(gr.getTournament());
                         resp.setTournaments(new ArrayList<TournamentDTO>());
                         resp.getTournaments().add(t);
                         break;
                     case RequestDTO.ADD_PLAYER:
-                        List<PlayerDTO> pl = DataUtil.addPlayers(gr.getPlayerList(), gr.getGolfGroupID());
+                        List<PlayerDTO> pl = dataUtil.addPlayers(gr.getPlayerList(), gr.getGolfGroupID());
                         resp.setPlayers(pl);
                         break;
                     case RequestDTO.UPDATE_PLAYER:
-                        DataUtil.updatePlayer(gr.getPlayerList().get(0));
+                        dataUtil.updatePlayer(gr.getPlayerList().get(0));
                         break;
 
                     case RequestDTO.ADD_PARENT:
-                        ParentDTO parent = DataUtil.addParent(gr.getParent(), gr.getGolfGroupID());
+                        ParentDTO parent = dataUtil.addParent(gr.getParent(), gr.getGolfGroupID());
                         resp.setParents(new ArrayList<ParentDTO>());
                         resp.getParents().add(parent);
                         break;
                     case RequestDTO.UPDATE_PARENT:
-                        DataUtil.updateParent(gr.getParent());
+                        dataUtil.updateParent(gr.getParent());
                         break;
                     case RequestDTO.ADMIN_LOGIN:
-                        AdministratorDTO admin1 = DataUtil.getAdminLoggedIn(gr.getEmail(), gr.getPin());
+                        AdministratorDTO admin1 = dataUtil.getAdminLoggedIn(gr.getEmail(), gr.getPin());
                         resp.setAdministrators(new ArrayList<AdministratorDTO>());
                         resp.getAdministrators().add(admin1);
                         //TODO - is admin joining GolfGroup on new device? then get golf data ...
                         //must request zipped response
-                        GolfGroup gg = DataUtil.getGroupByID(gr.getGolfGroupID());
-                        resp.setAgeGroups(DataUtil.getAgeGroups());
-                        
+                        GolfGroup gg = dataUtil.getGroupByID(gr.getGolfGroupID());
+                        resp.setAgeGroups(dataUtil.getAgeGroups(gr.getGolfGroupID()));
+
                         resp.setGolfGroups(new ArrayList<GolfGroupDTO>());
                         resp.getGolfGroups().add(new GolfGroupDTO(gg));
-                        
+
                         break;
                     case RequestDTO.ADD_ADMINISTRATOR:
-                        AdministratorDTO admin = DataUtil.addGolfGroupAdmin(gr.getAdministrator());
+                        AdministratorDTO admin = dataUtil.addGolfGroupAdmin(gr.getAdministrator());
                         resp.setAdministrators(new ArrayList<AdministratorDTO>());
                         resp.getAdministrators().add(admin);
                         break;
                     case RequestDTO.ADD_GOLF_GROUP:
-                        GolfGroupDTO group = DataUtil.addGolfGroup(gr.getGolfGroup());
+                        GolfGroupDTO group = dataUtil.addGolfGroup(gr.getGolfGroup());
                         gr.getAdministrator().setGolfGroup(group);
-                        AdministratorDTO admin0 = DataUtil.addGolfGroupAdmin(gr.getAdministrator());
+                        AdministratorDTO admin0 = dataUtil.addGolfGroupAdmin(gr.getAdministrator());
                         resp.setGolfGroups(new ArrayList<GolfGroupDTO>());
                         resp.setAdministrators(new ArrayList<AdministratorDTO>());
                         resp.getAdministrators().add(admin0);
                         resp.getGolfGroups().add(group);
                         break;
                     case RequestDTO.UPDATE_GOLF_GROUP:
-                        DataUtil.updateGolfGroup(gr.getGolfGroup());
+                        dataUtil.updateGolfGroup(gr.getGolfGroup());
                         break;
                     case RequestDTO.ADD_CLUB:
-                        ClubDTO c = DataUtil.addClub(gr.getClub());
+                        ClubDTO c = dataUtil.addClub(gr.getClub());
                         break;
                     case RequestDTO.GET_CLUBS_IN_COUNTRY:
-                        List<ClubDTO> ctryList = DataUtil.getClubsByCountry(gr.getCountryID());
+                        List<ClubDTO> ctryList = dataUtil.getClubsByCountry(gr.getCountryID());
                         resp.setClubs(ctryList);
                         break;
                     case RequestDTO.GET_CLUBS_IN_PROVINCE:
-                        List<ClubDTO> pList = DataUtil.getClubsByProvince(gr.getProvinceID());
+                        List<ClubDTO> pList = dataUtil.getClubsByProvince(gr.getProvinceID());
                         resp.setClubs(pList);
                         break;
                     case RequestDTO.UPDATE_PLAYER_PARENT:
                         //TODO - think!
                         break;
                     case RequestDTO.UPDATE_ADMINISTRATOR:
-                        DataUtil.updateAdmin(gr.getAdministrator());
+                        dataUtil.updateAdmin(gr.getAdministrator());
                         break;
                     case RequestDTO.UPDATE_CLUB:
-                        DataUtil.updateClub(gr.getClub());
+                        dataUtil.updateClub(gr.getClub());
                         break;
                     case RequestDTO.GET_AGE_GROUPS:
-                        List<AgeGroupDTO> ageList = DataUtil.getAgeGroups();
+                        List<AgeGroupDTO> ageList = dataUtil.getAgeGroups(gr.getGolfGroupID());
                         resp.setAgeGroups(ageList);
                         break;
                     case RequestDTO.GET_AGE_GROUPS_BOYS:
-                        List<AgeGroupDTO> ageList1 = DataUtil.getAgeGroupsBoys();
+                        List<AgeGroupDTO> ageList1 = dataUtil.getAgeGroupsBoys(gr.getGolfGroupID());
                         resp.setAgeGroups(ageList1);
                         break;
                     case RequestDTO.GET_AGE_GROUPS_GIRLS:
-                        List<AgeGroupDTO> ageList2 = DataUtil.getAgeGroupsGirls();
+                        List<AgeGroupDTO> ageList2 = dataUtil.getAgeGroupsGirls(gr.getGolfGroupID());
                         resp.setAgeGroups(ageList2);
                         break;
                     case RequestDTO.GET_COUNTRIES:
-                        List<CountryDTO> cntrList = DataUtil.getCountries();
+                        List<CountryDTO> cntrList = dataUtil.getCountries();
                         resp.setCountries(cntrList);
                         break;
                     case RequestDTO.ADD_CLUB_COURSE:
-                        DataUtil.addClubCourse(gr.getClubCourse());
+                        dataUtil.addClubCourse(gr.getClubCourse());
                         resp.setClubCourse(gr.getClubCourse());
                         break;
                     case RequestDTO.UPDATE_CLUB_COURSE:
-                        DataUtil.updateClubCourse(gr.getClubCourse());
+                        dataUtil.updateClubCourse(gr.getClubCourse());
                         break;
                 }
-            } catch (LoginException e) {
-                resp.setStatusCode(ResponseDTO.LOGIN_EXCEPTION);
-                resp.setMessage("Login failed. Please try again");
-                log.log(Level.SEVERE, "Login failed", e);
-
+           
             } catch (DataException e) {
                 resp.setStatusCode(ResponseDTO.DATA_EXCEPTION);
                 resp.setMessage("Database failed. Please try again later");
                 log.log(Level.SEVERE, "Database failed", e);
-            } catch (DuplicateException e) {
-                resp.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
-                resp.setMessage("Data duplicated. Data not stored");
-                log.log(Level.WARNING, "Duplicate data", e);
+            
             } catch (Exception e) {
                 resp.setStatusCode(ResponseDTO.GENERIC_EXCEPTION);
                 resp.setMessage("Server process failed. Please try again later");

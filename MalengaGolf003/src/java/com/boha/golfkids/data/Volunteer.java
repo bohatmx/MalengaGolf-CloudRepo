@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -9,6 +11,7 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,21 +29,14 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "volunteer")
 @NamedQueries({
-    @NamedQuery(name = "Volunteer.findAll", query = "SELECT v FROM Volunteer v"),
-    @NamedQuery(name = "Volunteer.findByVolunteerID", query = "SELECT v FROM Volunteer v WHERE v.volunteerID = :volunteerID"),
-    @NamedQuery(name = "Volunteer.findByFirstName", query = "SELECT v FROM Volunteer v WHERE v.firstName = :firstName"),
-    @NamedQuery(name = "Volunteer.findByMiddleName", query = "SELECT v FROM Volunteer v WHERE v.middleName = :middleName"),
-    @NamedQuery(name = "Volunteer.findByLastName", query = "SELECT v FROM Volunteer v WHERE v.lastName = :lastName"),
-    @NamedQuery(name = "Volunteer.findByCellphone", query = "SELECT v FROM Volunteer v WHERE v.cellphone = :cellphone"),
-    @NamedQuery(name = "Volunteer.findByEmail", query = "SELECT v FROM Volunteer v WHERE v.email = :email"),
-    @NamedQuery(name = "Volunteer.findByPin", query = "SELECT v FROM Volunteer v WHERE v.pin = :pin")})
+    @NamedQuery(name = "Volunteer.findAll", query = "SELECT v FROM Volunteer v")})
 public class Volunteer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "volunteerID")
-    private int volunteerID;
+    private Integer volunteerID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
@@ -57,6 +53,7 @@ public class Volunteer implements Serializable {
     @Size(max = 45)
     @Column(name = "cellphone")
     private String cellphone;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -65,30 +62,30 @@ public class Volunteer implements Serializable {
     @Size(max = 45)
     @Column(name = "pin")
     private String pin;
-    @OneToMany(mappedBy = "volunteer")
+    @OneToMany(mappedBy = "volunteer", fetch = FetchType.EAGER)
     private List<GolfGroupVolunteer> golfGroupVolunteerList;
-    @OneToMany(mappedBy = "volunteer")
+    @OneToMany(mappedBy = "volunteer", fetch = FetchType.EAGER)
     private List<TournamentVolunteer> tournamentVolunteerList;
 
     public Volunteer() {
     }
 
-    public Volunteer(int volunteerID) {
+    public Volunteer(Integer volunteerID) {
         this.volunteerID = volunteerID;
     }
 
-    public Volunteer(int volunteerID, String firstName, String lastName, String email) {
+    public Volunteer(Integer volunteerID, String firstName, String lastName, String email) {
         this.volunteerID = volunteerID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
     }
 
-    public int getVolunteerID() {
+    public Integer getVolunteerID() {
         return volunteerID;
     }
 
-    public void setVolunteerID(int volunteerID) {
+    public void setVolunteerID(Integer volunteerID) {
         this.volunteerID = volunteerID;
     }
 
@@ -156,7 +153,25 @@ public class Volunteer implements Serializable {
         this.tournamentVolunteerList = tournamentVolunteerList;
     }
 
-   
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (volunteerID != null ? volunteerID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Volunteer)) {
+            return false;
+        }
+        Volunteer other = (Volunteer) object;
+        if ((this.volunteerID == null && other.volunteerID != null) || (this.volunteerID != null && !this.volunteerID.equals(other.volunteerID))) {
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public String toString() {

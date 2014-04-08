@@ -27,6 +27,11 @@ public class ResponseDTO {
     private List<ClubDTO> clubs;
     private List<AgeGroupDTO> ageGroups;
     private List<AdministratorDTO> administrators;
+    private List<GolfGroupPlayerDTO> golfGroupPlayers;
+    private List<GolfGroupParentDTO> golfGroupParents;
+    private GolfGroupDTO golfGroup;
+    private AdministratorDTO administrator;
+    
     private ClubCourseDTO clubCourse;
     //
     public static final int LOGIN_EXCEPTION = 101;
@@ -40,6 +45,38 @@ public class ResponseDTO {
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public AdministratorDTO getAdministrator() {
+        return administrator;
+    }
+
+    public void setAdministrator(AdministratorDTO administrator) {
+        this.administrator = administrator;
+    }
+
+    public GolfGroupDTO getGolfGroup() {
+        return golfGroup;
+    }
+
+    public void setGolfGroup(GolfGroupDTO golfGroup) {
+        this.golfGroup = golfGroup;
+    }
+
+    public List<GolfGroupPlayerDTO> getGolfGroupPlayers() {
+        return golfGroupPlayers;
+    }
+
+    public void setGolfGroupPlayers(List<GolfGroupPlayerDTO> golfGroupPlayers) {
+        this.golfGroupPlayers = golfGroupPlayers;
+    }
+
+    public List<GolfGroupParentDTO> getGolfGroupParents() {
+        return golfGroupParents;
+    }
+
+    public void setGolfGroupParents(List<GolfGroupParentDTO> golfGroupParents) {
+        this.golfGroupParents = golfGroupParents;
     }
 
     public String getMessage() {

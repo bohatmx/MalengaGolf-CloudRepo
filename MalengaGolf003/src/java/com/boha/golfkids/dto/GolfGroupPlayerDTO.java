@@ -20,7 +20,7 @@ public class GolfGroupPlayerDTO {
     
     public GolfGroupPlayerDTO(GolfGroupPlayer a) {
         dateRegistered = a.getDateRegistered().getTime();
-        player = new PlayerDTO(a.getPlayer(), true);
+        player = new PlayerDTO(a.getPlayer());
         golfGroupID = a.getGolfGroup().getGolfGroupID();
     }
 

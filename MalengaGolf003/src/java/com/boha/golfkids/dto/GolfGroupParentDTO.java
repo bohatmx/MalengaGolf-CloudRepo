@@ -55,6 +55,6 @@ public class GolfGroupParentDTO {
         golfGroupID = a.getGolfGroup().getGolfGroupID();
         golfGroupParentID = a.getGolfGroupParentID();
         dateRegistered = a.getDateRegistered().getTime();
-        parent = new ParentDTO(a.getParent(), false);
+        parent = new ParentDTO(a.getParent());
     }
 }

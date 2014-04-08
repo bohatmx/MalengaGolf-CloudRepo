@@ -13,6 +13,7 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
 
     private int position;
     private PlayerDTO player;
+    
     private int scoreRound1, 
             scoreRound2, 
             scoreRound3, 

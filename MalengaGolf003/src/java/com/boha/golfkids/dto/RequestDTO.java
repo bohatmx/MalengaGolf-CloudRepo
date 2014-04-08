@@ -17,6 +17,7 @@ public class RequestDTO {
     private int tournamentID, playerID, countryID, provinceID, clubCourseID;
     private GolfGroupDTO golfGroup;
     private TournamentDTO tournament;
+    private PlayerDTO player;
     private AdministratorDTO administrator;
     private List<PlayerDTO> playerList;
     private ParentDTO parent;
@@ -25,7 +26,7 @@ public class RequestDTO {
     private List<TourneyPlayerScoreDTO> players;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private List<TeeTimeDTO> teeTimeList;
-    private int requestCode;
+    private int requestType;
     private boolean zippedResponse;
     //
     public static final int ADMIN_LOGIN = 1;
@@ -76,6 +77,14 @@ public class RequestDTO {
 
     public int getProvinceID() {
         return provinceID;
+    }
+
+    public PlayerDTO getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(PlayerDTO player) {
+        this.player = player;
     }
 
     public void setProvinceID(int provinceID) {
@@ -218,11 +227,11 @@ public class RequestDTO {
         this.parent = parent;
     }
 
-    public int getRequestCode() {
-        return requestCode;
+    public int getRequestType() {
+        return requestType;
     }
 
-    public void setRequestCode(int requestCode) {
-        this.requestCode = requestCode;
+    public void setRequestType(int requestType) {
+        this.requestType = requestType;
     }
 }

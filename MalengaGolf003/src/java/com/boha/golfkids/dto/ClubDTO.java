@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Club
  * @author Aubrey Malabie
  */
 public class ClubDTO {

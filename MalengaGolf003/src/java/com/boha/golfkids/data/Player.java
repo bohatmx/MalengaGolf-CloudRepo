@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -11,6 +13,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,30 +34,16 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "player")
 @NamedQueries({
-    @NamedQuery(name = "Player.findAll", query = "SELECT p FROM Player p"),
-    @NamedQuery(name = "Player.findByPlayerID", query = "SELECT p FROM Player p WHERE p.playerID = :playerID"),
-    @NamedQuery(name = "Player.findByFirstName", query = "SELECT p FROM Player p WHERE p.firstName = :firstName"),
-    @NamedQuery(name = "Player.findByMiddleName", query = "SELECT p FROM Player p WHERE p.middleName = :middleName"),
-    @NamedQuery(name = "Player.findByLastName", query = "SELECT p FROM Player p WHERE p.lastName = :lastName"),
-    @NamedQuery(name = "Player.findByDateOfBirth", query = "SELECT p FROM Player p WHERE p.dateOfBirth = :dateOfBirth"),
-    @NamedQuery(name = "Player.findByGender", query = "SELECT p FROM Player p WHERE p.gender = :gender"),
-    @NamedQuery(name = "Player.findByDateRegistered", query = "SELECT p FROM Player p WHERE p.dateRegistered = :dateRegistered"),
-    @NamedQuery(name = "Player.findByYearJoined", query = "SELECT p FROM Player p WHERE p.yearJoined = :yearJoined"),
-    @NamedQuery(name = "Player.findByEmail", query = "SELECT p FROM Player p WHERE p.email = :email"),
-    @NamedQuery(name = "Player.findByCellphone", query = "SELECT p FROM Player p WHERE p.cellphone = :cellphone"),
-    @NamedQuery(name = "Player.findByPin", query = "SELECT p FROM Player p WHERE p.pin = :pin")})
+    @NamedQuery(name = "Player.login", 
+            query = "SELECT a FROM Player a where a.email = :email and a.pin = :pin"),
+    @NamedQuery(name = "Player.findAll", query = "SELECT p FROM Player p")})
 public class Player implements Serializable {
-    @Column(name = "gender")
-    private Integer gender;
-    @Column(name = "yearJoined")
-    private Integer yearJoined;
-   
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "playerID")
-    private int playerID;
+    private Integer playerID;
     @Size(max = 45)
     @Column(name = "firstName")
     private String firstName;
@@ -67,9 +56,14 @@ public class Player implements Serializable {
     @Column(name = "dateOfBirth")
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
+    @Column(name = "gender")
+    private Integer gender;
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
+    @Column(name = "yearJoined")
+    private Integer yearJoined;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 95)
     @Column(name = "email")
     private String email;
@@ -80,25 +74,25 @@ public class Player implements Serializable {
     @Column(name = "pin")
     private String pin;
     @JoinColumn(name = "parentID", referencedColumnName = "parentID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Parent parent;
-    @OneToMany(mappedBy = "player")
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
     private List<TourneyPlayerScore> tourneyPlayerScoreList;
-    @OneToMany(mappedBy = "player")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "player", fetch = FetchType.EAGER)
     private List<GolfGroupPlayer> golfGroupPlayerList;
 
     public Player() {
     }
 
-    public Player(int playerID) {
+    public Player(Integer playerID) {
         this.playerID = playerID;
     }
 
-    public int getPlayerID() {
+    public Integer getPlayerID() {
         return playerID;
     }
 
-    public void setPlayerID(int playerID) {
+    public void setPlayerID(Integer playerID) {
         this.playerID = playerID;
     }
 
@@ -134,12 +128,28 @@ public class Player implements Serializable {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
     public Date getDateRegistered() {
         return dateRegistered;
     }
 
     public void setDateRegistered(Date dateRegistered) {
         this.dateRegistered = dateRegistered;
+    }
+
+    public Integer getYearJoined() {
+        return yearJoined;
+    }
+
+    public void setYearJoined(Integer yearJoined) {
+        this.yearJoined = yearJoined;
     }
 
     public String getEmail() {
@@ -166,7 +176,14 @@ public class Player implements Serializable {
         this.pin = pin;
     }
 
-    
+    public Parent getParent() {
+        return parent;
+    }
+
+    public void setParent(Parent parent) {
+        this.parent = parent;
+    }
+
 
     public List<TourneyPlayerScore> getTourneyPlayerScoreList() {
         return tourneyPlayerScoreList;
@@ -184,36 +201,29 @@ public class Player implements Serializable {
         this.golfGroupPlayerList = golfGroupPlayerList;
     }
 
-    public Parent getParent() {
-        return parent;
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (playerID != null ? playerID.hashCode() : 0);
+        return hash;
     }
 
-    public void setParent(Parent parent) {
-        this.parent = parent;
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Player)) {
+            return false;
+        }
+        Player other = (Player) object;
+        if ((this.playerID == null && other.playerID != null) || (this.playerID != null && !this.playerID.equals(other.playerID))) {
+            return false;
+        }
+        return true;
     }
-
-   
 
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Player[ playerID=" + playerID + " ]";
     }
-
-    public Integer getGender() {
-        return gender;
-    }
-
-    public void setGender(Integer gender) {
-        this.gender = gender;
-    }
-
-    public Integer getYearJoined() {
-        return yearJoined;
-    }
-
-    public void setYearJoined(Integer yearJoined) {
-        this.yearJoined = yearJoined;
-    }
-
     
 }

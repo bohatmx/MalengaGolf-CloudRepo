@@ -22,7 +22,7 @@ public class EMUtil {
 
     private static void setEntityManager() {
         if (emf == null) {
-            emf = Persistence.createEntityManagerFactory("MalengaGolf003PU");
+            emf = Persistence.createEntityManagerFactory("MGGolf003bPU");
         }
         if (em == null) {
             em = emf.createEntityManager();

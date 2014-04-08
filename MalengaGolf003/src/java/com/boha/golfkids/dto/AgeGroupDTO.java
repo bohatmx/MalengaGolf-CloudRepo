@@ -4,7 +4,7 @@
  */
 package com.boha.golfkids.dto;
 
-import com.boha.golfkids.data.AgeGroup;
+import com.boha.golfkids.data.Agegroup;
 
 /**
  *
@@ -17,7 +17,7 @@ public class AgeGroupDTO {
     private String groupName;
     private int numberOfHolesPerRound;
 
-    public AgeGroupDTO(AgeGroup a) {
+    public AgeGroupDTO(Agegroup a) {
         gender = a.getGender();
         ageGroupID = a.getAgeGroupID();
         golfGroupID = a.getGolfGroup().getGolfGroupID();

@@ -45,14 +45,14 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
             golfGroupID = a.getGolfGroup().getGolfGroupID();
         }
         if (a.getTourneyPlayerScoreList() != null) {
-            scores = new ArrayList<TourneyPlayerScoreDTO>();
+            scores = new ArrayList<>();
             List<TourneyPlayerScore> tpList = a.getTourneyPlayerScoreList();
             for (TourneyPlayerScore tourneyPlayerScore : tpList) {
                 scores.add(new TourneyPlayerScoreDTO(tourneyPlayerScore, true, false));
             }
         }
         if (a.getTournamentVolunteerList() != null) {
-            volunteers = new ArrayList<VolunteerDTO>();
+            volunteers = new ArrayList<>();
             List<TournamentVolunteer> tvList = a.getTournamentVolunteerList();
             for (TournamentVolunteer vol : tvList) {
                 volunteers.add(new VolunteerDTO(vol.getVolunteer()));

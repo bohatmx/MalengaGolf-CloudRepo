@@ -9,7 +9,6 @@ import com.boha.golfkids.data.GolfGroup;
 import com.boha.golfkids.data.GolfGroupPlayer;
 import com.boha.golfkids.data.Tournament;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**

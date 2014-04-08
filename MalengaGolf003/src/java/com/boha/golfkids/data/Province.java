@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -9,6 +11,7 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,43 +30,39 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "province")
 @NamedQueries({
-    @NamedQuery(name = "Province.findAll", query = "SELECT p FROM Province p"),
-    @NamedQuery(name = "Province.findByProvinceID", query = "SELECT p FROM Province p WHERE p.provinceID = :provinceID"),
-    @NamedQuery(name = "Province.findByProvinceName", query = "SELECT p FROM Province p WHERE p.provinceName = :provinceName"),
-    @NamedQuery(name = "Province.findByLatitude", query = "SELECT p FROM Province p WHERE p.latitude = :latitude"),
-    @NamedQuery(name = "Province.findByLongitude", query = "SELECT p FROM Province p WHERE p.longitude = :longitude")})
+    @NamedQuery(name = "Province.findAll", query = "SELECT p FROM Province p")})
 public class Province implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "provinceID")
-    private int provinceID;
+    private Integer provinceID;
     @Size(max = 100)
     @Column(name = "provinceName")
     private String provinceName;
     @Column(name = "latitude")
-    private int latitude;
+    private Integer latitude;
     @Column(name = "longitude")
-    private int longitude;
-    @OneToMany(mappedBy = "province")
+    private Integer longitude;
+    @OneToMany(mappedBy = "province", fetch = FetchType.EAGER)
     private List<Club> clubList;
     @JoinColumn(name = "countryID", referencedColumnName = "countryID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Country country;
 
     public Province() {
     }
 
-    public Province(int provinceID) {
+    public Province(Integer provinceID) {
         this.provinceID = provinceID;
     }
 
-    public int getProvinceID() {
+    public Integer getProvinceID() {
         return provinceID;
     }
 
-    public void setProvinceID(int provinceID) {
+    public void setProvinceID(Integer provinceID) {
         this.provinceID = provinceID;
     }
 
@@ -75,19 +74,19 @@ public class Province implements Serializable {
         this.provinceName = provinceName;
     }
 
-    public int getLatitude() {
+    public Integer getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(Integer latitude) {
         this.latitude = latitude;
     }
 
-    public int getLongitude() {
+    public Integer getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(Integer longitude) {
         this.longitude = longitude;
     }
 
@@ -99,15 +98,27 @@ public class Province implements Serializable {
         this.clubList = clubList;
     }
 
-    public Country getCountry() {
-        return country;
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (provinceID != null ? provinceID.hashCode() : 0);
+        return hash;
     }
 
-    public void setCountry(Country country) {
-        this.country = country;
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Province)) {
+            return false;
+        }
+        Province other = (Province) object;
+        if ((this.provinceID == null && other.provinceID != null) || (this.provinceID != null && !this.provinceID.equals(other.provinceID))) {
+            return false;
+        }
+        return true;
     }
 
-    
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Province[ provinceID=" + provinceID + " ]";

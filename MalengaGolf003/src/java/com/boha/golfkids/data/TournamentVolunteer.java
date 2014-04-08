@@ -1,13 +1,16 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,43 +27,34 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "tournamentVolunteer")
 @NamedQueries({
-    @NamedQuery(name = "TournamentVolunteer.findAll", query = "SELECT t FROM TournamentVolunteer t"),
-    @NamedQuery(name = "TournamentVolunteer.findByTournamentVolunteerID", query = "SELECT t FROM TournamentVolunteer t WHERE t.tournamentVolunteerID = :tournamentVolunteerID")})
+    @NamedQuery(name = "TournamentVolunteer.findAll", query = "SELECT t FROM TournamentVolunteer t")})
 public class TournamentVolunteer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "tournamentVolunteerID")
-    private int tournamentVolunteerID;
-    @JoinColumn(name = "volunteerID", referencedColumnName = "volunteerID")
-    @ManyToOne
-    private Volunteer volunteer;
+    private Integer tournamentVolunteerID;
     @JoinColumn(name = "tournamentID", referencedColumnName = "tournamentID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Tournament tournament;
+    @JoinColumn(name = "volunteerID", referencedColumnName = "volunteerID")
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Volunteer volunteer;
 
     public TournamentVolunteer() {
     }
 
-    public TournamentVolunteer(int tournamentVolunteerID) {
+    public TournamentVolunteer(Integer tournamentVolunteerID) {
         this.tournamentVolunteerID = tournamentVolunteerID;
     }
 
-    public int getTournamentVolunteerID() {
+    public Integer getTournamentVolunteerID() {
         return tournamentVolunteerID;
     }
 
-    public void setTournamentVolunteerID(int tournamentVolunteerID) {
+    public void setTournamentVolunteerID(Integer tournamentVolunteerID) {
         this.tournamentVolunteerID = tournamentVolunteerID;
-    }
-
-    public Volunteer getVolunteer() {
-        return volunteer;
-    }
-
-    public void setVolunteer(Volunteer volunteer) {
-        this.volunteer = volunteer;
     }
 
     public Tournament getTournament() {
@@ -71,7 +65,36 @@ public class TournamentVolunteer implements Serializable {
         this.tournament = tournament;
     }
 
-   
+    public Volunteer getVolunteer() {
+        return volunteer;
+    }
+
+    public void setVolunteer(Volunteer volunteer) {
+        this.volunteer = volunteer;
+    }
+
+    
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (tournamentVolunteerID != null ? tournamentVolunteerID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof TournamentVolunteer)) {
+            return false;
+        }
+        TournamentVolunteer other = (TournamentVolunteer) object;
+        if ((this.tournamentVolunteerID == null && other.tournamentVolunteerID != null) || (this.tournamentVolunteerID != null && !this.tournamentVolunteerID.equals(other.tournamentVolunteerID))) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         return "com.boha.golfkids.data.TournamentVolunteer[ tournamentVolunteerID=" + tournamentVolunteerID + " ]";

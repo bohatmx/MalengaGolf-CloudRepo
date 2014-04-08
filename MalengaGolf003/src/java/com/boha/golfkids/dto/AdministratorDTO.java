@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class AdministratorDTO {
 
-    private int administratorID;
+    private int administratorID, superUserFlag;
     private String cellphone;
     private Date dateRegistered;
     private String email;
@@ -28,6 +28,7 @@ public class AdministratorDTO {
         email = a.getEmail();
         firstName = a.getFirstName();
         lastName = a.getLastName();
+        superUserFlag = a.getSuperUserFlag();
         pin = a.getPin();
         if (a.getGolfGroup() != null) {
             golfGroup = new GolfGroupDTO(a.getGolfGroup());
@@ -36,6 +37,14 @@ public class AdministratorDTO {
 
     public GolfGroupDTO getGolfGroup() {
         return golfGroup;
+    }
+
+    public int getSuperUserFlag() {
+        return superUserFlag;
+    }
+
+    public void setSuperUserFlag(int superUserFlag) {
+        this.superUserFlag = superUserFlag;
     }
 
     public void setGolfGroup(GolfGroupDTO golfGroup) {

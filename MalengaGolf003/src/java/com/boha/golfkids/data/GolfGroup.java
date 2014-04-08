@@ -1,13 +1,16 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -32,27 +35,20 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "golfGroup")
 @NamedQueries({
-    @NamedQuery(name = "GolfGroup.findAll", query = "SELECT g FROM GolfGroup g"),
-    @NamedQuery(name = "GolfGroup.findByGolfGroupID", query = "SELECT g FROM GolfGroup g WHERE g.golfGroupID = :golfGroupID"),
-    @NamedQuery(name = "GolfGroup.findByGolfGroupName", query = "SELECT g FROM GolfGroup g WHERE g.golfGroupName = :golfGroupName"),
-    @NamedQuery(name = "GolfGroup.findByEmail", query = "SELECT g FROM GolfGroup g WHERE g.email = :email"),
-    @NamedQuery(name = "GolfGroup.findByCellphone", query = "SELECT g FROM GolfGroup g WHERE g.cellphone = :cellphone"),
-    @NamedQuery(name = "GolfGroup.findByDateRegistered", query = "SELECT g FROM GolfGroup g WHERE g.dateRegistered = :dateRegistered")})
+    @NamedQuery(name = "GolfGroup.findAll", query = "SELECT g FROM GolfGroup g")})
 public class GolfGroup implements Serializable {
-    
-    @OneToMany(mappedBy = "golfGroup", fetch = FetchType.EAGER)
-    private List<AgeGroup> ageGroupList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "golfGroupID")
-    private int golfGroupID;
+    private Integer golfGroupID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "golfGroupName")
     private String golfGroupName;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -66,39 +62,43 @@ public class GolfGroup implements Serializable {
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @OneToMany(mappedBy = "golfGroup")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup", fetch = FetchType.EAGER)
     private List<Tournament> tournamentList;
-    @OneToMany(mappedBy = "golfGroup")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup", fetch = FetchType.EAGER)
     private List<GolfGroupParent> golfGroupParentList;
-    @OneToMany(mappedBy = "golfGroup")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup", fetch = FetchType.EAGER)
     private List<GolfGroupVolunteer> golfGroupVolunteerList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup", fetch = FetchType.EAGER)
+    private List<Agegroup> ageGroupList;
     @JoinColumn(name = "countryID", referencedColumnName = "countryID")
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Country country;
-    @OneToMany(mappedBy = "golfGroup")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup", fetch = FetchType.EAGER)
     private List<GolfGroupPlayer> golfGroupPlayerList;
-    @OneToMany(mappedBy = "golfGroup")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup", fetch = FetchType.EAGER)
+    private List<Scorer> scorerList;
+    @OneToMany(mappedBy = "golfGroup", fetch = FetchType.EAGER)
     private List<Administrator> administratorList;
 
     public GolfGroup() {
     }
 
-    public GolfGroup(int golfGroupID) {
+    public GolfGroup(Integer golfGroupID) {
         this.golfGroupID = golfGroupID;
     }
 
-    public GolfGroup(int golfGroupID, String golfGroupName, String email, Date dateRegistered) {
+    public GolfGroup(Integer golfGroupID, String golfGroupName, String email, Date dateRegistered) {
         this.golfGroupID = golfGroupID;
         this.golfGroupName = golfGroupName;
         this.email = email;
         this.dateRegistered = dateRegistered;
     }
 
-    public int getGolfGroupID() {
+    public Integer getGolfGroupID() {
         return golfGroupID;
     }
 
-    public void setGolfGroupID(int golfGroupID) {
+    public void setGolfGroupID(Integer golfGroupID) {
         this.golfGroupID = golfGroupID;
     }
 
@@ -158,6 +158,14 @@ public class GolfGroup implements Serializable {
         this.golfGroupVolunteerList = golfGroupVolunteerList;
     }
 
+    public List<Agegroup> getAgeGroupList() {
+        return ageGroupList;
+    }
+
+    public void setAgeGroupList(List<Agegroup> ageGroupList) {
+        this.ageGroupList = ageGroupList;
+    }
+
     public Country getCountry() {
         return country;
     }
@@ -166,12 +174,22 @@ public class GolfGroup implements Serializable {
         this.country = country;
     }
 
+   
+
     public List<GolfGroupPlayer> getGolfGroupPlayerList() {
         return golfGroupPlayerList;
     }
 
     public void setGolfGroupPlayerList(List<GolfGroupPlayer> golfGroupPlayerList) {
         this.golfGroupPlayerList = golfGroupPlayerList;
+    }
+
+    public List<Scorer> getScorerList() {
+        return scorerList;
+    }
+
+    public void setScorerList(List<Scorer> scorerList) {
+        this.scorerList = scorerList;
     }
 
     public List<Administrator> getAdministratorList() {
@@ -182,19 +200,29 @@ public class GolfGroup implements Serializable {
         this.administratorList = administratorList;
     }
 
- 
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (golfGroupID != null ? golfGroupID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof GolfGroup)) {
+            return false;
+        }
+        GolfGroup other = (GolfGroup) object;
+        if ((this.golfGroupID == null && other.golfGroupID != null) || (this.golfGroupID != null && !this.golfGroupID.equals(other.golfGroupID))) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         return "com.boha.golfkids.data.GolfGroup[ golfGroupID=" + golfGroupID + " ]";
-    }
-
-
-    public List<AgeGroup> getAgeGroupList() {
-        return ageGroupList;
-    }
-
-    public void setAgeGroupList(List<AgeGroup> ageGroupList) {
-        this.ageGroupList = ageGroupList;
     }
     
 }

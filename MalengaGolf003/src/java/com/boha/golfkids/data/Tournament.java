@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -11,6 +13,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,23 +36,14 @@ import javax.validation.constraints.Size;
 @Table(name = "tournament")
 @NamedQueries({
     @NamedQuery(name = "Tournament.findByGolfGroup", 
-        query = "SELECT t FROM Tournament t "
-        + "where t.golfGroup.golfGroupID = :id "
-        + "order by a.startDate desc"),
-    @NamedQuery(name = "Tournament.findByTournamentID", query = "SELECT t FROM Tournament t WHERE t.tournamentID = :tournamentID"),
-    @NamedQuery(name = "Tournament.findByTourneyName", query = "SELECT t FROM Tournament t WHERE t.tourneyName = :tourneyName"),
-    @NamedQuery(name = "Tournament.findByClosingDate", query = "SELECT t FROM Tournament t WHERE t.closingDate = :closingDate"),
-    @NamedQuery(name = "Tournament.findByEndDate", query = "SELECT t FROM Tournament t WHERE t.endDate = :endDate"),
-    @NamedQuery(name = "Tournament.findByStartDate", query = "SELECT t FROM Tournament t WHERE t.startDate = :startDate"),
-    @NamedQuery(name = "Tournament.findByGolfRounds", query = "SELECT t FROM Tournament t WHERE t.golfRounds = :golfRounds")})
+            query = "SELECT t FROM Tournament t where t.golfGroup.golfGroupID = :id order by t.startDate desc")})
 public class Tournament implements Serializable {
-    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "tournamentID")
-    private int tournamentID;
+    private Integer tournamentID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -72,34 +66,28 @@ public class Tournament implements Serializable {
     @NotNull
     @Column(name = "golfRounds")
     private int golfRounds;
-    
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private GolfGroup golfGroup;
-    
     @JoinColumn(name = "clubID", referencedColumnName = "clubID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Club club;
-    
-    
     @JoinColumn(name = "clubCourseID", referencedColumnName = "clubCourseID")
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private ClubCourse clubCourse;
-    
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament", fetch = FetchType.EAGER)
     private List<TourneyPlayerScore> tourneyPlayerScoreList;
-    
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament", fetch = FetchType.EAGER)
     private List<TournamentVolunteer> tournamentVolunteerList;
 
     public Tournament() {
     }
 
-    public Tournament(int tournamentID) {
+    public Tournament(Integer tournamentID) {
         this.tournamentID = tournamentID;
     }
 
-    public Tournament(int tournamentID, String tourneyName, Date endDate, Date startDate, int golfRounds) {
+    public Tournament(Integer tournamentID, String tourneyName, Date endDate, Date startDate, int golfRounds) {
         this.tournamentID = tournamentID;
         this.tourneyName = tourneyName;
         this.endDate = endDate;
@@ -107,11 +95,11 @@ public class Tournament implements Serializable {
         this.golfRounds = golfRounds;
     }
 
-    public int getTournamentID() {
+    public Integer getTournamentID() {
         return tournamentID;
     }
 
-    public void setTournamentID(int tournamentID) {
+    public void setTournamentID(Integer tournamentID) {
         this.tournamentID = tournamentID;
     }
 
@@ -125,14 +113,6 @@ public class Tournament implements Serializable {
 
     public Date getClosingDate() {
         return closingDate;
-    }
-
-    public ClubCourse getClubCourse() {
-        return clubCourse;
-    }
-
-    public void setClubCourse(ClubCourse clubCourse) {
-        this.clubCourse = clubCourse;
     }
 
     public void setClosingDate(Date closingDate) {
@@ -163,24 +143,6 @@ public class Tournament implements Serializable {
         this.golfRounds = golfRounds;
     }
 
-   
-
-    public List<TourneyPlayerScore> getTourneyPlayerScoreList() {
-        return tourneyPlayerScoreList;
-    }
-
-    public void setTourneyPlayerScoreList(List<TourneyPlayerScore> tourneyPlayerScoreList) {
-        this.tourneyPlayerScoreList = tourneyPlayerScoreList;
-    }
-
-    public List<TournamentVolunteer> getTournamentVolunteerList() {
-        return tournamentVolunteerList;
-    }
-
-    public void setTournamentVolunteerList(List<TournamentVolunteer> tournamentVolunteerList) {
-        this.tournamentVolunteerList = tournamentVolunteerList;
-    }
-
     public GolfGroup getGolfGroup() {
         return golfGroup;
     }
@@ -197,13 +159,54 @@ public class Tournament implements Serializable {
         this.club = club;
     }
 
- 
+    public ClubCourse getClubCourse() {
+        return clubCourse;
+    }
+
+    public void setClubCourse(ClubCourse clubCourse) {
+        this.clubCourse = clubCourse;
+    }
+
+    
+    public List<TourneyPlayerScore> getTourneyPlayerScoreList() {
+        return tourneyPlayerScoreList;
+    }
+
+    public void setTourneyPlayerScoreList(List<TourneyPlayerScore> tourneyPlayerScoreList) {
+        this.tourneyPlayerScoreList = tourneyPlayerScoreList;
+    }
+
+    public List<TournamentVolunteer> getTournamentVolunteerList() {
+        return tournamentVolunteerList;
+    }
+
+    public void setTournamentVolunteerList(List<TournamentVolunteer> tournamentVolunteerList) {
+        this.tournamentVolunteerList = tournamentVolunteerList;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (tournamentID != null ? tournamentID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Tournament)) {
+            return false;
+        }
+        Tournament other = (Tournament) object;
+        if ((this.tournamentID == null && other.tournamentID != null) || (this.tournamentID != null && !this.tournamentID.equals(other.tournamentID))) {
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Tournament[ tournamentID=" + tournamentID + " ]";
     }
-
-   
     
 }

@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -10,6 +12,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,22 +29,16 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "parent")
 @NamedQueries({
-    @NamedQuery(name = "Parent.findAll", query = "SELECT p FROM Parent p"),
-    @NamedQuery(name = "Parent.findByParentID", query = "SELECT p FROM Parent p WHERE p.parentID = :parentID"),
-    @NamedQuery(name = "Parent.findByFirstName", query = "SELECT p FROM Parent p WHERE p.firstName = :firstName"),
-    @NamedQuery(name = "Parent.findByMiddleName", query = "SELECT p FROM Parent p WHERE p.middleName = :middleName"),
-    @NamedQuery(name = "Parent.findByLastName", query = "SELECT p FROM Parent p WHERE p.lastName = :lastName"),
-    @NamedQuery(name = "Parent.findByEmail", query = "SELECT p FROM Parent p WHERE p.email = :email"),
-    @NamedQuery(name = "Parent.findByCellphone", query = "SELECT p FROM Parent p WHERE p.cellphone = :cellphone"),
-    @NamedQuery(name = "Parent.findByParentType", query = "SELECT p FROM Parent p WHERE p.parentType = :parentType"),
-    @NamedQuery(name = "Parent.findByPin", query = "SELECT p FROM Parent p WHERE p.pin = :pin")})
+    @NamedQuery(name = "Parent.login", 
+            query = "SELECT a FROM Parent a where a.email = :email and a.pin = :pin"),
+    @NamedQuery(name = "Parent.findAll", query = "SELECT p FROM Parent p")})
 public class Parent implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "parentID")
-    private int parentID;
+    private Integer parentID;
     @Size(max = 45)
     @Column(name = "firstName")
     private String firstName;
@@ -59,27 +56,27 @@ public class Parent implements Serializable {
     @Column(name = "cellphone")
     private String cellphone;
     @Column(name = "parentType")
-    private int parentType;
+    private Integer parentType;
     @Size(max = 20)
     @Column(name = "pin")
     private String pin;
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent", fetch = FetchType.EAGER)
     private List<GolfGroupParent> golfGroupParentList;
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
     private List<Player> playerList;
 
     public Parent() {
     }
 
-    public Parent(int parentID) {
+    public Parent(Integer parentID) {
         this.parentID = parentID;
     }
 
-    public int getParentID() {
+    public Integer getParentID() {
         return parentID;
     }
 
-    public void setParentID(int parentID) {
+    public void setParentID(Integer parentID) {
         this.parentID = parentID;
     }
 
@@ -123,11 +120,11 @@ public class Parent implements Serializable {
         this.cellphone = cellphone;
     }
 
-    public int getParentType() {
+    public Integer getParentType() {
         return parentType;
     }
 
-    public void setParentType(int parentType) {
+    public void setParentType(Integer parentType) {
         this.parentType = parentType;
     }
 
@@ -155,6 +152,25 @@ public class Parent implements Serializable {
         this.playerList = playerList;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (parentID != null ? parentID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Parent)) {
+            return false;
+        }
+        Parent other = (Parent) object;
+        if ((this.parentID == null && other.parentID != null) || (this.parentID != null && !this.parentID.equals(other.parentID))) {
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public String toString() {

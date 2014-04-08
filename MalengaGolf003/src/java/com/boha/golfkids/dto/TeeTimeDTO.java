@@ -18,6 +18,7 @@ public class TeeTimeDTO {
     private int tourneyPlayerScoreID;
     
     public TeeTimeDTO(TeeTime a) {
+        
         teeTimeID = a.getTeeTimeID();
         golfRound = a.getGolfRound();
         teeTime = a.getTeeTime().getTime();

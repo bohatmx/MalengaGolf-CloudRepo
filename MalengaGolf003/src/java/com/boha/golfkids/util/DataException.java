@@ -9,5 +9,9 @@ package com.boha.golfkids.util;
  * @author Aubrey Malabie
  */
 public class DataException extends Exception {
-    
+    public String description;
+    public DataException() {}
+    public DataException(String description) {
+        this.description = description;
+    }
 }

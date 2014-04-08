@@ -53,7 +53,7 @@ public class GolfProperties {
             File f = null;
             f = new File("/workspaces/properties/golfkids.properties");
             if (!f.exists()) {
-                f = new File("/opt/malengagolf/golfkids.properties");
+                f = new File("/opt/properties/golfkids.properties");
             }
             if (!f.exists()) {
                 logger.log(Level.SEVERE, "MalengaGolf Properties File not found");

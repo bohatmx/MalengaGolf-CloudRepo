@@ -4,7 +4,7 @@
  */
 package com.boha.golfkids.util;
 
-import com.boha.golfkids.data.AgeGroup;
+import com.boha.golfkids.data.Agegroup;
 import com.boha.golfkids.data.ClubCourse;
 import com.boha.golfkids.data.GolfGroup;
 import com.boha.golfkids.data.GolfGroupParent;
@@ -14,7 +14,7 @@ import com.boha.golfkids.data.Player;
 import com.boha.golfkids.data.Tournament;
 import com.boha.golfkids.data.TourneyPlayerScore;
 import com.boha.golfkids.data.TourneyScoreByRound;
-import com.boha.golfkids.gateway.GenRequest;
+import com.boha.golfkids.servlet.GenRequest;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -691,7 +691,7 @@ public class Generator {
         tsbr.setScore18(score18);
     }
 
-    private static AgeGroup getPlayersAgeGroup(GolfGroupPlayer ggPlayer,
+    private static Agegroup getPlayersAgeGroup(GolfGroupPlayer ggPlayer,
             DataUtil dataUtil) {
         Date today = new Date();
         Date bDate = ggPlayer.getPlayer().getDateOfBirth();
@@ -747,9 +747,9 @@ public class Generator {
         sb.append("#### GENERATED PLAYERS AND PARENTS\n\n");
         //generate players in each age group
         EntityManager em = EMUtil.getEntityManager();
-        List<AgeGroup> list = getAgeGroupsBoys();
+        List<Agegroup> list = getAgeGroupsBoys();
         int count = 1;
-        for (AgeGroup ageGroup : list) {
+        for (Agegroup ageGroup : list) {
             for (int i = 0; i < 10; i++) {
                 int fNameIndex = rand.nextInt(firstNames.length - 1);
                 int lNameIndex = rand.nextInt(lastNames.length - 1);
@@ -865,9 +865,9 @@ public class Generator {
         return cal.getTime();
     }
 
-    public static List<AgeGroup> getAgeGroupsBoys() throws DataException {
+    public static List<Agegroup> getAgeGroupsBoys() throws DataException {
         EntityManager em = EMUtil.getEntityManager();
-        List<AgeGroup> cList = new ArrayList<>();
+        List<Agegroup> cList = new ArrayList<>();
         try {
             Query q = em.createQuery("select a from AgeGroup a  where a.gender = 1 "
                     + " order by a.ageGroupID ");

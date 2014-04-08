@@ -7,7 +7,7 @@ package com.boha.golfkids.dto;
 import com.boha.golfkids.data.ClubCourse;
 
 /**
- *
+ * Club golf course
  * @author aubreyM
  */
 public class ClubCourseDTO {
@@ -15,17 +15,11 @@ public class ClubCourseDTO {
 	private String courseName;
         private int clubID;
 	private int latitude;
-
 	private int longitude;
-
 	private int par;
-
 	private int par1;
-
 	private int par10;
-
 	private int par11;
-
 	private int par12;
 
 	private int par13;

@@ -26,10 +26,10 @@ public class PlayerDTO {
     private String middleName;
     private String pin;
     private int yearJoined;
-    private ParentDTO parent;
+    private int parentID;
     private List<TourneyPlayerScoreDTO> scores;
 
-    public PlayerDTO(Player a, boolean getScores) {
+    public PlayerDTO(Player a) {
         playerID = a.getPlayerID();
         cellphone = a.getCellphone();
         dateOfBirth = a.getDateOfBirth().getTime();
@@ -41,29 +41,21 @@ public class PlayerDTO {
         middleName = a.getMiddleName();
         pin = a.getPin();
         yearJoined = a.getYearJoined();
-        //
         if (a.getParent() != null) {
-            parent = new ParentDTO(a.getParent(), false);
+            parentID = a.getParent().getParentID();
         }
-        if (getScores) {
-            if (a.getTourneyPlayerScoreList() != null) {
-                scores = new ArrayList<TourneyPlayerScoreDTO>();
-                List<TourneyPlayerScore> tpList = a.getTourneyPlayerScoreList();
-                for (TourneyPlayerScore tourneyPlayerScore : tpList) {
-                    scores.add(new TourneyPlayerScoreDTO(tourneyPlayerScore, false, false));
-                }
-            }
-        }
+        
     }
 
-    public ParentDTO getParent() {
-        return parent;
+    public int getParentID() {
+        return parentID;
     }
 
-    public void setParent(ParentDTO parent) {
-        this.parent = parent;
+    public void setParentID(int parentID) {
+        this.parentID = parentID;
     }
 
+    
     public List<TourneyPlayerScoreDTO> getScores() {
         return scores;
     }

@@ -2,31 +2,25 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.boha.golfkids.gateway;
+package com.boha.golfkids.servlet;
 
-import com.boha.golfkids.data.GolfGroup;
-import com.boha.golfkids.dto.AdministratorDTO;
 import com.boha.golfkids.dto.AgeGroupDTO;
 import com.boha.golfkids.dto.ClubDTO;
 import com.boha.golfkids.dto.CountryDTO;
-import com.boha.golfkids.dto.GolfGroupDTO;
 import com.boha.golfkids.dto.LeaderBoardDTO;
-import com.boha.golfkids.dto.ParentDTO;
-import com.boha.golfkids.dto.PlayerDTO;
-import com.boha.golfkids.dto.TournamentDTO;
 import com.boha.golfkids.dto.RequestDTO;
 import com.boha.golfkids.dto.ResponseDTO;
 import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;
 import com.boha.golfkids.util.GZipUtility;
 import com.boha.golfkids.util.LeaderBoardUtil;
+import com.boha.golfkids.util.PlatformUtil;
 import com.google.gson.Gson;
 import com.oreilly.servlet.ServletUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,11 +42,10 @@ public class GolfAdminServlet extends HttpServlet {
     DataUtil dataUtil;
     @EJB
     LeaderBoardUtil leaderBoardUtil;
+    @EJB
+    PlatformUtil platformUtil;
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
      *
      * Serves as the main administration servlet
      *
@@ -73,11 +66,12 @@ public class GolfAdminServlet extends HttpServlet {
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
             out.println("Bad Request, nobody's home for you!");
+            platformUtil.addErrorStore(9, "Bad, rogue request detected", "GolfAdminServlet");
             out.close();
         } else {
 
             try {
-                switch (gr.getRequestCode()) {
+                switch (gr.getRequestType()) {
                     case RequestDTO.GET_TEE_TIMES:
                         resp.setTeeTimeList(dataUtil.getTeeTimes(gr.getTournamentID()));
                         break;
@@ -109,58 +103,38 @@ public class GolfAdminServlet extends HttpServlet {
                         dataUtil.updateTeeTimes(gr.getTeeTimeList());
                         break;
                     case RequestDTO.ADD_TOURNAMENT:
-                        TournamentDTO t = dataUtil.addTournament(gr.getTournament());
-                        resp.setTournaments(new ArrayList<TournamentDTO>());
-                        resp.getTournaments().add(t);
+                        resp = dataUtil.addTournament(gr.getTournament());
+                    
                         break;
                     case RequestDTO.ADD_PLAYER:
-                        List<PlayerDTO> pl = dataUtil.addPlayers(gr.getPlayerList(), gr.getGolfGroupID());
-                        resp.setPlayers(pl);
+                        resp = dataUtil.addPlayer(gr.getPlayer(), gr.getGolfGroupID());
                         break;
                     case RequestDTO.UPDATE_PLAYER:
                         dataUtil.updatePlayer(gr.getPlayerList().get(0));
                         break;
 
                     case RequestDTO.ADD_PARENT:
-                        ParentDTO parent = dataUtil.addParent(gr.getParent(), gr.getGolfGroupID());
-                        resp.setParents(new ArrayList<ParentDTO>());
-                        resp.getParents().add(parent);
+                        resp = dataUtil.addParent(gr.getParent(), gr.getGolfGroupID());
                         break;
                     case RequestDTO.UPDATE_PARENT:
                         dataUtil.updateParent(gr.getParent());
                         break;
                     case RequestDTO.ADMIN_LOGIN:
-                        AdministratorDTO admin1 = dataUtil.getAdminLoggedIn(gr.getEmail(), gr.getPin());
-                        resp.setAdministrators(new ArrayList<AdministratorDTO>());
-                        resp.getAdministrators().add(admin1);
-                        //TODO - is admin joining GolfGroup on new device? then get golf data ...
-                        //must request zipped response
-                        GolfGroup gg = dataUtil.getGroupByID(gr.getGolfGroupID());
-                        resp.setAgeGroups(dataUtil.getAgeGroups(gr.getGolfGroupID()));
-
-                        resp.setGolfGroups(new ArrayList<GolfGroupDTO>());
-                        resp.getGolfGroups().add(new GolfGroupDTO(gg));
-
+                        resp = dataUtil.signInAdministrator(gr.getEmail(), gr.getPin());
                         break;
                     case RequestDTO.ADD_ADMINISTRATOR:
-                        AdministratorDTO admin = dataUtil.addGolfGroupAdmin(gr.getAdministrator());
-                        resp.setAdministrators(new ArrayList<AdministratorDTO>());
-                        resp.getAdministrators().add(admin);
+                       resp = dataUtil.addGolfGroupAdmin(gr.getAdministrator());
+                        
                         break;
                     case RequestDTO.ADD_GOLF_GROUP:
-                        GolfGroupDTO group = dataUtil.addGolfGroup(gr.getGolfGroup());
-                        gr.getAdministrator().setGolfGroup(group);
-                        AdministratorDTO admin0 = dataUtil.addGolfGroupAdmin(gr.getAdministrator());
-                        resp.setGolfGroups(new ArrayList<GolfGroupDTO>());
-                        resp.setAdministrators(new ArrayList<AdministratorDTO>());
-                        resp.getAdministrators().add(admin0);
-                        resp.getGolfGroups().add(group);
+                        resp = dataUtil.addGolfGroup(gr.getGolfGroup(), gr.getAdministrator());
+                        
                         break;
                     case RequestDTO.UPDATE_GOLF_GROUP:
                         dataUtil.updateGolfGroup(gr.getGolfGroup());
                         break;
                     case RequestDTO.ADD_CLUB:
-                        ClubDTO c = dataUtil.addClub(gr.getClub());
+                        resp = dataUtil.addClub(gr.getClub());
                         break;
                     case RequestDTO.GET_CLUBS_IN_COUNTRY:
                         List<ClubDTO> ctryList = dataUtil.getClubsByCountry(gr.getCountryID());
@@ -202,22 +176,30 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.UPDATE_CLUB_COURSE:
                         dataUtil.updateClubCourse(gr.getClubCourse());
                         break;
+                        default:
+                            platformUtil.addErrorStore(7, "Request Type specified not on", "GolfAdminServlet");
+                            resp.setStatusCode(7);
+                            break;
                 }
            
             } catch (DataException e) {
                 resp.setStatusCode(ResponseDTO.DATA_EXCEPTION);
                 resp.setMessage("Database failed. Please try again later");
                 log.log(Level.SEVERE, "Database failed", e);
+                platformUtil.addErrorStore(8, "Database related error\n" +
+                        e.description, "GolfAdminServlet");
             
             } catch (Exception e) {
                 resp.setStatusCode(ResponseDTO.GENERIC_EXCEPTION);
                 resp.setMessage("Server process failed. Please try again later");
                 log.log(Level.SEVERE, "Server failed", e);
+                platformUtil.addErrorStore(8, "Generic server app error\n" +
+                        dataUtil.getErrorString(e), "GolfAdminServlet");
             } finally {
                 String json = gson.toJson(resp);
                 if (gr.isZippedResponse()) {
                     response.setContentType("application/zip;charset=UTF-8");
-                    File zipped = null;
+                    File zipped;
                     try {
                         zipped = GZipUtility.getZipped(json);
                         ServletUtils.returnFile(zipped.getAbsolutePath(), response.getOutputStream());
@@ -239,8 +221,8 @@ public class GolfAdminServlet extends HttpServlet {
                 }
 
                 long end = System.currentTimeMillis();
-
-                log.log(Level.INFO, "---> MalengaGolf Request completed in {0} seconds", getElapsed(start, end));
+                platformUtil.addTimeElapsedWarning(start, end, gr, "GolfAdminServlet");
+                log.log(Level.INFO, "---> GolfAdminServlet completed in {0} seconds", getElapsed(start, end));
             }
         }
     }

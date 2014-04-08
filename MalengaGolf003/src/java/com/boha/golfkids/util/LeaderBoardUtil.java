@@ -27,21 +27,23 @@ import javax.persistence.Query;
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class LeaderBoardUtil {
+
     @PersistenceContext
     EntityManager em;
-    public  List<LeaderBoardDTO> getLeaderBoard(int tournamentID,
+
+    public List<LeaderBoardDTO> getLeaderBoard(int tournamentID,
             DataUtil dataUtil) throws DataException {
 
         List<LeaderBoardDTO> list = new ArrayList<>();
         try {
             Tournament t = dataUtil.getTournamentByID(tournamentID);
-            Query q = em.createNamedQuery("TourneyPlayerScore.findByTournament",TourneyPlayerScore.class);
+            Query q = em.createNamedQuery("TourneyPlayerScore.findByTournament", TourneyPlayerScore.class);
             q.setParameter("id", tournamentID);
             List<TourneyPlayerScore> tpsList = q.getResultList();
             if (t != null) {
                 for (TourneyPlayerScore s : tpsList) {
                     LeaderBoardDTO d = new LeaderBoardDTO();
-                    d.setPlayer(new PlayerDTO(s.getPlayer(), false));
+                    d.setPlayer(new PlayerDTO(s.getPlayer()));
                     d.setScoreRound1(s.getScoreRound1());
                     d.setScoreRound2(s.getScoreRound2());
                     d.setScoreRound3(s.getScoreRound3());
@@ -67,13 +69,13 @@ public class LeaderBoardUtil {
                 b.setPosition(map.get(b.getTotalScore()));
             }
         } catch (Exception e) {
-            throw new DataException();
+            throw new DataException(getErrorString(e));
         }
 
         return list;
     }
 
-    public  List<LeaderBoardDTO> getLeaderBoardBoys(int tournamentID,
+    public List<LeaderBoardDTO> getLeaderBoardBoys(int tournamentID,
             DataUtil dataUtil) throws DataException {
 
         List<LeaderBoardDTO> list = new ArrayList<>();
@@ -108,13 +110,13 @@ public class LeaderBoardUtil {
                 b.setPosition(map.get(b.getTotalScore()));
             }
         } catch (Exception e) {
-            throw new DataException();
+            throw new DataException(getErrorString(e));
         }
 
         return list;
     }
 
-    public  List<LeaderBoardDTO> getLeaderBoardGirls(int tournamentID,
+    public List<LeaderBoardDTO> getLeaderBoardGirls(int tournamentID,
             DataUtil dataUtil) throws DataException {
 
         List<LeaderBoardDTO> list = new ArrayList<>();
@@ -149,9 +151,31 @@ public class LeaderBoardUtil {
                 b.setPosition(map.get(b.getTotalScore()));
             }
         } catch (Exception e) {
-            throw new DataException();
+            throw new DataException(getErrorString(e));
         }
 
         return list;
+    }
+
+    public static String getErrorString(Exception e) {
+        StringBuilder sb = new StringBuilder();
+        if (e.getMessage() != null) {
+            sb.append(e.getMessage()).append("\n\n");
+        }
+        if (e.toString() != null) {
+            sb.append(e.toString()).append("\n\n");
+        }
+        StackTraceElement[] s = e.getStackTrace();
+        if (s.length > 0) {
+            StackTraceElement ss = s[0];
+            String method = ss.getMethodName();
+            String cls = ss.getClassName();
+            int line = ss.getLineNumber();
+            sb.append("Class: ").append(cls).append("\n");
+            sb.append("Method: ").append(method).append("\n");
+            sb.append("Line Number: ").append(line).append("\n");
+        }
+
+        return sb.toString();
     }
 }

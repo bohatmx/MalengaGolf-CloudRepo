@@ -5,8 +5,6 @@
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Parent;
-import com.boha.golfkids.data.Player;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +23,7 @@ public class ParentDTO {
     private String pin;
     private List<PlayerDTO> players;
 
-    public ParentDTO(Parent a, boolean getKids) {
+    public ParentDTO(Parent a) {
         parentID = a.getParentID();
         cellphone = a.getCellphone();
         email = a.getEmail();
@@ -34,15 +32,6 @@ public class ParentDTO {
         middleName = a.getMiddleName();
         parentType = a.getParentType();
         pin = a.getPin();
-        if (getKids) {
-            if (a.getPlayerList() != null) {
-                players = new ArrayList<PlayerDTO>();
-                List<Player> pList = a.getPlayerList();
-                for (Player player : pList) {
-                    players.add(new PlayerDTO(player, false));
-                }
-            }
-        }
     }
 
     public int getParentID() {

@@ -5,8 +5,6 @@
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Country;
-import com.boha.golfkids.data.Province;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,13 +25,7 @@ public class CountryDTO {
         latitude = a.getLatitude();
         longitude = a.getLongitude();
 
-        List<Province> pList = a.getProvinceList();
-        if (a.getProvinceList() != null) {
-            provinces = new ArrayList<ProvinceDTO>();
-            for (Province province : pList) {
-                provinces.add(new ProvinceDTO(province));
-            }
-        }
+       
     }
 
     public int getCountryID() {

@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -10,6 +12,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,22 +32,21 @@ import javax.validation.constraints.Size;
 @Table(name = "club")
 @NamedQueries({
     @NamedQuery(name = "Club.findByCountry", 
-        query = "select a from Club a where a.province.country.countryID = :id "
-                    + " order by a.clubName "),
-    @NamedQuery(name = "Club.findByProvince", 
-        query = "select a from Club a where a.province.provinceID= :id "
-                    + " order by a.clubName "),
-    })
+            query = "SELECT c FROM Club c where c.province.country.countryID = :id order by c.clubName"),
+@NamedQuery(name = "Club.findByProvince", 
+        query = "select c from Club c where c.province.provinceID = :id order by c.clubName")
+})
 public class Club implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "clubID")
-    private int clubID;
+    private Integer clubID;
     @Size(max = 100)
     @Column(name = "clubName")
     private String clubName;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 95)
     @Column(name = "email")
     private String email;
@@ -52,32 +54,32 @@ public class Club implements Serializable {
     @Column(name = "telephone")
     private String telephone;
     @Column(name = "latitude")
-    private int latitude;
+    private Integer latitude;
     @Column(name = "longitude")
-    private int longitude;
+    private Integer longitude;
     @Size(max = 255)
     @Column(name = "address")
     private String address;
-    @OneToMany(mappedBy = "club")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "club", fetch = FetchType.EAGER)
     private List<Tournament> tournamentList;
-    @OneToMany(mappedBy = "club")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "club", fetch = FetchType.EAGER)
     private List<ClubCourse> clubCourseList;
     @JoinColumn(name = "provinceID", referencedColumnName = "provinceID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Province province;
 
     public Club() {
     }
 
-    public Club(int clubID) {
+    public Club(Integer clubID) {
         this.clubID = clubID;
     }
 
-    public int getClubID() {
+    public Integer getClubID() {
         return clubID;
     }
 
-    public void setClubID(int clubID) {
+    public void setClubID(Integer clubID) {
         this.clubID = clubID;
     }
 
@@ -105,19 +107,19 @@ public class Club implements Serializable {
         this.telephone = telephone;
     }
 
-    public int getLatitude() {
+    public Integer getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(Integer latitude) {
         this.latitude = latitude;
     }
 
-    public int getLongitude() {
+    public Integer getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(Integer longitude) {
         this.longitude = longitude;
     }
 
@@ -154,6 +156,27 @@ public class Club implements Serializable {
     }
 
     
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (clubID != null ? clubID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Club)) {
+            return false;
+        }
+        Club other = (Club) object;
+        if ((this.clubID == null && other.clubID != null) || (this.clubID != null && !this.clubID.equals(other.clubID))) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Club[ clubID=" + clubID + " ]";

@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.boha.golfkids.gateway;
+package com.boha.golfkids.servlet;
 
 import com.boha.golfkids.util.GolfProperties;
+import com.boha.golfkids.util.PlatformUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,6 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -58,7 +60,10 @@ public class HouseKeeper extends HttpServlet {
 
         Timer timer = new Timer();
         Calendar cal = GregorianCalendar.getInstance();
-        cal.roll(Calendar.HOUR_OF_DAY, true);
+        for (int i = 0; i < 3; i++) {
+           cal.roll(Calendar.MINUTE, true); 
+        }
+        
         Date date = cal.getTime();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -94,7 +99,10 @@ public class HouseKeeper extends HttpServlet {
             }
         }
         logger.log(Level.INFO, "### MalengaGolf HouseKeeping cleaned up {0} temporary files", count);
+        platformUtil.addErrorStore(133, "MGGolf temporary files cleaned up", "HouseKeeper");
     }
+    @EJB
+    PlatformUtil platformUtil;
     private static final Logger logger = Logger.getLogger("HouseKeeper");
     private final static int ONE_HOUR = 1000 * 60 * 60;
     private final static int FOUR_HOUR = 1000 * 60 * 60 * 4;

@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -29,15 +31,12 @@ import javax.validation.constraints.Size;
 @Table(name = "agegroup")
 @NamedQueries({
     @NamedQuery(name = "AgeGroup.findByGolfGroup", 
-        query = "select a from AgeGroup a  where a.golfGroup.golfGroupID = :id"
-                    + " order by a.groupName "),
-     @NamedQuery(name = "AgeGroup.findByGender", 
-        query = "select a from AgeGroup a "
-                    + "where a.golfGroup.golfGroupID = :id "
-                    + "and a.gender = :gender "
-                    + " order by a.ageGroupID "
-          )})
-public class AgeGroup implements  Serializable {
+            query = "SELECT a FROM Agegroup a where a.golfGroup.golfGroupID = :id order by a.groupName"),
+    @NamedQuery(name = "AgeGroup.findByGender",
+            query = "SELECT a FROM Agegroup a where a.golfGroup.golfGroupID = :id and a.gender = :gender order by a.groupName")
+
+})
+public class Agegroup implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,28 +47,27 @@ public class AgeGroup implements  Serializable {
     @Column(name = "groupName")
     private String groupName;
     @Column(name = "gender")
-    private int gender;
+    private Integer gender;
     @Column(name = "numberOfHolesPerRound")
-    private int numberOfHolesPerRound;
+    private Integer numberOfHolesPerRound;
+    @OneToMany(mappedBy = "ageGroup", fetch = FetchType.EAGER)
+    private List<TourneyPlayerScore> tourneyPlayerScoreList;
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private GolfGroup golfGroup;
-    
-    @OneToMany(mappedBy = "ageGroup")
-    private List<TourneyPlayerScore> tourneyPlayerScoreList;
 
-    public AgeGroup() {
+    public Agegroup() {
     }
 
-    public AgeGroup(int ageGroupID) {
+    public Agegroup(Integer ageGroupID) {
         this.ageGroupID = ageGroupID;
     }
 
-    public int getAgeGroupID() {
+    public Integer getAgeGroupID() {
         return ageGroupID;
     }
 
-    public void setAgeGroupID(int ageGroupID) {
+    public void setAgeGroupID(Integer ageGroupID) {
         this.ageGroupID = ageGroupID;
     }
 
@@ -81,16 +79,19 @@ public class AgeGroup implements  Serializable {
         this.groupName = groupName;
     }
 
+    public Integer getGender() {
+        return gender;
+    }
 
-    public void setGender(int gender) {
+    public void setGender(Integer gender) {
         this.gender = gender;
     }
 
-    public int getNumberOfHolesPerRound() {
+    public Integer getNumberOfHolesPerRound() {
         return numberOfHolesPerRound;
     }
 
-    public void setNumberOfHolesPerRound(int numberOfHolesPerRound) {
+    public void setNumberOfHolesPerRound(Integer numberOfHolesPerRound) {
         this.numberOfHolesPerRound = numberOfHolesPerRound;
     }
 
@@ -102,37 +103,6 @@ public class AgeGroup implements  Serializable {
         this.tourneyPlayerScoreList = tourneyPlayerScoreList;
     }
 
-    
-    public void setAgeGroupID(Integer ageGroupID) {
-        this.ageGroupID = ageGroupID;
-    }
-
-   
-    public void setGender(Integer gender) {
-        this.gender = gender;
-    }
-
-   
-
-    
-
-    public GolfGroup getGolfGroup() {
-        return golfGroup;
-    }
-
-    
-
-    public int getGender() {
-        return gender;
-    }
-
-    public void setGolfGroup(GolfGroup golfGroup) {
-        this.golfGroup = golfGroup;
-    }
-
-   
-    
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -143,21 +113,27 @@ public class AgeGroup implements  Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AgeGroup)) {
+        if (!(object instanceof Agegroup)) {
             return false;
         }
-        AgeGroup other = (AgeGroup) object;
+        Agegroup other = (Agegroup) object;
         if ((this.ageGroupID == null && other.ageGroupID != null) || (this.ageGroupID != null && !this.ageGroupID.equals(other.ageGroupID))) {
             return false;
         }
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "com.boha.golfkids.data.AgeGroup[ ageGroupID=" + ageGroupID + " ]";
+    public GolfGroup getGolfGroup() {
+        return golfGroup;
     }
 
-    
+    public void setGolfGroup(GolfGroup golfGroup) {
+        this.golfGroup = golfGroup;
+    }
+
+    @Override
+    public String toString() {
+        return "com.boha.golfkids.data.Agegroup[ ageGroupID=" + ageGroupID + " ]";
+    }
     
 }

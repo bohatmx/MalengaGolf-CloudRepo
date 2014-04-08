@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.boha.golfkids.gateway;
+package com.boha.golfkids.servlet;
 
 import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;

@@ -54,25 +54,24 @@ public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> 
         tourneyPosition = a.getTourneyPosition();
         tourneyPositionTied = a.getTourneyPositionTied();
         orderByName = orderByFullName;
-     
+    
         if (a.getAgeGroup() != null) {
             ageGroup = new AgeGroupDTO(a.getAgeGroup());
         }
         if (getPlayerData) {
             if (a.getPlayer() != null) {
-                player = new PlayerDTO(a.getPlayer(), false);
+                player = new PlayerDTO(a.getPlayer());
             }
         }
         if (a.getAdministrator() != null) {
             administrator = new AdministratorDTO(a.getAdministrator());
         }
-        if (a.getTeeTimes() != null) {
-            teeTimeList = new ArrayList<TeeTimeDTO>();
-            for (TeeTime teeTime : a.getTeeTimes()) {
-                teeTimeList.add(new TeeTimeDTO(teeTime));
+        if (a.getTeeTimeList()!= null) {
+            teeTimeList = new ArrayList<>();
+            for (TeeTime tt : a.getTeeTimeList()) {
+                teeTimeList.add(new TeeTimeDTO(tt));
             }
         }
-
     }
 
     public long getTeeTime() {

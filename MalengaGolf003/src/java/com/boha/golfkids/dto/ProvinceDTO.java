@@ -28,7 +28,7 @@ public class ProvinceDTO {
 
         List<Club> cList = a.getClubList();
         if (a.getClubList() != null) {
-            clubs = new ArrayList<ClubDTO>();
+            clubs = new ArrayList<>();
             for (Club club : cList) {
                 clubs.add(new ClubDTO(club));
             }

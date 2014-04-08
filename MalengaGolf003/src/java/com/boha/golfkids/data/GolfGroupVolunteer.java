@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -9,6 +11,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,7 +22,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -28,39 +30,36 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "golfGroupVolunteer")
 @NamedQueries({
-    @NamedQuery(name = "GolfGroupVolunteer.findAll", query = "SELECT g FROM GolfGroupVolunteer g"),
-    @NamedQuery(name = "GolfGroupVolunteer.findByGolfGroupVolunteerID", query = "SELECT g FROM GolfGroupVolunteer g WHERE g.golfGroupVolunteerID = :golfGroupVolunteerID"),
-    @NamedQuery(name = "GolfGroupVolunteer.findByDateRegistered", query = "SELECT g FROM GolfGroupVolunteer g WHERE g.dateRegistered = :dateRegistered")})
+    @NamedQuery(name = "GolfGroupVolunteer.findAll", query = "SELECT g FROM GolfGroupVolunteer g")})
 public class GolfGroupVolunteer implements Serializable {
-    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "golfGroupVolunteerID")
-    private int golfGroupVolunteerID;
+    private Integer golfGroupVolunteerID;
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @JoinColumn(name = "volunteerID", referencedColumnName = "volunteerID")
-    @ManyToOne
-    private Volunteer volunteer;
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private GolfGroup golfGroup;
+    @JoinColumn(name = "volunteerID", referencedColumnName = "volunteerID")
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Volunteer volunteer;
 
     public GolfGroupVolunteer() {
     }
 
-    public GolfGroupVolunteer(int golfGroupVolunteerID) {
+    public GolfGroupVolunteer(Integer golfGroupVolunteerID) {
         this.golfGroupVolunteerID = golfGroupVolunteerID;
     }
 
-    public int getGolfGroupVolunteerID() {
+    public Integer getGolfGroupVolunteerID() {
         return golfGroupVolunteerID;
     }
 
-    public void setGolfGroupVolunteerID(int golfGroupVolunteerID) {
+    public void setGolfGroupVolunteerID(Integer golfGroupVolunteerID) {
         this.golfGroupVolunteerID = golfGroupVolunteerID;
     }
 
@@ -72,14 +71,6 @@ public class GolfGroupVolunteer implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Volunteer getVolunteer() {
-        return volunteer;
-    }
-
-    public void setVolunteer(Volunteer volunteer) {
-        this.volunteer = volunteer;
-    }
-
     public GolfGroup getGolfGroup() {
         return golfGroup;
     }
@@ -88,13 +79,38 @@ public class GolfGroupVolunteer implements Serializable {
         this.golfGroup = golfGroup;
     }
 
-   
+    public Volunteer getVolunteer() {
+        return volunteer;
+    }
+
+    public void setVolunteer(Volunteer volunteer) {
+        this.volunteer = volunteer;
+    }
+
+    
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (golfGroupVolunteerID != null ? golfGroupVolunteerID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof GolfGroupVolunteer)) {
+            return false;
+        }
+        GolfGroupVolunteer other = (GolfGroupVolunteer) object;
+        if ((this.golfGroupVolunteerID == null && other.golfGroupVolunteerID != null) || (this.golfGroupVolunteerID != null && !this.golfGroupVolunteerID.equals(other.golfGroupVolunteerID))) {
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public String toString() {
         return "com.boha.golfkids.data.GolfGroupVolunteer[ golfGroupVolunteerID=" + golfGroupVolunteerID + " ]";
     }
-
-  
     
 }

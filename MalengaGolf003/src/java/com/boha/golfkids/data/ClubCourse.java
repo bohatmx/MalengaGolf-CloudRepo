@@ -149,7 +149,7 @@ public class ClubCourse implements Serializable {
     @ManyToOne(optional = false)
     private Club club;
     
-     @OneToMany(cascade = CascadeType.ALL, mappedBy = "clubCourse")
+     @OneToMany(mappedBy = "clubCourse")
     private List<Tournament> tournaments;
 
 

@@ -63,7 +63,7 @@ public class Parent implements Serializable {
     @Size(max = 20)
     @Column(name = "pin")
     private String pin;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
+    @OneToMany(mappedBy = "parent")
     private List<GolfGroupParent> golfGroupParentList;
     @OneToMany(mappedBy = "parent")
     private List<Player> playerList;

@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -40,9 +39,8 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "GolfGroup.findByCellphone", query = "SELECT g FROM GolfGroup g WHERE g.cellphone = :cellphone"),
     @NamedQuery(name = "GolfGroup.findByDateRegistered", query = "SELECT g FROM GolfGroup g WHERE g.dateRegistered = :dateRegistered")})
 public class GolfGroup implements Serializable {
-    @Column(name = "countryID")
-    private Integer countryID;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroupID", fetch = FetchType.EAGER)
+    
+    @OneToMany(mappedBy = "golfGroup", fetch = FetchType.EAGER)
     private List<AgeGroup> ageGroupList;
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,7 +53,6 @@ public class GolfGroup implements Serializable {
     @Size(min = 1, max = 100)
     @Column(name = "golfGroupName")
     private String golfGroupName;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -69,16 +66,16 @@ public class GolfGroup implements Serializable {
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
+    @OneToMany(mappedBy = "golfGroup")
     private List<Tournament> tournamentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
+    @OneToMany(mappedBy = "golfGroup")
     private List<GolfGroupParent> golfGroupParentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
+    @OneToMany(mappedBy = "golfGroup")
     private List<GolfGroupVolunteer> golfGroupVolunteerList;
     @JoinColumn(name = "countryID", referencedColumnName = "countryID")
     @ManyToOne(optional = false)
     private Country country;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
+    @OneToMany(mappedBy = "golfGroup")
     private List<GolfGroupPlayer> golfGroupPlayerList;
     @OneToMany(mappedBy = "golfGroup")
     private List<Administrator> administratorList;
@@ -191,13 +188,6 @@ public class GolfGroup implements Serializable {
         return "com.boha.golfkids.data.GolfGroup[ golfGroupID=" + golfGroupID + " ]";
     }
 
-    public Integer getCountryID() {
-        return countryID;
-    }
-
-    public void setCountryID(Integer countryID) {
-        this.countryID = countryID;
-    }
 
     public List<AgeGroup> getAgeGroupList() {
         return ageGroupList;

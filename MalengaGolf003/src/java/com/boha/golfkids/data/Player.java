@@ -48,8 +48,7 @@ public class Player implements Serializable {
     private Integer gender;
     @Column(name = "yearJoined")
     private Integer yearJoined;
-    @Column(name = "parentID")
-    private Integer parentID;
+   
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,7 +84,7 @@ public class Player implements Serializable {
     private Parent parent;
     @OneToMany(mappedBy = "player")
     private List<TourneyPlayerScore> tourneyPlayerScoreList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "player")
+    @OneToMany(mappedBy = "player")
     private List<GolfGroupPlayer> golfGroupPlayerList;
 
     public Player() {
@@ -216,12 +215,5 @@ public class Player implements Serializable {
         this.yearJoined = yearJoined;
     }
 
-    public Integer getParentID() {
-        return parentID;
-    }
-
-    public void setParentID(Integer parentID) {
-        this.parentID = parentID;
-    }
     
 }

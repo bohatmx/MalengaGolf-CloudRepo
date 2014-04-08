@@ -50,7 +50,7 @@ public class Country implements Serializable {
     private int latitude;
     @Column(name = "longitude")
     private int longitude;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "country")
+    @OneToMany(mappedBy = "country")
     private List<GolfGroup> golfGroupList;
     @OneToMany(mappedBy = "country")
     private List<Province> provinceList;

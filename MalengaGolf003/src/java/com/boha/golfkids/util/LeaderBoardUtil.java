@@ -16,6 +16,9 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -24,15 +27,19 @@ import javax.ejb.TransactionManagementType;
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class LeaderBoardUtil {
-
+    @PersistenceContext
+    EntityManager em;
     public  List<LeaderBoardDTO> getLeaderBoard(int tournamentID,
             DataUtil dataUtil) throws DataException {
 
         List<LeaderBoardDTO> list = new ArrayList<>();
         try {
             Tournament t = dataUtil.getTournamentByID(tournamentID);
+            Query q = em.createNamedQuery("TourneyPlayerScore.findByTournament",TourneyPlayerScore.class);
+            q.setParameter("id", tournamentID);
+            List<TourneyPlayerScore> tpsList = q.getResultList();
             if (t != null) {
-                for (TourneyPlayerScore s : t.getTourneyPlayerScoreList()) {
+                for (TourneyPlayerScore s : tpsList) {
                     LeaderBoardDTO d = new LeaderBoardDTO();
                     d.setPlayer(new PlayerDTO(s.getPlayer(), false));
                     d.setScoreRound1(s.getScoreRound1());

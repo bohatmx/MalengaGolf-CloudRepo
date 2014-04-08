@@ -29,9 +29,10 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Administrator.login", 
         query = "select a from Administrator a "
-                + "where a.email = : email "
+                + "where a.email = :email "
                 + " and a.pin = :pin")
     })
+
 public class Administrator implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

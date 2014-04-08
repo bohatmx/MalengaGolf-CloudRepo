@@ -30,7 +30,7 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "AgeGroup.findByGolfGroup", 
         query = "select a from AgeGroup a  where a.golfGroup.golfGroupID = :id"
-                    + " order by a.ageGroupName "),
+                    + " order by a.groupName "),
      @NamedQuery(name = "AgeGroup.findByGender", 
         query = "select a from AgeGroup a "
                     + "where a.golfGroup.golfGroupID = :id "

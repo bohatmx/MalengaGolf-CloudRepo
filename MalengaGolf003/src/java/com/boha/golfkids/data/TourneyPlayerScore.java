@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +15,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -27,7 +28,14 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "tourneyPlayerScore")
-
+@NamedQueries({
+    @NamedQuery(name = "TourneyPlayerScore.findByTournament", 
+        query = "select a from TourneyPlayerScore a  where a.tournament.tournamentID = :id"
+                    + " order by a.totalScore "),
+     @NamedQuery(name = "TourneyPlayerScore.findByPlayer", 
+        query = "select a from TourneyPlayerScore a where a.player.playerID = :id"
+                    + " order by a.tournament.startDate desc ")
+          })
 public class TourneyPlayerScore implements Serializable {
     @Column(name = "scoreRound1")
     private Integer scoreRound1;
@@ -43,14 +51,7 @@ public class TourneyPlayerScore implements Serializable {
     private Integer tourneyPositionTied;
     @Column(name = "winnerFlag")
     private Integer winnerFlag;
-    @Column(name = "playerID")
-    private Integer playerID;
-    @Column(name = "tournamentID")
-    private Integer tournamentID;
-    @Column(name = "ageGroupID")
-    private Integer ageGroupID;
-    @Column(name = "administratorID")
-    private Integer administratorID;
+    
     @Column(name = "paidFlag")
     private Integer paidFlag;
     @Column(name = "totalScore")
@@ -81,10 +82,10 @@ public class TourneyPlayerScore implements Serializable {
     @ManyToOne
     private Tournament tournament;
 //
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourneyPlayerScore")
+    @OneToMany(mappedBy = "tourneyPlayerScore")
     private List<TourneyScoreByRound> tourneyScoreByRounds;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourneyPlayerScore")
+    @OneToMany(mappedBy = "tourneyPlayerScore")
     private List<TeeTime> teeTimes;
 
     public TourneyPlayerScore() {
@@ -222,38 +223,6 @@ public class TourneyPlayerScore implements Serializable {
 
     public void setWinnerFlag(Integer winnerFlag) {
         this.winnerFlag = winnerFlag;
-    }
-
-    public Integer getPlayerID() {
-        return playerID;
-    }
-
-    public void setPlayerID(Integer playerID) {
-        this.playerID = playerID;
-    }
-
-    public Integer getTournamentID() {
-        return tournamentID;
-    }
-
-    public void setTournamentID(Integer tournamentID) {
-        this.tournamentID = tournamentID;
-    }
-
-    public Integer getAgeGroupID() {
-        return ageGroupID;
-    }
-
-    public void setAgeGroupID(Integer ageGroupID) {
-        this.ageGroupID = ageGroupID;
-    }
-
-    public Integer getAdministratorID() {
-        return administratorID;
-    }
-
-    public void setAdministratorID(Integer administratorID) {
-        this.administratorID = administratorID;
     }
 
     public Integer getPaidFlag() {

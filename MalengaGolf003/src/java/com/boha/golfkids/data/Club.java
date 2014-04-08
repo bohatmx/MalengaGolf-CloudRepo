@@ -29,10 +29,10 @@ import javax.validation.constraints.Size;
 @Table(name = "club")
 @NamedQueries({
     @NamedQuery(name = "Club.findByCountry", 
-        query = "select a from Club a where a.province.country.countryID = : id "
+        query = "select a from Club a where a.province.country.countryID = :id "
                     + " order by a.clubName "),
     @NamedQuery(name = "Club.findByProvince", 
-        query = "select a from Club a where a.province.provinceID= : id "
+        query = "select a from Club a where a.province.provinceID= :id "
                     + " order by a.clubName "),
     })
 public class Club implements Serializable {
@@ -58,9 +58,9 @@ public class Club implements Serializable {
     @Size(max = 255)
     @Column(name = "address")
     private String address;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "club")
+    @OneToMany(mappedBy = "club")
     private List<Tournament> tournamentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "club")
+    @OneToMany(mappedBy = "club")
     private List<ClubCourse> clubCourseList;
     @JoinColumn(name = "provinceID", referencedColumnName = "provinceID")
     @ManyToOne

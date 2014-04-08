@@ -32,7 +32,10 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "tournament")
 @NamedQueries({
-    @NamedQuery(name = "Tournament.findAll", query = "SELECT t FROM Tournament t"),
+    @NamedQuery(name = "Tournament.findByGolfGroup", 
+        query = "SELECT t FROM Tournament t "
+        + "where t.golfGroup.golfGroupID = :id "
+        + "order by a.startDate desc"),
     @NamedQuery(name = "Tournament.findByTournamentID", query = "SELECT t FROM Tournament t WHERE t.tournamentID = :tournamentID"),
     @NamedQuery(name = "Tournament.findByTourneyName", query = "SELECT t FROM Tournament t WHERE t.tourneyName = :tourneyName"),
     @NamedQuery(name = "Tournament.findByClosingDate", query = "SELECT t FROM Tournament t WHERE t.closingDate = :closingDate"),
@@ -40,16 +43,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Tournament.findByStartDate", query = "SELECT t FROM Tournament t WHERE t.startDate = :startDate"),
     @NamedQuery(name = "Tournament.findByGolfRounds", query = "SELECT t FROM Tournament t WHERE t.golfRounds = :golfRounds")})
 public class Tournament implements Serializable {
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "clubID")
-    private int clubID;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "golfGroupID")
-    private int golfGroupID;
-    @Column(name = "clubCourseID")
-    private Integer clubCourseID;
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,6 +72,7 @@ public class Tournament implements Serializable {
     @NotNull
     @Column(name = "golfRounds")
     private int golfRounds;
+    
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
     @ManyToOne(optional = false)
     private GolfGroup golfGroup;
@@ -94,7 +89,7 @@ public class Tournament implements Serializable {
     @OneToMany(mappedBy = "tournament")
     private List<TourneyPlayerScore> tourneyPlayerScoreList;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament")
     private List<TournamentVolunteer> tournamentVolunteerList;
 
     public Tournament() {
@@ -209,28 +204,6 @@ public class Tournament implements Serializable {
         return "com.boha.golfkids.data.Tournament[ tournamentID=" + tournamentID + " ]";
     }
 
-    public int getClubID() {
-        return clubID;
-    }
-
-    public void setClubID(int clubID) {
-        this.clubID = clubID;
-    }
-
-    public int getGolfGroupID() {
-        return golfGroupID;
-    }
-
-    public void setGolfGroupID(int golfGroupID) {
-        this.golfGroupID = golfGroupID;
-    }
-
-    public Integer getClubCourseID() {
-        return clubCourseID;
-    }
-
-    public void setClubCourseID(Integer clubCourseID) {
-        this.clubCourseID = clubCourseID;
-    }
+   
     
 }

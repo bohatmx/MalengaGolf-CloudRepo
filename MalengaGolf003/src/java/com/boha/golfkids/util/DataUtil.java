@@ -53,11 +53,13 @@ import javax.validation.ConstraintViolationException;
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class DataUtil {
-@PersistenceContext
+
+    @PersistenceContext
     EntityManager em;
     //private  EntityManager em;
-    public  List<ClubDTO> getClubsByCountry(int countryID) throws DataException {
-        
+
+    public List<ClubDTO> getClubsByCountry(int countryID) throws DataException {
+
         List<ClubDTO> cList = new ArrayList<>();
         try {
             Query q = em.createNamedQuery("Club.findByCountry", Club.class);
@@ -72,8 +74,8 @@ public class DataUtil {
         return cList;
     }
 
-    public  List<ClubDTO> getClubsByProvince(int provinceID) throws DataException {
-        
+    public List<ClubDTO> getClubsByProvince(int provinceID) throws DataException {
+
         List<ClubDTO> cList = new ArrayList<>();
         try {
             Query q = em.createNamedQuery("Club.findByProvince", Club.class);
@@ -88,9 +90,9 @@ public class DataUtil {
         return cList;
     }
 
-    public  List<AgeGroupDTO> getAgeGroups(int golfGroupID) 
+    public List<AgeGroupDTO> getAgeGroups(int golfGroupID)
             throws DataException {
-        
+
         List<AgeGroupDTO> cList = new ArrayList<>();
         try {
             Query q = em.createNamedQuery("AgeGroup.findByGolfGroup",
@@ -106,11 +108,11 @@ public class DataUtil {
         return cList;
     }
 
-    public  List<AgeGroupDTO> getAgeGroupsBoys(int golfGroupID) throws DataException {
-        
+    public List<AgeGroupDTO> getAgeGroupsBoys(int golfGroupID) throws DataException {
+
         List<AgeGroupDTO> cList = new ArrayList<>();
         try {
-            Query q = em.createNamedQuery("AgeGroup.findByGender",AgeGroup.class);
+            Query q = em.createNamedQuery("AgeGroup.findByGender", AgeGroup.class);
             q.setParameter("id", golfGroupID);
             q.setParameter("gender", 1);
             List<AgeGroup> list = q.getResultList();
@@ -124,11 +126,11 @@ public class DataUtil {
         return cList;
     }
 
-    public  List<AgeGroupDTO> getAgeGroupsGirls(int golfGroupID) throws DataException {
-        
+    public List<AgeGroupDTO> getAgeGroupsGirls(int golfGroupID) throws DataException {
+
         List<AgeGroupDTO> cList = new ArrayList<>();
         try {
-            Query q = em.createNamedQuery("AgeGroup.findByGender",AgeGroup.class);
+            Query q = em.createNamedQuery("AgeGroup.findByGender", AgeGroup.class);
             q.setParameter("id", golfGroupID);
             q.setParameter("gender", 2);
 
@@ -143,11 +145,11 @@ public class DataUtil {
         return cList;
     }
 
-    public  List<TeeTimeDTO> getTeeTimes(int tournamentID) throws DataException {
-        
+    public List<TeeTimeDTO> getTeeTimes(int tournamentID) throws DataException {
+
         List<TeeTimeDTO> cList = new ArrayList<>();
         try {
-            Query q = em.createNamedQuery("TeeTime.findByTournament",TeeTime.class);
+            Query q = em.createNamedQuery("TeeTime.findByTournament", TeeTime.class);
             q.setParameter("id", tournamentID);
             List<TeeTime> list = q.getResultList();
             for (TeeTime g : list) {
@@ -159,11 +161,12 @@ public class DataUtil {
         logger.log(Level.OFF, "teetime list found: {0}", cList.size());
         return cList;
     }
-    public  List<CountryDTO> getCountries() throws DataException {
-        
+
+    public List<CountryDTO> getCountries() throws DataException {
+
         List<CountryDTO> cList = new ArrayList<>();
         try {
-            Query q = em.createNamedQuery("Country.findAll",Country.class);
+            Query q = em.createNamedQuery("Country.findAll", Country.class);
             List<Country> list = q.getResultList();
             for (Country g : list) {
                 cList.add(new CountryDTO(g));
@@ -175,10 +178,10 @@ public class DataUtil {
         return cList;
     }
 
-    public  AdministratorDTO getAdminLoggedIn(String email, 
+    public AdministratorDTO getAdminLoggedIn(String email,
             String pin) throws LoginException, DataException {
-        
-        Query q = em.createNamedQuery("Administrator.login",Administrator.class);
+
+        Query q = em.createNamedQuery("Administrator.login", Administrator.class);
         q.setMaxResults(1);
         q.setParameter("email", email);
         q.setParameter("pin", pin);
@@ -191,69 +194,68 @@ public class DataUtil {
 
     }
 
-    public  List<TourneyPlayerScoreDTO> getScoresByTournament(int tournamentID, boolean orderByName) {
+    public List<TourneyPlayerScoreDTO> getScoresByTournament(int tournamentID, boolean orderByName) {
 
-        Tournament t = getTournamentByID(tournamentID);
+        Query q = em.createNamedQuery("TourneyPlayerScore.findByTournament", TourneyPlayerScore.class);
+        q.setParameter("id", tournamentID);
+        List<TourneyPlayerScore> tpsList = q.getResultList();
         List<TourneyPlayerScoreDTO> list = new ArrayList<>();
-        List<TourneyPlayerScore> tpList = t.getTourneyPlayerScoreList();
-        for (TourneyPlayerScore tourneyPlayerScore : tpList) {
+        for (TourneyPlayerScore tourneyPlayerScore : tpsList) {
             list.add(new TourneyPlayerScoreDTO(tourneyPlayerScore, true, orderByName));
         }
         Collections.sort(list);
         return list;
     }
 
-    public  List<TourneyPlayerScoreDTO> getScoresByTournamentBoys(int tournamentID, boolean orderByName) {
+    public List<TourneyPlayerScoreDTO> getScoresByTournamentBoys(int tournamentID, boolean orderByName) {
 
-        Tournament t = getTournamentByID(tournamentID);
-        List<TourneyPlayerScoreDTO> list = new ArrayList<>();
-        List<TourneyPlayerScore> tpList = t.getTourneyPlayerScoreList();
-        for (TourneyPlayerScore tourneyPlayerScore : tpList) {
+        List<TourneyPlayerScoreDTO> list = getScoresByTournament(tournamentID, true);
+        List<TourneyPlayerScoreDTO> tpList = new ArrayList<>();
+        for (TourneyPlayerScoreDTO tourneyPlayerScore : list) {
             if (tourneyPlayerScore.getAgeGroup().getGender() == 1) {
-                list.add(new TourneyPlayerScoreDTO(tourneyPlayerScore, true, orderByName));
+                tpList.add(tourneyPlayerScore);
             }
         }
-        Collections.sort(list);
-        return list;
+        Collections.sort(tpList);
+        return tpList;
     }
 
-    public  List<TourneyPlayerScoreDTO> getScoresByTournamentGirls(int tournamentID, boolean orderByName) {
+    public List<TourneyPlayerScoreDTO> getScoresByTournamentGirls(int tournamentID, boolean orderByName) {
 
-        Tournament t = getTournamentByID(tournamentID);
-        List<TourneyPlayerScoreDTO> list = new ArrayList<>();
-        List<TourneyPlayerScore> tpList = t.getTourneyPlayerScoreList();
-        for (TourneyPlayerScore tourneyPlayerScore : tpList) {
+        List<TourneyPlayerScoreDTO> list = getScoresByTournament(tournamentID, true);
+        List<TourneyPlayerScoreDTO> tpList = new ArrayList<>();
+        for (TourneyPlayerScoreDTO tourneyPlayerScore : list) {
             if (tourneyPlayerScore.getAgeGroup().getGender() == 2) {
-                list.add(new TourneyPlayerScoreDTO(tourneyPlayerScore, true, orderByName));
+                tpList.add(tourneyPlayerScore);
             }
         }
-        Collections.sort(list);
-        return list;
+        Collections.sort(tpList);
+        return tpList;
     }
 
-    public  List<TournamentDTO> getTournamentByGroup(int groupID) {
-        
+    public List<TournamentDTO> getTournamentByGroup(int groupID) {
+
         List<TournamentDTO> list = new ArrayList<>();
+        Query q = em.createNamedQuery("Tournament.findByGolfGroup", Tournament.class);
+        q.setParameter("id", groupID);
+        List<Tournament> tList = q.getResultList();
         GolfGroup t = em.find(GolfGroup.class, groupID);
-        if (t != null) {
-            for (Tournament tournament : t.getTournamentList()) {
-                list.add(new TournamentDTO(tournament));
-            }
+
+        for (Tournament tournament : tList) {
+            list.add(new TournamentDTO(tournament));
         }
+
         Collections.sort(list);
         return list;
     }
 
-    public  Tournament getTournamentByID(int tournamentID) {
-        
+    public Tournament getTournamentByID(int tournamentID) {
+
         Tournament t = em.find(Tournament.class, tournamentID);
         return t;
     }
 
-    public  void addTournamentScoreByRound(List<TourneyScoreByRoundDTO> scoreByRoundList) throws DataException {
-        
-        
-        
+    public void addTournamentScoreByRound(List<TourneyScoreByRoundDTO> scoreByRoundList) throws DataException {
         try {
 
             for (TourneyScoreByRoundDTO tsbr : scoreByRoundList) {
@@ -327,10 +329,7 @@ public class DataUtil {
         }
     }
 
-    public  void updateTournamentScoreByRound(List<TourneyScoreByRoundDTO> scoreByRoundList) throws DataException {
-        
-        
-        
+    public void updateTournamentScoreByRound(List<TourneyScoreByRoundDTO> scoreByRoundList) throws DataException {
 
         try {
             for (TourneyScoreByRoundDTO tsbr : scoreByRoundList) {
@@ -393,16 +392,16 @@ public class DataUtil {
                 em.merge(t);
                 scoreTotals(tps, em);
             }
-            
+
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update score", e);
             throw new DataException();
         }
     }
 
-    public  void scoreTotals(TourneyPlayerScore tpScore, EntityManager em) throws DataException {
+    public void scoreTotals(TourneyPlayerScore tpScore, EntityManager em) throws DataException {
         Query q = null;
-        q = em.createNamedQuery("TourneyScoreByRound.getScoreTotals",TourneyScoreByRound.class);
+        q = em.createNamedQuery("TourneyScoreByRound.getScoreTotals", TourneyScoreByRound.class);
         q.setParameter("t", tpScore);
         List<TourneyScoreByRound> xlist = q.getResultList();
         for (TourneyScoreByRound tsbr : xlist) {
@@ -433,28 +432,24 @@ public class DataUtil {
         }
     }
 
-    public  TourneyScoreByRound getTourneyScoreByRoundByID(int id) {
-        
+    public TourneyScoreByRound getTourneyScoreByRoundByID(int id) {
         TourneyScoreByRound tsbr = em.find(TourneyScoreByRound.class, id);
-
         return tsbr;
     }
 
-    public  void updateTourneyPlayerScores(List<TourneyPlayerScoreDTO> tourneyPlayers) throws DataException {
-
+    public void updateTourneyPlayerScores(List<TourneyPlayerScoreDTO> tourneyPlayers) throws DataException {
         for (TourneyPlayerScoreDTO dto : tourneyPlayers) {
             updateTournamentScore(dto);
         }
     }
 
-    public  TourneyPlayerScore getTourneyPlayerScoreByID(int id) {
-        
+    public TourneyPlayerScore getTourneyPlayerScoreByID(int id) {
         TourneyPlayerScore t = em.find(TourneyPlayerScore.class, id);
         return t;
     }
 
-    public  void updateTournamentScore(TourneyPlayerScoreDTO d) throws DataException {
-        
+    public void updateTournamentScore(TourneyPlayerScoreDTO d) throws DataException {
+
         TourneyPlayerScore s = em.find(TourneyPlayerScore.class, d.getTourneyPlayerScoreID());
         s.setAdministrator(em.find(Administrator.class, d.getAdministrator().getAdministratorID()));
         s.setAgeGroup(em.find(AgeGroup.class, d.getAgeGroup().getAgeGroupID()));
@@ -467,11 +462,9 @@ public class DataUtil {
         s.setTotalScore(d.getScoreRound1() + d.getScoreRound2() + d.getScoreRound3() + d.getScoreRound4());
         s.setTourneyPosition(d.getTourneyPosition());
         s.setTourneyPositionTied(d.getTourneyPositionTied());
-        
-        
         try {
             em.merge(s);
-            
+
             logger.log(Level.INFO, "\n### Updated Tournament player score: {0} {1} to {2}",
                     new Object[]{s.getPlayer().getFirstName(), s.getPlayer().getLastName(), s.getTournament().getTourneyName()});
         } catch (Exception e) {
@@ -480,19 +473,16 @@ public class DataUtil {
         }
     }
 
-    public  void updateGolfGroup(GolfGroupDTO group) throws DataException {
-        
+    public void updateGolfGroup(GolfGroupDTO group) throws DataException {
 
         GolfGroup g = getGroupByID(group.getGolfGroupID());
         g.setGolfGroupName(group.getGolfGroupName());
         g.setEmail(group.getEmail());
         g.setCellphone(group.getCellphone());
 
-        
-        
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated golf group: {0} ",
                     new Object[]{g.getGolfGroupName()});
         } catch (Exception e) {
@@ -501,17 +491,12 @@ public class DataUtil {
         }
     }
 
-    public  void removeParentInPlayer(PlayerDTO p) throws DataException {
-        
-
+    public void removeParentInPlayer(PlayerDTO p) throws DataException {
         Player g = getPlayerByID(p.getPlayerID());
         g.setParent(null);
-
-        
-        
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated player: '{'0'}' {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update player", e);
@@ -519,8 +504,7 @@ public class DataUtil {
         }
     }
 
-    public  void updatePlayer(PlayerDTO player) throws DataException {
-        
+    public void updatePlayer(PlayerDTO player) throws DataException {
 
         Player g = getPlayerByID(player.getPlayerID());
         g.setCellphone(player.getCellphone());
@@ -537,11 +521,9 @@ public class DataUtil {
             g.setParent(parent);
         }
 
-        
-        
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated player: '{'0'}' {0} {1}", new Object[]{player.getFirstName(), player.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update player", e);
@@ -549,22 +531,16 @@ public class DataUtil {
         }
     }
 
-    public  void updateParent(ParentDTO dto) throws DataException {
-        
-
+    public void updateParent(ParentDTO dto) throws DataException {
         Parent g = getParentByID(dto.getParentID());
         g.setCellphone(dto.getCellphone());
         g.setEmail(dto.getEmail());
         g.setFirstName(dto.getFirstName());
         g.setLastName(dto.getLastName());
         g.setMiddleName(dto.getMiddleName());
-
-
-        
-        
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated parent: '{'0'}' {0} {1}", new Object[]{dto.getFirstName(), dto.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update parent", e);
@@ -572,8 +548,7 @@ public class DataUtil {
         }
     }
 
-    public  void updateClub(ClubDTO dto) throws DataException {
-        
+    public void updateClub(ClubDTO dto) throws DataException {
 
         Club g = getClubByID(dto.getClubID());
         g.setTelephone(dto.getTelephone());
@@ -588,12 +563,9 @@ public class DataUtil {
             g.setProvince(prov);
         }
 
-
-        
-        
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated club: {0}", new Object[]{dto.getClubName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update club", e);
@@ -601,21 +573,16 @@ public class DataUtil {
         }
     }
 
-    public  void updateAdmin(AdministratorDTO d) throws DataException {
-        
+    public void updateAdmin(AdministratorDTO d) throws DataException {
 
         Administrator g = em.find(Administrator.class, d.getAdministratorID());
         g.setCellphone(d.getCellphone());
         g.setEmail(d.getEmail());
         g.setFirstName(d.getFirstName());
         g.setLastName(d.getLastName());
-
-
-        
-        
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated admin: {0}", new Object[]{d.getFirstName() + " " + d.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update admin", e);
@@ -623,8 +590,7 @@ public class DataUtil {
         }
     }
 
-    public  void updateClubCourse(ClubCourseDTO d) throws DataException {
-        
+    public void updateClubCourse(ClubCourseDTO d) throws DataException {
 
         ClubCourse s = getClubCourseByID(d.getClubCourseID());
         s.setCourseName(d.getCourseName());
@@ -650,12 +616,9 @@ public class DataUtil {
         s.setPar17(d.getPar1());
         s.setPar18(d.getPar1());
 
-
-        
-        
         try {
             em.merge(s);
-            
+
             logger.log(Level.INFO, "\n### Updated clubCourse: {0}",
                     new Object[]{d.getCourseName()});
         } catch (Exception e) {
@@ -664,85 +627,70 @@ public class DataUtil {
         }
     }
 
-    public  AgeGroup getAgeGroupByID(int id) {
-        
+    public AgeGroup getAgeGroupByID(int id) {
         AgeGroup g = em.find(AgeGroup.class, id);
         return g;
     }
 
-    public  ClubCourse getClubCourseByID(int id) {
-        
+    public ClubCourse getClubCourseByID(int id) {
         ClubCourse g = em.find(ClubCourse.class, id);
         return g;
     }
 
-    public  Administrator getAdministratorByID(int id) {
-        
+    public Administrator getAdministratorByID(int id) {
         Administrator g = em.find(Administrator.class, id);
         return g;
     }
 
-   
-    public  Club getClubByID(int id) {
-        
+    public Club getClubByID(int id) {
         Club g = em.find(Club.class, id);
         return g;
     }
 
-    public  Country getCountryByID(int id) {
-        
+    public Country getCountryByID(int id) {
         Country g = em.find(Country.class, id);
         return g;
     }
 
-    public  Province getProvinceByID(int id) {
-        
+    public Province getProvinceByID(int id) {
         Province g = em.find(Province.class, id);
         return g;
     }
 
-    public  GolfGroup getGroupByID(int id) {
-        
+    public GolfGroup getGroupByID(int id) {
         GolfGroup g = em.find(GolfGroup.class, id);
         return g;
     }
 
-    public  Player getPlayerByID(int id) {
-        
+    public Player getPlayerByID(int id) {
         Player g = em.find(Player.class, id);
         return g;
     }
 
-    public  Parent getParentByID(int id) {
-        
+    public Parent getParentByID(int id) {
+
         Parent g = em.find(Parent.class, id);
         return g;
     }
 
-    public  ResponseDTO addTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
+    public ResponseDTO addTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
         ResponseDTO resp = new ResponseDTO();
         resp.setTeeTimeList(new ArrayList<TeeTimeDTO>());
         for (TeeTimeDTO t : list) {
-           TeeTimeDTO d = addTeeTime(t);
-           resp.getTeeTimeList().add(d);
+            TeeTimeDTO d = addTeeTime(t);
+            resp.getTeeTimeList().add(d);
         }
-        
+
         return resp;
     }
 
-    public  TeeTimeDTO addTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
-        
-
+    public TeeTimeDTO addTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
         TeeTime s = new TeeTime();
         s.setGolfRound(d.getGolfRound());
         s.setTeeTime(new Date(d.getTeeTime()));
         s.setTourneyPlayerScore(getTourneyPlayerScoreByID(d.getTourneyPlayerScoreID()));
-
-        
-        
         try {
             em.persist(s);
-            
             logger.log(Level.INFO, "\n### Added Tournament tee time");
         } catch (ConstraintViolationException e) {
             throw new DuplicateException();
@@ -753,31 +701,23 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Tournament teetime", e);
             throw new DataException();
         } finally {
-            
         }
         return new TeeTimeDTO(s);
     }
 
-    public  void updateTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
+    public void updateTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
         for (TeeTimeDTO t : list) {
             updateTeeTime(t);
         }
     }
 
-    public  void updateTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
-        
+    public void updateTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
 
         TeeTime s = em.find(TeeTime.class, d.getTeeTimeID());
         s.setGolfRound(d.getGolfRound());
         s.setTeeTime(new Date(d.getTeeTime()));
-        //s.setTourneyPlayerScore(getTourneyPlayerScoreByID(d.getTourneyPlayerScoreID()));
-
-        
-        
         try {
             em.merge(s);
-            
-
             logger.log(Level.INFO, "\n### updated Tournament player tee time");
         } catch (ConstraintViolationException e) {
             throw new DuplicateException();
@@ -788,24 +728,22 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** upd Tournament teetime", e);
             throw new DataException();
         } finally {
-            
         }
 
     }
 
-    public  ResponseDTO addTournamentPlayers(List<TourneyPlayerScoreDTO> list) throws DataException, DuplicateException {
+    public ResponseDTO addTournamentPlayers(List<TourneyPlayerScoreDTO> list) throws DataException, DuplicateException {
         ResponseDTO d = new ResponseDTO();
         d.setTourneyPlayers(new ArrayList<TourneyPlayerScoreDTO>());
         for (TourneyPlayerScoreDTO s : list) {
             TourneyPlayerScoreDTO dto = addTournamentPlayer(s);
             d.getTourneyPlayers().add(s);
         }
-        
+
         return d;
     }
 
-    public  TourneyPlayerScoreDTO addTournamentPlayer(TourneyPlayerScoreDTO d) throws DataException, DuplicateException {
-        
+    public TourneyPlayerScoreDTO addTournamentPlayer(TourneyPlayerScoreDTO d) throws DataException, DuplicateException {
 
         TourneyPlayerScore s = new TourneyPlayerScore();
         s.setAgeGroup(em.find(AgeGroup.class, d.getAgeGroup().getAgeGroupID()));
@@ -813,13 +751,10 @@ public class DataUtil {
         s.setPaidFlag(d.getPaidFlag());
         s.setPlayer(getPlayerByID(d.getPlayer().getPlayerID()));
         s.setTournament(getTournamentByID(d.getTournamentID()));
-
-        
-        
         try {
             em.persist(s);
-            
-            List<TourneyScoreByRoundDTO> list = new ArrayList<TourneyScoreByRoundDTO>();
+
+            List<TourneyScoreByRoundDTO> list = new ArrayList<>();
             for (int i = 0; i < s.getTournament().getGolfRounds(); i++) {
                 TourneyScoreByRoundDTO dto = new TourneyScoreByRoundDTO();
                 dto.setGolfRound(i + 1);
@@ -838,13 +773,11 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Tournament player", e);
             throw new DataException();
         } finally {
-            
         }
         return new TourneyPlayerScoreDTO(s, false, false);
     }
 
-    public  void addClubCourse(ClubCourseDTO d) throws DataException, DuplicateException {
-        
+    public void addClubCourse(ClubCourseDTO d) throws DataException, DuplicateException {
 
         ClubCourse s = new ClubCourse();
         s.setClub(getClubByID(d.getClubID()));
@@ -871,11 +804,9 @@ public class DataUtil {
         s.setPar17(d.getPar1());
         s.setPar18(d.getPar1());
 
-        
-        
-        try {
+       try {
             em.persist(s);
-            
+
             d = new ClubCourseDTO(s);
             logger.log(Level.INFO, "\n### Added ClubCourse: {0}", d.getCourseName());
         } catch (ConstraintViolationException e) {
@@ -887,13 +818,12 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding ClubCourse", e);
             throw new DataException();
         } finally {
-            
         }
 
     }
 
-    public  TournamentDTO addTournament(TournamentDTO dto) throws DataException, DuplicateException {
-        
+    public TournamentDTO addTournament(TournamentDTO dto) throws DataException, DuplicateException {
+
         Tournament t = new Tournament();
         if (dto.getClosingDate() > 0) {
             t.setClosingDate(new Date(dto.getClosingDate()));
@@ -909,11 +839,10 @@ public class DataUtil {
         t.setGolfRounds(dto.getGolfRounds());
         t.setGolfGroup(getGroupByID(dto.getGolfGroupID()));
         t.setTourneyName(dto.getTourneyName());
-        
-        
+
         try {
             em.persist(t);
-            
+
             logger.log(Level.INFO, "\n### Added Tournament {0} group: {1}",
                     new Object[]{t.getTourneyName(), t.getGolfGroup().getGolfGroupName()});
         } catch (ConstraintViolationException e) {
@@ -925,13 +854,12 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Tournament", e);
             throw new DataException();
         } finally {
-           
         }
         return new TournamentDTO(t);
     }
 
-    public  ParentDTO addParent(ParentDTO dto, int golfGroupID) throws DataException, DuplicateException {
-        
+    public ParentDTO addParent(ParentDTO dto, int golfGroupID) throws DataException, DuplicateException {
+
         Parent p = new Parent();
         p.setCellphone(dto.getCellphone());
         p.setEmail(dto.getEmail());
@@ -941,11 +869,9 @@ public class DataUtil {
         p.setParentType(dto.getParentType());
         p.setPin(dto.getPin());
 
-        
-        
         try {
             em.persist(p);
-            
+
             addGolfGroupParent(p.getParentID(), golfGroupID);
             logger.log(Level.INFO, "\n### Added Parent {0}  {1}", new Object[]{p.getFirstName(), p.getLastName()});
 
@@ -958,24 +884,22 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Parent", e);
             throw new DataException();
         } finally {
-            
         }
         return new ParentDTO(p, true);
     }
 
-    public  void addGolfGroupParent(int parentID, int golfGroupID
-            ) throws DuplicateException, DataException {
-        
+    public void addGolfGroupParent(int parentID, int golfGroupID) throws DuplicateException, DataException {
+
         GolfGroup group = getGroupByID(golfGroupID);
         GolfGroupParent gg = new GolfGroupParent();
         gg.setDateRegistered(new Date());
         gg.setGolfGroup(group);
         gg.setParent(getParentByID(parentID));
-        
-        
+
+
         try {
             em.persist(gg);
-            
+
             logger.log(Level.INFO, "\n### Added Parent to GolfGroup");
 
         } catch (ConstraintViolationException e) {
@@ -987,22 +911,21 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding GGParent", e);
             throw new DataException();
         } finally {
-            
         }
     }
 
-    public  void addGolfGroupPlayer(int playerID, int golfGroupID) throws DuplicateException, DataException {
-        
+    public void addGolfGroupPlayer(int playerID, int golfGroupID) throws DuplicateException, DataException {
+
         GolfGroup group = getGroupByID(golfGroupID);
         GolfGroupPlayer gg = new GolfGroupPlayer();
         gg.setDateRegistered(new Date());
         gg.setGolfGroup(group);
         gg.setPlayer(getPlayerByID(playerID));
-        
-        
+
+
         try {
             em.persist(gg);
-            
+
             logger.log(Level.INFO, "\n### Added Player to GolfGroup");
 
         } catch (ConstraintViolationException e) {
@@ -1014,12 +937,11 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding GGPlayer", e);
             throw new DataException();
         } finally {
-            
         }
     }
 
-    public  ClubDTO addClub(ClubDTO d) throws DataException, DuplicateException {
-        
+    public ClubDTO addClub(ClubDTO d) throws DataException, DuplicateException {
+
         Club club = new Club();
         club.setAddress(d.getAddress());
         club.setClubName(d.getClubName());
@@ -1030,11 +952,11 @@ public class DataUtil {
         if (d.getProvinceID() > 0) {
             club.setProvince(getProvinceByID(d.getProvinceID()));
         }
-        
-        
+
+
         try {
             em.persist(club);
-            
+
             logger.log(Level.INFO, "\n### Added Club {0}", club.getClubName() + " - " + club.getProvince().getProvinceName());
         } catch (ConstraintViolationException e) {
             throw new DuplicateException();
@@ -1045,13 +967,12 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Club", e);
             throw new DataException();
         } finally {
-            
         }
         return new ClubDTO(club);
 
     }
 
-    public  List<PlayerDTO> addPlayers(List<PlayerDTO> list, int golfGroupID) throws DataException, DuplicateException {
+    public List<PlayerDTO> addPlayers(List<PlayerDTO> list, int golfGroupID) throws DataException, DuplicateException {
         List<PlayerDTO> pList = new ArrayList<PlayerDTO>();
 
         for (PlayerDTO playerDTO : list) {
@@ -1061,8 +982,8 @@ public class DataUtil {
         return pList;
     }
 
-    private  PlayerDTO addPlayer(PlayerDTO d, int golfGroupID) throws DataException, DuplicateException {
-        
+    private PlayerDTO addPlayer(PlayerDTO d, int golfGroupID) throws DataException, DuplicateException {
+
         Player p = new Player();
         p.setCellphone(d.getCellphone());
         p.setDateOfBirth(new Date(d.getDateOfBirth()));
@@ -1078,11 +999,11 @@ public class DataUtil {
             Parent parent = getParentByID(d.getParent().getParentID());
             p.setParent(parent);
         }
-        
-        
+
+
         try {
             em.persist(p);
-            
+
             logger.log(Level.INFO, "\n### Added Player {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
             addGolfGroupPlayer(p.getPlayerID(), golfGroupID);
         } catch (ConstraintViolationException e) {
@@ -1094,13 +1015,12 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Player", e);
             throw new DataException();
         } finally {
-            
         }
         return new PlayerDTO(p, false);
     }
 
-    public  AdministratorDTO addGolfGroupAdmin(AdministratorDTO d) throws DataException, DuplicateException {
-        
+    public AdministratorDTO addGolfGroupAdmin(AdministratorDTO d) throws DataException, DuplicateException {
+
         Administrator a = new Administrator();
         a.setCellphone(d.getCellphone());
         a.setEmail(d.getEmail());
@@ -1111,11 +1031,11 @@ public class DataUtil {
             GolfGroup gg = getGroupByID(d.getGolfGroup().getGolfGroupID());
             a.setGolfGroup(gg);
         }
-        
-        
+
+
         try {
             em.persist(a);
-            
+
             logger.log(Level.INFO, "\n### Added Admin {0} {1} group: {2}",
                     new Object[]{a.getFirstName(), a.getLastName(), a.getGolfGroup().getGolfGroupName()});
         } catch (ConstraintViolationException e) {
@@ -1127,13 +1047,12 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding Admin", e);
             throw new DataException();
         } finally {
-            
         }
         return new AdministratorDTO(a);
     }
 
-    public  GolfGroupDTO addGolfGroup(GolfGroupDTO d) throws DataException, DuplicateException {
-        
+    public GolfGroupDTO addGolfGroup(GolfGroupDTO d) throws DataException, DuplicateException {
+
         GolfGroup g = new GolfGroup();
         g.setCellphone(d.getCellphone());
         g.setDateRegistered(new Date());
@@ -1142,11 +1061,11 @@ public class DataUtil {
         if (d.getCountryID() > 0) {
             g.setCountry(getCountryByID(d.getCountryID()));
         }
-        
-        
+
+
         try {
             em.persist(g);
-            
+
             logger.log(Level.INFO, "\n### Added GolfGroup {0}", g.getGolfGroupName());
             return new GolfGroupDTO(g);
         } catch (ConstraintViolationException e) {
@@ -1158,9 +1077,8 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Adding GolfGroup", e);
             throw new DataException();
         } finally {
-            
         }
 
     }
-    private  final Logger logger = Logger.getLogger("DataUtil");
+    private final Logger logger = Logger.getLogger("DataUtil");
 }

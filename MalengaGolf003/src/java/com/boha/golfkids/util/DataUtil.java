@@ -772,7 +772,7 @@ public class DataUtil {
 
     }
 
-    public ResponseDTO addTournamentPlayers(List<TourneyPlayerScoreDTO> list) throws DataException, DuplicateException {
+    public ResponseDTO addTournamentPlayers(List<TourneyPlayerScoreDTO> list) throws DataException {
         ResponseDTO d = new ResponseDTO();
         d.setTourneyPlayers(new ArrayList<TourneyPlayerScoreDTO>());
         for (TourneyPlayerScoreDTO s : list) {
@@ -783,7 +783,7 @@ public class DataUtil {
         return d;
     }
 
-    public TourneyPlayerScoreDTO addTournamentPlayer(TourneyPlayerScoreDTO d) throws DataException, DuplicateException {
+    public TourneyPlayerScoreDTO addTournamentPlayer(TourneyPlayerScoreDTO d) throws DataException {
 
         TourneyPlayerScore s = new TourneyPlayerScore();
         s.setAgeGroup(em.find(Agegroup.class, d.getAgeGroup().getAgeGroupID()));
@@ -805,7 +805,7 @@ public class DataUtil {
             logger.log(Level.INFO, "\n### Added Tournament player: {0} {1} to {2}",
                     new Object[]{s.getPlayer().getFirstName(), s.getPlayer().getLastName(), s.getTournament().getTourneyName()});
         } catch (ConstraintViolationException e) {
-            throw new DuplicateException();
+            throw new DataException(getErrorString(e));
         } catch (IllegalStateException e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding Tournament player", e);
             throw new DataException(getErrorString(e));
@@ -817,7 +817,7 @@ public class DataUtil {
         return new TourneyPlayerScoreDTO(s, false, false);
     }
 
-    public void addClubCourse(ClubCourseDTO d) throws DataException, DuplicateException {
+    public void addClubCourse(ClubCourseDTO d) throws DataException {
 
         ClubCourse s = new ClubCourse();
         s.setClub(getClubByID(d.getClubID()));
@@ -850,7 +850,7 @@ public class DataUtil {
             d = new ClubCourseDTO(s);
             logger.log(Level.INFO, "\n### Added ClubCourse: {0}", d.getCourseName());
         } catch (ConstraintViolationException e) {
-            throw new DuplicateException();
+            throw new DataException();
         } catch (IllegalStateException e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding ClubCourse", e);
             throw new DataException(getErrorString(e));
@@ -862,7 +862,7 @@ public class DataUtil {
 
     }
 
-    public ResponseDTO addTournament(TournamentDTO dto) throws DataException, DuplicateException {
+    public ResponseDTO addTournament(TournamentDTO dto) throws DataException {
 
         ResponseDTO r = new ResponseDTO();
         Tournament t = new Tournament();
@@ -894,7 +894,10 @@ public class DataUtil {
             logger.log(Level.INFO, "\n### Added Tournament {0} group: {1}",
                     new Object[]{t.getTourneyName(), t.getGolfGroup().getGolfGroupName()});
         } catch (ConstraintViolationException e) {
-            throw new DuplicateException();
+            logger.log(Level.SEVERE, "***ERROR*** Duplicate GolfGroup", e);
+            r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
+            r.setMessage("This tournament already exists");
+
         } catch (IllegalStateException e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding Tournament ", e);
             throw new DataException(getErrorString(e));
@@ -906,7 +909,7 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO addParent(ParentDTO dto, int golfGroupID) throws DataException, DuplicateException {
+    public ResponseDTO addParent(ParentDTO dto, int golfGroupID) throws DataException {
 
         ResponseDTO r = new ResponseDTO();
         Parent p = new Parent();
@@ -947,7 +950,10 @@ public class DataUtil {
             logger.log(Level.INFO, "\n### Added Parent {0}  {1}", new Object[]{p.getFirstName(), p.getLastName()});
 
         } catch (ConstraintViolationException e) {
-            throw new DuplicateException();
+            logger.log(Level.SEVERE, "***ERROR*** Duplicate GolfGroup", e);
+            r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
+            r.setMessage("This parent already has an account");
+
         } catch (IllegalStateException e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding Parent ", e);
             throw new DataException(getErrorString(e));
@@ -970,6 +976,8 @@ public class DataUtil {
         try {
             em.persist(gg);
             logger.log(Level.INFO, "\n### Added Parent to GolfGroup");
+            } catch (ConstraintViolationException e) {
+             throw new DuplicateException();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding GGParent", e);
             throw new DataException(getErrorString(e));
@@ -996,6 +1004,11 @@ public class DataUtil {
             }
             r.setGolfGroupPlayers(dList);
             logger.log(Level.INFO, "\n### Added Player to GolfGroup");
+            } catch (ConstraintViolationException e) {
+            logger.log(Level.SEVERE, "***ERROR*** Duplicate GolfGroup", e);
+            r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
+            r.setMessage("This player already belongs to the Group");
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding GGPlayer", e);
             throw new DataException(getErrorString(e));
@@ -1004,7 +1017,7 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO addClub(ClubDTO d) throws DataException, DuplicateException {
+    public ResponseDTO addClub(ClubDTO d) throws DataException {
         ResponseDTO r = new ResponseDTO();
         Club club = new Club();
         club.setAddress(d.getAddress());
@@ -1028,7 +1041,11 @@ public class DataUtil {
             }
             r.setClubs(dList);
             logger.log(Level.INFO, "\n### Added Club {0}", club.getClubName() + " - " + club.getProvince().getProvinceName());
-       
+       } catch (ConstraintViolationException e) {
+            logger.log(Level.SEVERE, "***ERROR*** Duplicate GolfGroup", e);
+            r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
+            r.setMessage("This club already exists");
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding Club", e);
             throw new DataException(getErrorString(e));
@@ -1038,7 +1055,7 @@ public class DataUtil {
 
     }
 
-    public ResponseDTO addPlayer(PlayerDTO d, int golfGroupID) throws DataException, DuplicateException {
+    public ResponseDTO addPlayer(PlayerDTO d, int golfGroupID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         Player p = new Player();
         p.setCellphone(d.getCellphone());
@@ -1063,7 +1080,11 @@ public class DataUtil {
             Player player = (Player) q.getSingleResult();
             r = addGolfGroupPlayer(player.getPlayerID(), golfGroupID);
             logger.log(Level.INFO, "\n### Added Player {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
-        
+        } catch (ConstraintViolationException e) {
+            logger.log(Level.SEVERE, "***ERROR*** Duplicate GolfGroup", e);
+            r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
+            r.setMessage("This player email already has an account");
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding Player", e);
             throw new DataException(getErrorString(e));
@@ -1072,7 +1093,8 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO addGolfGroupAdmin(AdministratorDTO d) throws DataException, DuplicateException {
+    public ResponseDTO addGolfGroupAdmin(AdministratorDTO d) 
+            throws DataException {
         ResponseDTO r = new ResponseDTO();
         Administrator a = new Administrator();
         a.setCellphone(d.getCellphone());
@@ -1093,18 +1115,24 @@ public class DataUtil {
             q.setParameter("email", d.getEmail());
             Administrator gg = (Administrator) q.getSingleResult();
             r.setAdministrator(new AdministratorDTO(gg));
-            logger.log(Level.INFO, "\n### Added Admin {0} {1} group: {2}",
-                    new Object[]{a.getFirstName(), a.getLastName(), a.getGolfGroup().getGolfGroupName()});
-        
+            logger.log(Level.INFO, "\n### Added Admin {0} {1} ",
+                    new Object[]{d.getFirstName(), d.getLastName()});
+        } catch (ConstraintViolationException e) {
+            logger.log(Level.SEVERE, "***ERROR*** Duplicate GolfGroup", e);
+            r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
+            r.setMessage("This golf group or administrator email already has an account");
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding Admin", e);
             throw new DataException(getErrorString(e));
+            
         } finally {
         }
         return r;
     }
 
-    public ResponseDTO addGolfGroup(GolfGroupDTO d, AdministratorDTO admin) throws DataException, DuplicateException {
+    public ResponseDTO addGolfGroup(GolfGroupDTO d, AdministratorDTO admin) 
+            throws DataException {
         ResponseDTO r = new ResponseDTO();
         GolfGroup g = new GolfGroup();
         g.setCellphone(d.getCellphone());
@@ -1121,16 +1149,25 @@ public class DataUtil {
             q.setMaxResults(1);
             q.setParameter("email", d.getEmail());
             GolfGroup gg = (GolfGroup) q.getSingleResult();
+            if (gg == null) {
+                throw new DataException("Failed to add or get golfgroup after insert");
+            }
             r.setGolfGroup(new GolfGroupDTO(gg));
             admin.setSuperUserFlag(1);
+            admin.setGolfGroup(r.getGolfGroup());
+            
             ResponseDTO r2 = addGolfGroupAdmin(admin);
             r.setAdministrator(r2.getAdministrator());
             logger.log(Level.INFO, "\n### Added GolfGroup {0}", g.getGolfGroupName());
 
        
-        } catch (Exception e) {
+        } catch (DataException e) {
             logger.log(Level.SEVERE, "***ERROR*** Adding GolfGroup", e);
             throw new DataException(getErrorString(e));
+        } catch (ConstraintViolationException e) {
+            logger.log(Level.SEVERE, "***ERROR*** Duplicate GolfGroup Admin", e);
+            r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
+            r.setMessage("This golf group or administrator email already has an account");
         } finally {
         }
         return r;

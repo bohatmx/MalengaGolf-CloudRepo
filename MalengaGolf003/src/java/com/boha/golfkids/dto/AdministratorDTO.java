@@ -20,7 +20,7 @@ public class AdministratorDTO {
     private String firstName;
     private String lastName;
     private String pin;
-    private GolfGroupDTO golfGroup;
+    private int golfGroupID;
 
     public AdministratorDTO(Administrator a) {
         administratorID = a.getAdministratorID();
@@ -30,14 +30,17 @@ public class AdministratorDTO {
         lastName = a.getLastName();
         superUserFlag = a.getSuperUserFlag();
         pin = a.getPin();
-        if (a.getGolfGroup() != null) {
-            golfGroup = new GolfGroupDTO(a.getGolfGroup());
-        }
+        golfGroupID = a.getGolfGroup().getGolfGroupID();
     }
 
-    public GolfGroupDTO getGolfGroup() {
-        return golfGroup;
+    public int getGolfGroupID() {
+        return golfGroupID;
     }
+
+    public void setGolfGroupID(int golfGroupID) {
+        this.golfGroupID = golfGroupID;
+    }
+
 
     public int getSuperUserFlag() {
         return superUserFlag;
@@ -45,10 +48,6 @@ public class AdministratorDTO {
 
     public void setSuperUserFlag(int superUserFlag) {
         this.superUserFlag = superUserFlag;
-    }
-
-    public void setGolfGroup(GolfGroupDTO golfGroup) {
-        this.golfGroup = golfGroup;
     }
 
     public int getAdministratorID() {

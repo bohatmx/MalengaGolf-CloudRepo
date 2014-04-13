@@ -30,7 +30,10 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "province")
 @NamedQueries({
-    @NamedQuery(name = "Province.findAll", query = "SELECT p FROM Province p")})
+    @NamedQuery(name = "Province.findByCountry", 
+            query = "SELECT p FROM Province p "
+                    + "where p.country.countryID = :id "
+                    + "order by p.provinceName")})
 public class Province implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -42,9 +45,9 @@ public class Province implements Serializable {
     @Column(name = "provinceName")
     private String provinceName;
     @Column(name = "latitude")
-    private Integer latitude;
+    private double latitude;
     @Column(name = "longitude")
-    private Integer longitude;
+    private double longitude;
     @OneToMany(mappedBy = "province", fetch = FetchType.EAGER)
     private List<Club> clubList;
     @JoinColumn(name = "countryID", referencedColumnName = "countryID")
@@ -70,23 +73,31 @@ public class Province implements Serializable {
         return provinceName;
     }
 
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
     public void setProvinceName(String provinceName) {
         this.provinceName = provinceName;
     }
 
-    public Integer getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Integer latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public Integer getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Integer longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

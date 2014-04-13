@@ -32,9 +32,17 @@ import javax.validation.constraints.Size;
 @Table(name = "administrator")
 @NamedQueries({
     @NamedQuery(name = "Administrator.login", 
-            query = "SELECT a FROM Administrator a where a.email = :email and a.pin = :pin"),
+            query = "SELECT a FROM Administrator a "
+                    + "where a.email = :email and a.pin = :pin"),
+    
+    @NamedQuery(name = "Administrator.findByEmail", 
+            query = "SELECT a FROM Administrator a "
+                    + "where a.email = :email"),
+    
      @NamedQuery(name = "Administrator.getByGroup", 
-            query = "SELECT a FROM Administrator a where a.golfGroup.golfGroupID = :id order by a.lastName, a.firstName")
+            query = "SELECT a FROM Administrator a "
+                    + "where a.golfGroup.golfGroupID = :id "
+                    + "order by a.lastName, a.firstName")
 
 })
 public class Administrator implements Serializable {

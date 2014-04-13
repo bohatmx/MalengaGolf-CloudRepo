@@ -19,8 +19,8 @@ public class ClubDTO {
     private String address;
     private String clubName, provinceName;
     private String email;
-    private int latitude;
-    private int longitude;
+    private double latitude;
+    private double longitude;
     private String telephone;
     private int provinceID;
     private List<ClubCourseDTO> clubCourses;
@@ -39,7 +39,7 @@ public class ClubDTO {
         }
         
         if (a.getClubCourseList() != null) {
-            clubCourses = new ArrayList<ClubCourseDTO>();
+            clubCourses = new ArrayList<>();
             List<ClubCourse> ccList = a.getClubCourseList();
             for (ClubCourse cc : ccList) {
              clubCourses.add(new ClubCourseDTO(cc));   
@@ -108,19 +108,19 @@ public class ClubDTO {
         this.email = email;
     }
 
-    public int getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public int getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

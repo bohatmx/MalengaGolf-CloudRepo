@@ -58,30 +58,11 @@ public class GolfGroupDTO {
         email = a.getEmail();
         golfGroupName = a.getGolfGroupName();
         
-        if (a.getTournamentList() != null) {
-            tournaments = new ArrayList<TournamentDTO>();
-            for (Tournament t : a.getTournamentList()) {
-                tournaments.add(new TournamentDTO(t));
-            }
-        }
-        if (a.getGolfGroupPlayerList() != null) {
-            golfGroupPlayers = new ArrayList<GolfGroupPlayerDTO>();
-            for (GolfGroupPlayer player : a.getGolfGroupPlayerList()) {
-                golfGroupPlayers.add(new GolfGroupPlayerDTO(player));
-            }
-        }
         if (a.getCountry() != null) {
             countryID = a.getCountry().getCountryID();
             countryName = a.getCountry().getCountryName();
         }
         
-        if (a.getAdministratorList() != null) {
-            administrators = new ArrayList<AdministratorDTO>();
-            List<Administrator> aList = a.getAdministratorList();
-            for (Administrator administrator : aList) {
-                administrators.add(new AdministratorDTO(administrator));
-            }
-        }
     }
 
     public int getGolfGroupID() {
@@ -94,6 +75,22 @@ public class GolfGroupDTO {
 
     public String getCellphone() {
         return cellphone;
+    }
+
+    public List<GolfGroupPlayerDTO> getGolfGroupPlayers() {
+        return golfGroupPlayers;
+    }
+
+    public void setGolfGroupPlayers(List<GolfGroupPlayerDTO> golfGroupPlayers) {
+        this.golfGroupPlayers = golfGroupPlayers;
+    }
+
+    public List<TournamentDTO> getTournaments() {
+        return tournaments;
+    }
+
+    public void setTournaments(List<TournamentDTO> tournaments) {
+        this.tournaments = tournaments;
     }
 
     public void setCellphone(String cellphone) {

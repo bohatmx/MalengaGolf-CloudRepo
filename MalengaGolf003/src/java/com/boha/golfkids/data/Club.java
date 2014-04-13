@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -31,12 +30,16 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "club")
 @NamedQueries({
-    @NamedQuery(name = "Club.findByCountry", 
-            query = "SELECT c FROM Club c where c.province.country.countryID = :id order by c.clubName"),
-@NamedQuery(name = "Club.findByProvince", 
-        query = "select c from Club c where c.province.provinceID = :id order by c.clubName")
+    @NamedQuery(name = "Club.findByCountry",
+            query = "SELECT c FROM Club c "
+            + "where c.province.country.countryID = :id "
+            + "order by c.clubName"),
+    @NamedQuery(name = "Club.findByProvince",
+            query = "select c from Club c "
+            + "where c.province.provinceID = :id order by c.clubName")
 })
 public class Club implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,9 +57,9 @@ public class Club implements Serializable {
     @Column(name = "telephone")
     private String telephone;
     @Column(name = "latitude")
-    private Integer latitude;
+    private double latitude;
     @Column(name = "longitude")
-    private Integer longitude;
+    private double longitude;
     @Size(max = 255)
     @Column(name = "address")
     private String address;
@@ -107,19 +110,19 @@ public class Club implements Serializable {
         this.telephone = telephone;
     }
 
-    public Integer getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Integer latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public Integer getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Integer longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
@@ -155,8 +158,6 @@ public class Club implements Serializable {
         this.province = province;
     }
 
-    
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -181,5 +182,5 @@ public class Club implements Serializable {
     public String toString() {
         return "com.boha.golfkids.data.Club[ clubID=" + clubID + " ]";
     }
-    
+
 }

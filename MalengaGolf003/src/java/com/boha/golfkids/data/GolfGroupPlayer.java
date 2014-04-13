@@ -31,7 +31,8 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "golfGroupPlayer")
 @NamedQueries({
-    @NamedQuery(name = "GolfGroupPlayer.findAll", query = "SELECT g FROM GolfGroupPlayer g")})
+    @NamedQuery(name = "GolfGroupPlayer.findByGolfGroup", 
+            query = "SELECT g FROM GolfGroupPlayer g where g.golfGroup.golfGroupID = :id")})
 public class GolfGroupPlayer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

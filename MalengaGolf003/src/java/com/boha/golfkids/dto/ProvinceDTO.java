@@ -4,9 +4,7 @@
  */
 package com.boha.golfkids.dto;
 
-import com.boha.golfkids.data.Club;
 import com.boha.golfkids.data.Province;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,9 +13,9 @@ import java.util.List;
  */
 public class ProvinceDTO {
 
-    private int provinceID;
-    private int latitude;
-    private int longitude;
+    private int provinceID, countryID;
+    private double latitude;
+    private double longitude;
     private String provinceName;
     private List<ClubDTO> clubs;
 
@@ -25,14 +23,9 @@ public class ProvinceDTO {
         provinceID = a.getProvinceID();
         latitude = a.getLatitude();
         longitude = a.getLongitude();
-
-        List<Club> cList = a.getClubList();
-        if (a.getClubList() != null) {
-            clubs = new ArrayList<>();
-            for (Club club : cList) {
-                clubs.add(new ClubDTO(club));
-            }
-        }
+        provinceName = a.getProvinceName();
+        countryID = a.getCountry().getCountryID();
+      
 
     }
 
@@ -44,19 +37,19 @@ public class ProvinceDTO {
         this.provinceID = provinceID;
     }
 
-    public int getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public int getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

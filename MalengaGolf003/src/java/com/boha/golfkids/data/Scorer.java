@@ -33,8 +33,17 @@ import javax.validation.constraints.Size;
 @Table(name = "scorer")
 @NamedQueries({
     @NamedQuery(name = "Scorer.login", 
-            query = "SELECT a FROM Scorer a where a.email = :email and a.pin = :pin"),
-    @NamedQuery(name = "Scorer.findAll", query = "SELECT s FROM Scorer s")})
+            query = "SELECT a FROM Scorer a "
+                    + "where a.email = :email and a.pin = :pin"),
+ 
+    @NamedQuery(name = "Scorer.findByEmail", 
+            query = "SELECT a FROM Scorer a "
+                    + "where a.email = :email"),
+ 
+    
+    @NamedQuery(name = "Scorer.findByGolfGroup", 
+            query = "SELECT s FROM Scorer s where s.golfGroup.golfGroupID = :id "
+                    + "order by s.lastName, s.firstName")})
 public class Scorer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

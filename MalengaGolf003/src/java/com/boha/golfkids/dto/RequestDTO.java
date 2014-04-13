@@ -20,9 +20,11 @@ public class RequestDTO {
     private PlayerDTO player;
     private AdministratorDTO administrator;
     private List<PlayerDTO> playerList;
+    private TourneyPlayerScoreDTO tourneyPlayerScore;
     private ParentDTO parent;
     private ClubCourseDTO clubCourse;
     private ClubDTO club;
+    private ScorerDTO scorer;
     private List<TourneyPlayerScoreDTO> players;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private List<TeeTimeDTO> teeTimeList;
@@ -65,7 +67,19 @@ public class RequestDTO {
     public static final int REMOVE_TOURNAMENT_PLAYER = 35;
     public static final int UPDATE_TOURNAMENT_SCORE_TOTALS = 36;
     public static final int GET_TEE_TIMES = 37;
+    public static final int GET_GOLF_GROUP_DATA = 38;
+    public static final int ADD_SCORER = 39;
+    public static final int UPDATE_SCORER = 40;
+    public static final int GET_TOURNAMENT_PLAYERS = 41;
     //
+
+    public ScorerDTO getScorer() {
+        return scorer;
+    }
+
+    public void setScorer(ScorerDTO scorer) {
+        this.scorer = scorer;
+    }
 
     public int getCountryID() {
         return countryID;
@@ -77,6 +91,14 @@ public class RequestDTO {
 
     public int getProvinceID() {
         return provinceID;
+    }
+
+    public TourneyPlayerScoreDTO getTourneyPlayerScore() {
+        return tourneyPlayerScore;
+    }
+
+    public void setTourneyPlayerScore(TourneyPlayerScoreDTO tourneyPlayerScore) {
+        this.tourneyPlayerScore = tourneyPlayerScore;
     }
 
     public PlayerDTO getPlayer() {

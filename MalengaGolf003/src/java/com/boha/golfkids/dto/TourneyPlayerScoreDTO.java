@@ -4,9 +4,7 @@
  */
 package com.boha.golfkids.dto;
 
-import com.boha.golfkids.data.TeeTime;
 import com.boha.golfkids.data.TourneyPlayerScore;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +14,7 @@ import java.util.List;
 public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> {
 
     public TourneyPlayerScoreDTO() {
-        
+
     }
     private int tourneyPlayerScoreID;
     private long dateRegistered;
@@ -25,7 +23,7 @@ public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> 
     private int scoreRound1;
     private int scoreRound2;
     private int scoreRound3;
-    private int scoreRound4;
+    private int scoreRound4, scoreRound5, scoreRound6;
     private int totalScore;
     private int tourneyPosition;
     private int tourneyPositionTied;
@@ -33,15 +31,18 @@ public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> 
     private AgeGroupDTO ageGroup;
     private PlayerDTO player;
     private int tournamentID;
-    private AdministratorDTO administrator;
+    private int administratorID;
     private boolean orderByName;
     private String fullName;
     private List<TeeTimeDTO> teeTimeList;
+    private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
 
-    public TourneyPlayerScoreDTO(TourneyPlayerScore a, boolean getPlayerData, boolean orderByFullName) {
+    public TourneyPlayerScoreDTO(TourneyPlayerScore a) {
         tourneyPlayerScoreID = a.getTourneyPlayerScoreID();
         tournamentID = a.getTournament().getTournamentID();
         dateRegistered = a.getDateRegistered().getTime();
+        if (a.getAdministrator() != null)
+            administratorID = a.getAdministrator().getAdministratorID();
         if (a.getDateUpdated() != null) {
             dateUpdated = a.getDateUpdated().getTime();
         }
@@ -50,32 +51,42 @@ public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> 
         scoreRound2 = a.getScoreRound2();
         scoreRound3 = a.getScoreRound3();
         scoreRound4 = a.getScoreRound4();
+        scoreRound5 = a.getScoreRound5();
+        scoreRound6 = a.getScoreRound6();
         totalScore = a.getTotalScore();
         tourneyPosition = a.getTourneyPosition();
         tourneyPositionTied = a.getTourneyPositionTied();
-        orderByName = orderByFullName;
-    
+
         if (a.getAgeGroup() != null) {
             ageGroup = new AgeGroupDTO(a.getAgeGroup());
         }
-        if (getPlayerData) {
-            if (a.getPlayer() != null) {
-                player = new PlayerDTO(a.getPlayer());
-            }
+
+        if (a.getPlayer() != null) {
+            player = new PlayerDTO(a.getPlayer());
         }
-        if (a.getAdministrator() != null) {
-            administrator = new AdministratorDTO(a.getAdministrator());
-        }
-        if (a.getTeeTimeList()!= null) {
-            teeTimeList = new ArrayList<>();
-            for (TeeTime tt : a.getTeeTimeList()) {
-                teeTimeList.add(new TeeTimeDTO(tt));
-            }
-        }
+
+        
+
+    }
+
+    public List<TourneyScoreByRoundDTO> getTourneyScoreByRoundList() {
+        return tourneyScoreByRoundList;
+    }
+
+    public void setTourneyScoreByRoundList(List<TourneyScoreByRoundDTO> tourneyScoreByRoundList) {
+        this.tourneyScoreByRoundList = tourneyScoreByRoundList;
     }
 
     public long getTeeTime() {
         return teeTime;
+    }
+
+    public List<TeeTimeDTO> getTeeTimeList() {
+        return teeTimeList;
+    }
+
+    public void setTeeTimeList(List<TeeTimeDTO> teeTimeList) {
+        this.teeTimeList = teeTimeList;
     }
 
     public void setTeeTime(long teeTime) {
@@ -98,20 +109,21 @@ public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> 
         this.fullName = fullName;
     }
 
-    public AdministratorDTO getAdministrator() {
-        return administrator;
-    }
-
-    public void setAdministrator(AdministratorDTO administrator) {
-        this.administrator = administrator;
-    }
-
+    
     public PlayerDTO getPlayer() {
         return player;
     }
 
     public void setPlayer(PlayerDTO player) {
         this.player = player;
+    }
+
+    public int getAdministratorID() {
+        return administratorID;
+    }
+
+    public void setAdministratorID(int administratorID) {
+        this.administratorID = administratorID;
     }
 
     public int getTournamentID() {
@@ -184,6 +196,22 @@ public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> 
 
     public void setScoreRound4(int scoreRound4) {
         this.scoreRound4 = scoreRound4;
+    }
+
+    public int getScoreRound5() {
+        return scoreRound5;
+    }
+
+    public void setScoreRound5(int scoreRound5) {
+        this.scoreRound5 = scoreRound5;
+    }
+
+    public int getScoreRound6() {
+        return scoreRound6;
+    }
+
+    public void setScoreRound6(int scoreRound6) {
+        this.scoreRound6 = scoreRound6;
     }
 
     public int getTotalScore() {

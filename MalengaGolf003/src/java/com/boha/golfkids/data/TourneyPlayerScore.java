@@ -34,28 +34,43 @@ import javax.persistence.TemporalType;
 @Table(name = "tourneyPlayerScore")
 @NamedQueries({
     @NamedQuery(name = "TourneyPlayerScore.findByTournament", 
-            query = "SELECT t FROM TourneyPlayerScore t where t.tournament.tournamentID = :id")})
+            query = "SELECT t FROM TourneyPlayerScore t "
+                    + "where t.tournament.tournamentID = :id "
+                    + "order by t.player.lastName, t.player.firstName"),
+    @NamedQuery(name = "TourneyPlayerScore.findByPlayerTourney",
+            query = "select a from TourneyPlayerScore a "
+                    + "where a.player.playerID = :playerID "
+                    + "and a.tournament.tournamentID = :tID"),
+    @NamedQuery(name = "TourneyPlayerScore.removeTourneyPlayer",
+            query = "delete from TourneyPlayerScore a "
+                    + "where a.player.playerID = :pID "
+                    + "and a.tournament.tournamentID = :tID")
+})
 public class TourneyPlayerScore implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "tourneyPlayerScoreID")
-    private Integer tourneyPlayerScoreID;
+    private int tourneyPlayerScoreID;
     @Column(name = "scoreRound1")
-    private Integer scoreRound1;
+    private int scoreRound1;
     @Column(name = "scoreRound2")
-    private Integer scoreRound2;
+    private int scoreRound2;
     @Column(name = "scoreRound3")
-    private Integer scoreRound3;
+    private int scoreRound3;
     @Column(name = "scoreRound4")
-    private Integer scoreRound4;
+    private int scoreRound4;
+    @Column(name = "scoreRound5")
+    private int scoreRound5;
+    @Column(name = "scoreRound6")
+    private int scoreRound6;
     @Column(name = "tourneyPosition")
-    private Integer tourneyPosition;
+    private int tourneyPosition;
     @Column(name = "tourneyPositionTied")
-    private Integer tourneyPositionTied;
+    private int tourneyPositionTied;
     @Column(name = "winnerFlag")
-    private Integer winnerFlag;
+    private int winnerFlag;
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
@@ -63,9 +78,9 @@ public class TourneyPlayerScore implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
     @Column(name = "paidFlag")
-    private Integer paidFlag;
+    private int paidFlag;
     @Column(name = "totalScore")
-    private Integer totalScore;
+    private int totalScore;
     @JoinColumn(name = "ageGroupID", referencedColumnName = "ageGroupID")
     @ManyToOne(fetch = FetchType.EAGER)
     private Agegroup ageGroup;
@@ -86,71 +101,87 @@ public class TourneyPlayerScore implements Serializable {
     public TourneyPlayerScore() {
     }
 
-    public TourneyPlayerScore(Integer tourneyPlayerScoreID) {
+    public TourneyPlayerScore(int tourneyPlayerScoreID) {
         this.tourneyPlayerScoreID = tourneyPlayerScoreID;
     }
 
-    public Integer getTourneyPlayerScoreID() {
+    public int getTourneyPlayerScoreID() {
         return tourneyPlayerScoreID;
     }
 
-    public void setTourneyPlayerScoreID(Integer tourneyPlayerScoreID) {
+    public void setTourneyPlayerScoreID(int tourneyPlayerScoreID) {
         this.tourneyPlayerScoreID = tourneyPlayerScoreID;
     }
 
-    public Integer getScoreRound1() {
+    public int getScoreRound1() {
         return scoreRound1;
     }
 
-    public void setScoreRound1(Integer scoreRound1) {
+    public void setScoreRound1(int scoreRound1) {
         this.scoreRound1 = scoreRound1;
     }
 
-    public Integer getScoreRound2() {
+    public int getScoreRound2() {
         return scoreRound2;
     }
 
-    public void setScoreRound2(Integer scoreRound2) {
+    public void setScoreRound2(int scoreRound2) {
         this.scoreRound2 = scoreRound2;
     }
 
-    public Integer getScoreRound3() {
+    public int getScoreRound3() {
         return scoreRound3;
     }
 
-    public void setScoreRound3(Integer scoreRound3) {
+    public void setScoreRound3(int scoreRound3) {
         this.scoreRound3 = scoreRound3;
     }
 
-    public Integer getScoreRound4() {
+    public int getScoreRound4() {
         return scoreRound4;
     }
 
-    public void setScoreRound4(Integer scoreRound4) {
+    public void setScoreRound4(int scoreRound4) {
         this.scoreRound4 = scoreRound4;
     }
 
-    public Integer getTourneyPosition() {
+    public int getScoreRound5() {
+        return scoreRound5;
+    }
+
+    public void setScoreRound5(int scoreRound5) {
+        this.scoreRound5 = scoreRound5;
+    }
+
+    public int getScoreRound6() {
+        return scoreRound6;
+    }
+
+    public void setScoreRound6(int scoreRound6) {
+        this.scoreRound6 = scoreRound6;
+    }
+
+    public int getTourneyPosition() {
         return tourneyPosition;
     }
 
-    public void setTourneyPosition(Integer tourneyPosition) {
+    public void setTourneyPosition(int tourneyPosition) {
         this.tourneyPosition = tourneyPosition;
     }
 
-    public Integer getTourneyPositionTied() {
+    public int getTourneyPositionTied() {
         return tourneyPositionTied;
     }
 
-    public void setTourneyPositionTied(Integer tourneyPositionTied) {
+    public void setTourneyPositionTied(int tourneyPositionTied) {
         this.tourneyPositionTied = tourneyPositionTied;
     }
 
-    public Integer getWinnerFlag() {
+    public int getWinnerFlag() {
         return winnerFlag;
     }
 
-    public void setWinnerFlag(Integer winnerFlag) {
+    public void setWinnerFlag(int winnerFlag) {
         this.winnerFlag = winnerFlag;
     }
 
@@ -170,19 +201,19 @@ public class TourneyPlayerScore implements Serializable {
         this.dateUpdated = dateUpdated;
     }
 
-    public Integer getPaidFlag() {
+    public int getPaidFlag() {
         return paidFlag;
     }
 
-    public void setPaidFlag(Integer paidFlag) {
+    public void setPaidFlag(int paidFlag) {
         this.paidFlag = paidFlag;
     }
 
-    public Integer getTotalScore() {
+    public int getTotalScore() {
         return totalScore;
     }
 
-    public void setTotalScore(Integer totalScore) {
+    public void setTotalScore(int totalScore) {
         this.totalScore = totalScore;
     }
 
@@ -238,20 +269,12 @@ public class TourneyPlayerScore implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (tourneyPlayerScoreID != null ? tourneyPlayerScoreID.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TourneyPlayerScore)) {
-            return false;
-        }
-        TourneyPlayerScore other = (TourneyPlayerScore) object;
-        if ((this.tourneyPlayerScoreID == null && other.tourneyPlayerScoreID != null) || (this.tourneyPlayerScoreID != null && !this.tourneyPlayerScoreID.equals(other.tourneyPlayerScoreID))) {
-            return false;
-        }
+      
         return true;
     }
 

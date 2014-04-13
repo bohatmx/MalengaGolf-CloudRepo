@@ -35,7 +35,11 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "golfGroup")
 @NamedQueries({
-    @NamedQuery(name = "GolfGroup.findAll", query = "SELECT g FROM GolfGroup g")})
+    @NamedQuery(name = "GolfGroup.findByEmail", 
+            query = "SELECT g FROM GolfGroup g "
+                    + "where g.email = :email"),
+
+})
 public class GolfGroup implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

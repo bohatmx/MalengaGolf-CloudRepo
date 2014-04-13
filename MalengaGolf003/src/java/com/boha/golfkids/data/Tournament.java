@@ -36,7 +36,12 @@ import javax.validation.constraints.Size;
 @Table(name = "tournament")
 @NamedQueries({
     @NamedQuery(name = "Tournament.findByGolfGroup", 
-            query = "SELECT t FROM Tournament t where t.golfGroup.golfGroupID = :id order by t.startDate desc")})
+            query = "SELECT t FROM Tournament t "
+                    + "where t.golfGroup.golfGroupID = :id "
+                    + "order by t.startDate desc"),
+@NamedQuery(name = "Tournament.findByClub",
+        query = "select a from Tournament a where a.club.clubID = :id")
+})
 public class Tournament implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -66,6 +71,9 @@ public class Tournament implements Serializable {
     @NotNull
     @Column(name = "golfRounds")
     private int golfRounds;
+    
+    @Column(name = "closedForScoringFlag")
+    private int closedForScoringFlag;
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private GolfGroup golfGroup;
@@ -117,6 +125,14 @@ public class Tournament implements Serializable {
 
     public void setClosingDate(Date closingDate) {
         this.closingDate = closingDate;
+    }
+
+    public int getClosedForScoringFlag() {
+        return closedForScoringFlag;
+    }
+
+    public void setClosedForScoringFlag(int closedForScoringFlag) {
+        this.closedForScoringFlag = closedForScoringFlag;
     }
 
     public Date getEndDate() {

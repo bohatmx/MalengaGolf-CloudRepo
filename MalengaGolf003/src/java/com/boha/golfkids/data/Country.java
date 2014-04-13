@@ -43,10 +43,12 @@ public class Country implements Serializable {
     @Size(min = 1, max = 100)
     @Column(name = "countryName")
     private String countryName;
+    @Column(name = "countryCode")
+    private String countryCode;
     @Column(name = "latitude")
-    private Integer latitude;
+    private double latitude;
     @Column(name = "longitude")
-    private Integer longitude;
+    private double longitude;
     @OneToMany(mappedBy = "country", fetch = FetchType.EAGER)
     private List<GolfGroup> golfGroupList;
     @OneToMany(mappedBy = "country", fetch = FetchType.EAGER)
@@ -80,19 +82,19 @@ public class Country implements Serializable {
         this.countryName = countryName;
     }
 
-    public Integer getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Integer latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public Integer getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Integer longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
@@ -110,6 +112,14 @@ public class Country implements Serializable {
 
     public void setProvinceList(List<Province> provinceList) {
         this.provinceList = provinceList;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     @Override

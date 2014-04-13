@@ -14,6 +14,7 @@ public class ResponseDTO {
 
     private int statusCode;
     private String message;
+     private TourneyPlayerScoreDTO tourneyPlayerScore;
     private List<GolfGroupDTO> golfGroups;
     private List<ParentDTO> parents;
     private List<PlayerDTO> players;
@@ -23,12 +24,14 @@ public class ResponseDTO {
     private List<TournamentDTO> tournaments;
     private List<LeaderBoardDTO> leaderBoard;
     private List<CountryDTO> countries;
-    private List<ProvinceDTO> province;
+    private List<ProvinceDTO> provinces;
     private List<ClubDTO> clubs;
     private List<AgeGroupDTO> ageGroups;
     private List<AdministratorDTO> administrators;
     private List<GolfGroupPlayerDTO> golfGroupPlayers;
     private List<GolfGroupParentDTO> golfGroupParents;
+    private List<ScorerDTO> scorers;
+    private List<ClubCourseDTO> clubCourses;
     private GolfGroupDTO golfGroup;
     private AdministratorDTO administrator;
     
@@ -51,6 +54,22 @@ public class ResponseDTO {
         return administrator;
     }
 
+    public TourneyPlayerScoreDTO getTourneyPlayerScore() {
+        return tourneyPlayerScore;
+    }
+
+    public void setTourneyPlayerScore(TourneyPlayerScoreDTO tourneyPlayerScore) {
+        this.tourneyPlayerScore = tourneyPlayerScore;
+    }
+
+    public List<ClubCourseDTO> getClubCourses() {
+        return clubCourses;
+    }
+
+    public void setClubCourses(List<ClubCourseDTO> clubCourses) {
+        this.clubCourses = clubCourses;
+    }
+
     public void setAdministrator(AdministratorDTO administrator) {
         this.administrator = administrator;
     }
@@ -61,6 +80,14 @@ public class ResponseDTO {
 
     public void setGolfGroup(GolfGroupDTO golfGroup) {
         this.golfGroup = golfGroup;
+    }
+
+    public List<ScorerDTO> getScorers() {
+        return scorers;
+    }
+
+    public void setScorers(List<ScorerDTO> scorers) {
+        this.scorers = scorers;
     }
 
     public List<GolfGroupPlayerDTO> getGolfGroupPlayers() {
@@ -167,12 +194,12 @@ public class ResponseDTO {
         this.countries = countries;
     }
 
-    public List<ProvinceDTO> getProvince() {
-        return province;
+    public List<ProvinceDTO> getProvinces() {
+        return provinces;
     }
 
-    public void setProvince(List<ProvinceDTO> province) {
-        this.province = province;
+    public void setProvinces(List<ProvinceDTO> province) {
+        this.provinces = province;
     }
 
     public List<ClubDTO> getClubs() {

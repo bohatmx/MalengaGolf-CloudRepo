@@ -5,9 +5,6 @@
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Tournament;
-import com.boha.golfkids.data.TournamentVolunteer;
-import com.boha.golfkids.data.TourneyPlayerScore;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,61 +17,57 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     private long closingDate;
     private long endDate;
     private int golfRounds;
+    private int closedForScoringFlag;
     private long startDate;
-    private String tourneyName;
-    private ClubDTO club;
-    private ClubCourseDTO clubCourse;
-    private int golfGroupID;
+    private String tourneyName, clubName;
+    private int clubID;
+    private int clubCourseID;
+    private int golfGroupID, par = 72;
     private List<TourneyPlayerScoreDTO> scores;
     private List<VolunteerDTO> volunteers;
-    
+
     public TournamentDTO(Tournament a) {
         tournamentID = a.getTournamentID();
-        closingDate = a.getClosingDate().getTime();
-        endDate = a.getEndDate().getTime();
+        closedForScoringFlag = a.getClosedForScoringFlag();
+        if (a.getClosingDate() != null) {
+            closingDate = a.getClosingDate().getTime();
+        }
+        if (a.getEndDate() != null) {
+            endDate = a.getEndDate().getTime();
+        }
         golfRounds = a.getGolfRounds();
-        startDate = a.getStartDate().getTime();
+        if (a.getStartDate() != null) {
+            startDate = a.getStartDate().getTime();
+        }
         tourneyName = a.getTourneyName();
         if (a.getClubCourse() != null) {
-            clubCourse = new ClubCourseDTO(a.getClubCourse());
+            clubCourseID = a.getClubCourse().getClubCourseID();
+            par = a.getClubCourse().getPar();
         }
         if (a.getClub() != null) {
-            club = new ClubDTO(a.getClub());
+            clubID = a.getClub().getClubID();
+            clubName = a.getClub().getClubName();
         }
         if (a.getGolfGroup() != null) {
             golfGroupID = a.getGolfGroup().getGolfGroupID();
         }
-        if (a.getTourneyPlayerScoreList() != null) {
-            scores = new ArrayList<>();
-            List<TourneyPlayerScore> tpList = a.getTourneyPlayerScoreList();
-            for (TourneyPlayerScore tourneyPlayerScore : tpList) {
-                scores.add(new TourneyPlayerScoreDTO(tourneyPlayerScore, true, false));
-            }
-        }
-        if (a.getTournamentVolunteerList() != null) {
-            volunteers = new ArrayList<>();
-            List<TournamentVolunteer> tvList = a.getTournamentVolunteerList();
-            for (TournamentVolunteer vol : tvList) {
-                volunteers.add(new VolunteerDTO(vol.getVolunteer()));
-            }
-        }
-      
+
     }
 
     public int getTournamentID() {
         return tournamentID;
     }
 
-    public ClubCourseDTO getClubCourse() {
-        return clubCourse;
-    }
-
-    public void setClubCourse(ClubCourseDTO clubCourse) {
-        this.clubCourse = clubCourse;
-    }
-
     public void setTournamentID(int tournamentID) {
         this.tournamentID = tournamentID;
+    }
+
+    public int getPar() {
+        return par;
+    }
+
+    public void setPar(int par) {
+        this.par = par;
     }
 
     public long getClosingDate() {
@@ -99,6 +92,22 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
 
     public void setGolfRounds(int golfRounds) {
         this.golfRounds = golfRounds;
+    }
+
+    public int getClosedForScoringFlag() {
+        return closedForScoringFlag;
+    }
+
+    public void setClosedForScoringFlag(int closedForScoringFlag) {
+        this.closedForScoringFlag = closedForScoringFlag;
+    }
+
+    public String getClubName() {
+        return clubName;
+    }
+
+    public void setClubName(String clubName) {
+        this.clubName = clubName;
     }
 
     public long getStartDate() {
@@ -141,25 +150,32 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
         this.tourneyName = tourneyName;
     }
 
-    public ClubDTO getClub() {
-        return club;
-    }
-
-    public void setClub(ClubDTO club) {
-        this.club = club;
-    }
-
-    
     @Override
     public int compareTo(TournamentDTO t) {
-       
+
         if (startDate > t.startDate) {
             return 1;
         }
         if (startDate < t.startDate) {
             return -1;
         }
-        
+
         return 0;
+    }
+
+    public int getClubID() {
+        return clubID;
+    }
+
+    public void setClubID(int clubID) {
+        this.clubID = clubID;
+    }
+
+    public int getClubCourseID() {
+        return clubCourseID;
+    }
+
+    public void setClubCourseID(int clubCourseID) {
+        this.clubCourseID = clubCourseID;
     }
 }

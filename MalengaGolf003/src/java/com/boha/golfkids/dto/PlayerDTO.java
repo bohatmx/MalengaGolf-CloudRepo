@@ -32,7 +32,9 @@ public class PlayerDTO {
     public PlayerDTO(Player a) {
         playerID = a.getPlayerID();
         cellphone = a.getCellphone();
-        dateOfBirth = a.getDateOfBirth().getTime();
+        if (a.getDateOfBirth() != null) {
+            dateOfBirth = a.getDateOfBirth().getTime();
+        }
         dateRegistered = a.getDateRegistered().getTime();
         email = a.getEmail();
         firstName = a.getFirstName();
@@ -44,7 +46,7 @@ public class PlayerDTO {
         if (a.getParent() != null) {
             parentID = a.getParent().getParentID();
         }
-        
+
     }
 
     public int getParentID() {
@@ -55,7 +57,6 @@ public class PlayerDTO {
         this.parentID = parentID;
     }
 
-    
     public List<TourneyPlayerScoreDTO> getScores() {
         return scores;
     }

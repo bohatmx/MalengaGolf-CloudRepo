@@ -30,8 +30,13 @@ import javax.validation.constraints.Size;
 @Table(name = "parent")
 @NamedQueries({
     @NamedQuery(name = "Parent.login", 
-            query = "SELECT a FROM Parent a where a.email = :email and a.pin = :pin"),
-    @NamedQuery(name = "Parent.findAll", query = "SELECT p FROM Parent p")})
+            query = "SELECT a FROM Parent a "
+                    + "where a.email = :email and a.pin = :pin"),
+    @NamedQuery(name = "Parent.findbyGolfGroup", 
+            query = "SELECT p FROM Parent p, GolfGroupParent a "
+                    + "where p.parentID = a.parent.parentID "
+                    + "and a.golfGroup.golfGroupID = :id "
+                    + "order by p.lastName, p.firstName")})
 public class Parent implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

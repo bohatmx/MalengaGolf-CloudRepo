@@ -32,6 +32,7 @@ public class TourneyScoreByRoundDTO {
     private int score16;
     private int score17;
     private int score18;
+    private int totalScore;
     private int tourneyPlayerScoreID;
 
     public TourneyScoreByRoundDTO() {
@@ -59,10 +60,19 @@ public class TourneyScoreByRoundDTO {
         score16 = a.getScore16();
         score17 = a.getScore17();
         score18 = a.getScore18();
+        totalScore = a.getTotalScore();
     }
 
     public int getTourneyScoreByRoundID() {
         return tourneyScoreByRoundID;
+    }
+
+    public int getTotalScore() {
+        return totalScore;
+    }
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
     }
 
     public void setTourneyScoreByRoundID(int tourneyScoreByRoundID) {

@@ -39,6 +39,7 @@ import javax.validation.constraints.Size;
             query = "SELECT t FROM Tournament t "
                     + "where t.golfGroup.golfGroupID = :id "
                     + "order by t.startDate desc"),
+    
 @NamedQuery(name = "Tournament.findByClub",
         query = "select a from Tournament a where a.club.clubID = :id")
 })

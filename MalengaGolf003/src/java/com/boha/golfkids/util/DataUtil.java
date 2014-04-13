@@ -50,7 +50,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import javax.validation.ConstraintViolationException;
 
 /**
  *
@@ -62,6 +61,29 @@ public class DataUtil {
 
     @PersistenceContext
     EntityManager em;
+
+    public ResponseDTO updateTournament(TournamentDTO t) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Tournament tx = getTournamentByID(t.getTournamentID());
+            tx.setTourneyName(t.getTourneyName());
+            tx.setStartDate(new Date(t.getStartDate()));
+            tx.setEndDate(new Date(t.getEndDate()));
+            if (t.getClubID() > 0) {
+                tx.setClub(getClubByID(t.getClubID()));
+            }
+            tx.setClosedForScoringFlag(t.getClosedForScoringFlag());
+            tx.setGolfRounds(t.getGolfRounds());
+            em.merge(tx);
+            logger.log(Level.INFO, "Tournament updated OK");
+            r.setMessage("Tournament is updated");
+        } catch (Exception e) {
+            logger.log(Level.INFO, "Failed to update tournament");
+            throw new DataException("Failed to update tournament\n"
+                    + getErrorString(e));
+        }
+        return r;
+    }
 
     public ResponseDTO getTournamentPlayers(int tournamentID) throws DataException {
         ResponseDTO r = new ResponseDTO();
@@ -258,6 +280,21 @@ public class DataUtil {
                     }
                 }
             }
+            q = em.createNamedQuery("ClubCourse.findByCountry", ClubCourse.class);
+            q.setParameter("id", countryID);
+            List<ClubCourse> ccList = q.getResultList();
+
+            for (ProvinceDTO p : dList) {
+                for (ClubDTO club : p.getClubs()) {
+                    club.setClubCourses(new ArrayList<ClubCourseDTO>());
+                    for (ClubCourse cc : ccList) {
+                        if (cc.getClub().getClubID() == club.getClubID()) {
+                            club.getClubCourses().add(new ClubCourseDTO(cc));
+                        }
+                    }
+                }
+
+            }
             r.setProvinces(dList);
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
@@ -265,8 +302,8 @@ public class DataUtil {
         return r;
     }
 
-    public List<ClubDTO> getClubsByProvince(int provinceID) throws DataException {
-
+    public ResponseDTO getClubsByProvince(int provinceID) throws DataException {
+        ResponseDTO r = new ResponseDTO();
         List<ClubDTO> cList = new ArrayList<>();
         try {
             Query q = em.createNamedQuery("Club.findByProvince", Club.class);
@@ -275,10 +312,24 @@ public class DataUtil {
             for (Club club : list) {
                 cList.add(new ClubDTO(club));
             }
+            q = em.createNamedQuery("ClubCourse.findByProvince", ClubCourse.class);
+            q.setParameter("id", provinceID);
+            List<ClubCourse> ccList = q.getResultList();
+
+            for (ClubDTO club : cList) {
+                club.setClubCourses(new ArrayList<ClubCourseDTO>());
+                for (ClubCourse cc : ccList) {
+                    if (cc.getClub().getClubID() == club.getClubID()) {
+                        club.getClubCourses().add(new ClubCourseDTO(cc));
+                    }
+                }
+
+            }
+            r.setClubs(cList);
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
-        return cList;
+        return r;
     }
 
     public List<AgeGroupDTO> getAgeGroups(int golfGroupID)

@@ -37,15 +37,7 @@ public class ClubDTO {
             provinceID = a.getProvince().getProvinceID();
             provinceName = a.getProvince().getProvinceName();
         }
-        
-        if (a.getClubCourseList() != null) {
-            clubCourses = new ArrayList<>();
-            List<ClubCourse> ccList = a.getClubCourseList();
-            for (ClubCourse cc : ccList) {
-             clubCourses.add(new ClubCourseDTO(cc));   
-            }
-        }
-
+      
     }
 
     public List<ClubCourseDTO> getClubCourses() {

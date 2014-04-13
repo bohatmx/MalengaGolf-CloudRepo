@@ -14,10 +14,13 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
     private int position;
     private PlayerDTO player;
     
-    private int scoreRound1, 
+    private int 
+            scoreRound1, 
             scoreRound2, 
             scoreRound3, 
             scoreRound4, 
+            scoreRound5, 
+            scoreRound6,
             totalScore;
 
     public int getPosition() {
@@ -68,7 +71,25 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         this.scoreRound4 = scoreRound4;
     }
 
+    public int getScoreRound5() {
+        return scoreRound5;
+    }
+
+    public void setScoreRound5(int scoreRound5) {
+        this.scoreRound5 = scoreRound5;
+    }
+
+    public int getScoreRound6() {
+        return scoreRound6;
+    }
+
+    public void setScoreRound6(int scoreRound6) {
+        this.scoreRound6 = scoreRound6;
+    }
+
     public int getTotalScore() {
+        totalScore = scoreRound1 + scoreRound2 + scoreRound4 +
+        scoreRound5 + scoreRound3 + scoreRound6;
         return totalScore;
     }
 
@@ -79,11 +100,11 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
     @Override
     public int compareTo(LeaderBoardDTO t) {
         
-        if (totalScore < t.totalScore) {
-            return 1;
-        }
-         if (totalScore > t.totalScore) {
+        if (getTotalScore() < t.getTotalScore()) {
             return -1;
+        }
+         if (getTotalScore() > t.getTotalScore()) {
+            return 1;
         }
         
         return 0;

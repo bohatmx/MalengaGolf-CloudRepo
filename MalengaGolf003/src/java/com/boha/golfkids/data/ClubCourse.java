@@ -34,7 +34,16 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "ClubCourse.findByClub", 
             query = "SELECT c FROM ClubCourse c "
                     + "where c.club.clubID = :id "
-                    + "order by c.courseName")})
+                    + "order by c.courseName"),
+@NamedQuery(name = "ClubCourse.findByCountry", 
+            query = "SELECT c FROM ClubCourse c "
+                    + "where c.club.province.country.countryID = :id "
+                    + "order by c.club.province.provinceID, c.courseName"),
+@NamedQuery(name = "ClubCourse.findByProvince", 
+            query = "SELECT c FROM ClubCourse c "
+                    + "where c.club.province.provinceID = :id "
+                    + "order by c.courseName")
+})
 public class ClubCourse implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

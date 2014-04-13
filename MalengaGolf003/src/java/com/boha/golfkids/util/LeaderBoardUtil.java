@@ -8,6 +8,7 @@ import com.boha.golfkids.data.Tournament;
 import com.boha.golfkids.data.TourneyPlayerScore;
 import com.boha.golfkids.dto.LeaderBoardDTO;
 import com.boha.golfkids.dto.PlayerDTO;
+import com.boha.golfkids.dto.ResponseDTO;
 import com.boha.golfkids.dto.TourneyPlayerScoreDTO;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,9 +32,9 @@ public class LeaderBoardUtil {
     @PersistenceContext
     EntityManager em;
 
-    public List<LeaderBoardDTO> getLeaderBoard(int tournamentID,
+    public ResponseDTO getLeaderBoard(int tournamentID,
             DataUtil dataUtil) throws DataException {
-
+        ResponseDTO r = new ResponseDTO();
         List<LeaderBoardDTO> list = new ArrayList<>();
         try {
             Tournament t = dataUtil.getTournamentByID(tournamentID);
@@ -48,12 +49,13 @@ public class LeaderBoardUtil {
                     d.setScoreRound2(s.getScoreRound2());
                     d.setScoreRound3(s.getScoreRound3());
                     d.setScoreRound4(s.getScoreRound4());
+                    d.setScoreRound5(s.getScoreRound5());
+                    d.setScoreRound6(s.getScoreRound6());
                     d.setTotalScore(d.getTotalScore());
                     list.add(d);
                 }
             }
             Collections.sort(list);
-
             //set positions
             HashMap<Integer, Integer> map = new HashMap<>();
             int pos = 1;
@@ -68,19 +70,21 @@ public class LeaderBoardUtil {
             for (LeaderBoardDTO b : list) {
                 b.setPosition(map.get(b.getTotalScore()));
             }
+            r.setLeaderBoardList(list);
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
 
-        return list;
+        return r;
     }
 
-    public List<LeaderBoardDTO> getLeaderBoardBoys(int tournamentID,
+    public ResponseDTO getLeaderBoardBoys(int tournamentID,
             DataUtil dataUtil) throws DataException {
-
+        ResponseDTO r = new ResponseDTO();
         List<LeaderBoardDTO> list = new ArrayList<>();
         try {
-            List<TourneyPlayerScoreDTO> listx = dataUtil.getScoresByTournamentBoys(tournamentID, false);
+            List<TourneyPlayerScoreDTO> listx = 
+                    dataUtil.getScoresByTournamentBoys(tournamentID, false);
 
             for (TourneyPlayerScoreDTO s : listx) {
                 LeaderBoardDTO d = new LeaderBoardDTO();
@@ -89,6 +93,8 @@ public class LeaderBoardUtil {
                 d.setScoreRound2(s.getScoreRound2());
                 d.setScoreRound3(s.getScoreRound3());
                 d.setScoreRound4(s.getScoreRound4());
+                d.setScoreRound5(s.getScoreRound5());
+                d.setScoreRound6(s.getScoreRound6());
                 d.setTotalScore(d.getTotalScore());
                 list.add(d);
             }
@@ -109,16 +115,17 @@ public class LeaderBoardUtil {
             for (LeaderBoardDTO b : list) {
                 b.setPosition(map.get(b.getTotalScore()));
             }
+            r.setLeaderBoardList(list);
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
 
-        return list;
+        return r;
     }
 
-    public List<LeaderBoardDTO> getLeaderBoardGirls(int tournamentID,
+    public ResponseDTO getLeaderBoardGirls(int tournamentID,
             DataUtil dataUtil) throws DataException {
-
+        ResponseDTO r = new ResponseDTO();
         List<LeaderBoardDTO> list = new ArrayList<>();
         try {
             List<TourneyPlayerScoreDTO> listx = dataUtil.getScoresByTournamentGirls(tournamentID, false);
@@ -130,6 +137,8 @@ public class LeaderBoardUtil {
                 d.setScoreRound2(s.getScoreRound2());
                 d.setScoreRound3(s.getScoreRound3());
                 d.setScoreRound4(s.getScoreRound4());
+                d.setScoreRound5(s.getScoreRound5());
+                d.setScoreRound6(s.getScoreRound6());
                 d.setTotalScore(d.getTotalScore());
                 list.add(d);
             }
@@ -150,11 +159,12 @@ public class LeaderBoardUtil {
             for (LeaderBoardDTO b : list) {
                 b.setPosition(map.get(b.getTotalScore()));
             }
+            r.setLeaderBoardList(list);
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
 
-        return list;
+        return r;
     }
 
     public static String getErrorString(Exception e) {

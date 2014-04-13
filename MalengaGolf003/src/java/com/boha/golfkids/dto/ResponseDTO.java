@@ -22,7 +22,7 @@ public class ResponseDTO {
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private List<TeeTimeDTO> teeTimeList;
     private List<TournamentDTO> tournaments;
-    private List<LeaderBoardDTO> leaderBoard;
+    private List<LeaderBoardDTO> leaderBoardList;
     private List<CountryDTO> countries;
     private List<ProvinceDTO> provinces;
     private List<ClubDTO> clubs;
@@ -178,12 +178,12 @@ public class ResponseDTO {
         this.tournaments = tournaments;
     }
 
-    public List<LeaderBoardDTO> getLeaderBoard() {
-        return leaderBoard;
+    public List<LeaderBoardDTO> getLeaderBoardList() {
+        return leaderBoardList;
     }
 
-    public void setLeaderBoard(List<LeaderBoardDTO> leaderBoard) {
-        this.leaderBoard = leaderBoard;
+    public void setLeaderBoardList(List<LeaderBoardDTO> leaderBoardList) {
+        this.leaderBoardList = leaderBoardList;
     }
 
     public List<CountryDTO> getCountries() {

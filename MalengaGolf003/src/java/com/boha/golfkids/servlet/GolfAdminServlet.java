@@ -81,16 +81,13 @@ public class GolfAdminServlet extends HttpServlet {
                                 gr.getCountryID());
                         break;
                     case RequestDTO.GET_LEADERBOARD:
-                        List<LeaderBoardDTO> bd = leaderBoardUtil.getLeaderBoard(gr.getTournamentID(), dataUtil);
-                        resp.setLeaderBoard(bd);
+                        resp = leaderBoardUtil.getLeaderBoard(gr.getTournamentID(), dataUtil);
                         break;
                     case RequestDTO.GET_LEADERBOARD_BOYS:
-                        List<LeaderBoardDTO> bdb = leaderBoardUtil.getLeaderBoardBoys(gr.getTournamentID(), dataUtil);
-                        resp.setLeaderBoard(bdb);
+                        resp = leaderBoardUtil.getLeaderBoardBoys(gr.getTournamentID(), dataUtil);
                         break;
                     case RequestDTO.GET_LEADERBOARD_GIRLS:
-                        List<LeaderBoardDTO> bdg = leaderBoardUtil.getLeaderBoardGirls(gr.getTournamentID(), dataUtil);
-                        resp.setLeaderBoard(bdg);
+                        resp  = leaderBoardUtil.getLeaderBoardGirls(gr.getTournamentID(), dataUtil);
                         break;
                     case RequestDTO.UPDATE_TOURNAMENT_SCORES:
                         resp = dataUtil.updateTournamentScoreByRound(gr.getTourneyPlayerScore());
@@ -187,6 +184,9 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.removeTournamentPlayer(gr.getTournamentID(),
                                 gr.getPlayerID());
                         break;
+                        case RequestDTO.UPDATE_TOURNAMENT:
+                            resp = dataUtil.updateTournament(gr.getTournament());
+                            break;
                     default:
                         platformUtil.addErrorStore(7, "Request Type specified not on", "GolfAdminServlet");
                         resp.setStatusCode(7);

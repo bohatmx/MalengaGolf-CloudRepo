@@ -5,15 +5,23 @@
 
 package com.boha.golfkids.dto;
 
+import com.boha.golfkids.data.LeaderBoard;
+import com.boha.golfkids.data.Tournament;
+import java.util.List;
+
 /**
  *
  * @author Aubrey Malabie
  */
 public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
 
-    private int position;
+    private int leaderBoardID, position, parStatus, tournamentID;
     private PlayerDTO player;
-    
+    private boolean tied;
+    private int rounds, lastHole, holesPerRound, currentRoundStatus;
+    private long startDate;
+    private String tournamentName;
+    private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private int 
             scoreRound1, 
             scoreRound2, 
@@ -23,12 +31,138 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
             scoreRound6,
             totalScore;
 
+    public LeaderBoardDTO() {}
+    public LeaderBoardDTO(LeaderBoard a) {
+        setBasics(a);
+        
+    }
+    public LeaderBoardDTO(LeaderBoard a, boolean getDetail) {
+        setBasics(a);
+        if (getDetail) {
+            tournamentName = a.getTournament().getTourneyName();
+        }
+    }
+    private void setBasics(LeaderBoard a) {
+       leaderBoardID = a.getLeaderBoardID();
+       
+        player = new PlayerDTO(a.getPlayer());
+        position = a.getPosition();
+        parStatus = a.getParStatus();
+        Tournament t = a.getTournament();
+        startDate = t.getStartDate().getTime();
+        tournamentID = t.getTournamentID();
+        holesPerRound = t.getHolesPerRound();
+        if (a.getTied() > 0) {
+            tied = true;
+        }
+        scoreRound1 = a.getScoreRound1();
+        scoreRound2 = a.getScoreRound2();
+        scoreRound3 = a.getScoreRound3();
+        scoreRound4 = a.getScoreRound4();
+        scoreRound5 = a.getScoreRound5();
+        scoreRound6 = a.getScoreRound6();
+        totalScore = a.getTotalScore(); 
+        rounds = a.getTournament().getGolfRounds();
+    }
     public int getPosition() {
         return position;
     }
 
+    public int getCurrentRoundStatus() {
+        return currentRoundStatus;
+    }
+
+    public void setCurrentRoundStatus(int currentRoundStatus) {
+        this.currentRoundStatus = currentRoundStatus;
+    }
+
+    
+
+    public int getLastHole() {
+        return lastHole;
+    }
+
+    public void setLastHole(int lastHole) {
+        this.lastHole = lastHole;
+    }
+
+    public int getHolesPerRound() {
+        return holesPerRound;
+    }
+
+    public void setHolesPerRound(int holesPerRound) {
+        this.holesPerRound = holesPerRound;
+    }
+
+    public int getLeaderBoardID() {
+        return leaderBoardID;
+    }
+
+    public int getRounds() {
+        return rounds;
+    }
+
+    public long getStartDate() {
+        return startDate;
+    }
+
+    public int getTournamentID() {
+        return tournamentID;
+    }
+
+    public void setTournamentID(int tournamentID) {
+        this.tournamentID = tournamentID;
+    }
+
+    public void setStartDate(long startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getTournamentName() {
+        return tournamentName;
+    }
+
+    public void setTournamentName(String tournamentName) {
+        this.tournamentName = tournamentName;
+    }
+
+
+    public void setRounds(int rounds) {
+        this.rounds = rounds;
+    }
+
+
+    public void setLeaderBoardID(int leaderBoardID) {
+        this.leaderBoardID = leaderBoardID;
+    }
+
+    public List<TourneyScoreByRoundDTO> getTourneyScoreByRoundList() {
+        return tourneyScoreByRoundList;
+    }
+
+    public void setTourneyScoreByRoundList(List<TourneyScoreByRoundDTO> tourneyScoreByRoundList) {
+        this.tourneyScoreByRoundList = tourneyScoreByRoundList;
+    }
+
+    public boolean isTied() {
+        return tied;
+    }
+
+    public void setTied(boolean tied) {
+        this.tied = tied;
+    }
+
+    
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public int getParStatus() {
+        return parStatus;
+    }
+
+    public void setParStatus(int parStatus) {
+        this.parStatus = parStatus;
     }
 
     public PlayerDTO getPlayer() {
@@ -97,17 +231,18 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         this.totalScore = totalScore;
     }
 
-    @Override
+   @Override
     public int compareTo(LeaderBoardDTO t) {
         
-        if (getTotalScore() < t.getTotalScore()) {
-            return -1;
-        }
-         if (getTotalScore() > t.getTotalScore()) {
+        if (this.getParStatus() < t.getParStatus()) {
             return 1;
+        }
+         if (this.getParStatus() > t.getParStatus()) {
+            return -1;
         }
         
         return 0;
     }
+    public static final int NO_PAR_STATUS = 9999;
     
 }

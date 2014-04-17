@@ -5,9 +5,7 @@
 package com.boha.golfkids.servlet;
 
 import com.boha.golfkids.dto.AgeGroupDTO;
-import com.boha.golfkids.dto.ClubDTO;
 import com.boha.golfkids.dto.CountryDTO;
-import com.boha.golfkids.dto.LeaderBoardDTO;
 import com.boha.golfkids.dto.RequestDTO;
 import com.boha.golfkids.dto.ResponseDTO;
 import com.boha.golfkids.util.DataException;
@@ -38,7 +36,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "GolfAdminServlet", urlPatterns = {"/admin"})
 public class GolfAdminServlet extends HttpServlet {
-
+    
     @EJB
     DataUtil dataUtil;
     @EJB
@@ -61,151 +59,153 @@ public class GolfAdminServlet extends HttpServlet {
         ;
         Gson gson = new Gson();
         ResponseDTO resp = new ResponseDTO();
-        RequestDTO gr = getRequest(gson, request);
+        RequestDTO dto = getRequest(gson, request);
         //
-        if (gr == null) {
+        if (dto == null) {
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
             out.println("Bad Request, nobody's home for you!");
             platformUtil.addErrorStore(9, "Bad, rogue request detected", "GolfAdminServlet");
             out.close();
         } else {
-            log.log(Level.WARNING, "---> GolfAdminServlet started ... requestType: {0}", gr.getRequestType());
+            log.log(Level.WARNING, "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
-                switch (gr.getRequestType()) {
+                switch (dto.getRequestType()) {
+                    case RequestDTO.CLOSE_TOURNAMENT:
+                        resp = dataUtil.closeTournament(dto.getTournamentID(), leaderBoardUtil);
+                        break;
                     case RequestDTO.GET_TEE_TIMES:
-                        resp.setTeeTimeList(dataUtil.getTeeTimes(gr.getTournamentID()));
+                        resp.setTeeTimeList(dataUtil.getTeeTimes(dto.getTournamentID()));
                         break;
                     case RequestDTO.GET_GOLF_GROUP_DATA:
-                        resp = dataUtil.getGolfGroupData(gr.getGolfGroupID(),
-                                gr.getCountryID());
+                        resp = dataUtil.getGolfGroupData(dto.getGolfGroupID(),
+                                dto.getCountryID());
                         break;
                     case RequestDTO.GET_LEADERBOARD:
-                        resp = leaderBoardUtil.getLeaderBoard(gr.getTournamentID(), dataUtil);
+                        resp = leaderBoardUtil.getLeaderBoard(dto.getTournamentID(), dataUtil);
                         break;
                     case RequestDTO.GET_LEADERBOARD_BOYS:
-                        resp = leaderBoardUtil.getLeaderBoardBoys(gr.getTournamentID(), dataUtil);
                         break;
                     case RequestDTO.GET_LEADERBOARD_GIRLS:
-                        resp  = leaderBoardUtil.getLeaderBoardGirls(gr.getTournamentID(), dataUtil);
                         break;
                     case RequestDTO.UPDATE_TOURNAMENT_SCORES:
-                        resp = dataUtil.updateTournamentScoreByRound(gr.getTourneyPlayerScore());
+                        resp = dataUtil.updateTournamentScoreByRound(dto.getTourneyPlayerScore());
                         break;
                     case RequestDTO.UPDATE_TOURNAMENT_SCORE_TOTALS:
-                        resp = dataUtil.updateTournamentScore(gr.getTourneyPlayerScore());
+                        resp = dataUtil.updateTournamentScore(dto.getTourneyPlayerScore());
                         break;
                     case RequestDTO.ADD_TOURNAMENT_PLAYERS:
-                        resp = dataUtil.addTournamentPlayer(gr.getTourneyPlayerScore());
+                        resp = dataUtil.addTournamentPlayer(dto.getTourneyPlayerScore());
                         break;
                     case RequestDTO.ADD_TEE_TIMES:
-                        resp = dataUtil.addTeeTimes(gr.getTeeTimeList());
+                        resp = dataUtil.addTeeTimes(dto.getTeeTimeList());
                         break;
                     case RequestDTO.UPDATE_TEE_TIMES:
-                        dataUtil.updateTeeTimes(gr.getTeeTimeList());
+                        dataUtil.updateTeeTimes(dto.getTeeTimeList());
                         break;
                     case RequestDTO.ADD_TOURNAMENT:
-                        resp = dataUtil.addTournament(gr.getTournament());
-
+                        resp = dataUtil.addTournament(dto.getTournament());
+                        
                         break;
                     case RequestDTO.ADD_PLAYER:
-                        resp = dataUtil.addPlayer(gr.getPlayer(), gr.getGolfGroupID());
+                        resp = dataUtil.addPlayer(dto.getPlayer(), dto.getGolfGroupID());
                         break;
                     case RequestDTO.UPDATE_PLAYER:
-                        dataUtil.updatePlayer(gr.getPlayerList().get(0));
+                        dataUtil.updatePlayer(dto.getPlayer());
                         break;
-
+                    
                     case RequestDTO.ADD_PARENT:
-                        resp = dataUtil.addParent(gr.getParent(), gr.getGolfGroupID());
+                        resp = dataUtil.addParent(dto.getParent(), dto.getGolfGroupID());
                         break;
                     case RequestDTO.UPDATE_PARENT:
-                        dataUtil.updateParent(gr.getParent());
+                        dataUtil.updateParent(dto.getParent());
                         break;
                     case RequestDTO.ADMIN_LOGIN:
-                        resp = dataUtil.signInAdministrator(gr.getEmail(), gr.getPin());
+                        resp = dataUtil.signInAdministrator(dto.getEmail(), dto.getPin());
                         break;
                     case RequestDTO.ADD_ADMINISTRATOR:
-                        resp = dataUtil.addGolfGroupAdmin(gr.getAdministrator());
-
+                        resp = dataUtil.addGolfGroupAdmin(dto.getAdministrator());
+                        
                         break;
                     case RequestDTO.ADD_GOLF_GROUP:
-                        resp = dataUtil.addGolfGroup(gr.getGolfGroup(), gr.getAdministrator());
-
+                        resp = dataUtil.addGolfGroup(dto.getGolfGroup(), dto.getAdministrator());
+                        
                         break;
                     case RequestDTO.UPDATE_GOLF_GROUP:
-                        dataUtil.updateGolfGroup(gr.getGolfGroup());
+                        dataUtil.updateGolfGroup(dto.getGolfGroup());
                         break;
                     case RequestDTO.ADD_CLUB:
-                        resp = dataUtil.addClub(gr.getClub());
+                        resp = dataUtil.addClub(dto.getClub());
                         break;
                     case RequestDTO.GET_CLUBS_IN_COUNTRY:
-                        resp = dataUtil.getClubsByCountry(gr.getCountryID());
+                        resp = dataUtil.getClubsByCountry(dto.getCountryID());
                         break;
-
+                    
                     case RequestDTO.UPDATE_PLAYER_PARENT:
                         //TODO - think!
                         break;
                     case RequestDTO.UPDATE_ADMINISTRATOR:
-                        dataUtil.updateAdmin(gr.getAdministrator());
+                        dataUtil.updateAdmin(dto.getAdministrator());
                         break;
                     case RequestDTO.UPDATE_CLUB:
-                        dataUtil.updateClub(gr.getClub());
+                        dataUtil.updateClub(dto.getClub());
                         break;
                     case RequestDTO.GET_AGE_GROUPS:
-                        List<AgeGroupDTO> ageList = dataUtil.getAgeGroups(gr.getGolfGroupID());
+                        List<AgeGroupDTO> ageList = dataUtil.getAgeGroups(dto.getGolfGroupID());
                         resp.setAgeGroups(ageList);
                         break;
                     case RequestDTO.GET_AGE_GROUPS_BOYS:
-                        List<AgeGroupDTO> ageList1 = dataUtil.getAgeGroupsBoys(gr.getGolfGroupID());
+                        List<AgeGroupDTO> ageList1 = dataUtil.getAgeGroupsBoys(dto.getGolfGroupID());
                         resp.setAgeGroups(ageList1);
                         break;
                     case RequestDTO.GET_AGE_GROUPS_GIRLS:
-                        List<AgeGroupDTO> ageList2 = dataUtil.getAgeGroupsGirls(gr.getGolfGroupID());
+                        List<AgeGroupDTO> ageList2 = dataUtil.getAgeGroupsGirls(dto.getGolfGroupID());
                         resp.setAgeGroups(ageList2);
                         break;
                     case RequestDTO.GET_COUNTRIES:
                         List<CountryDTO> cntrList = dataUtil.getCountries();
                         resp.setCountries(cntrList);
                         break;
-                    case RequestDTO.ADD_CLUB_COURSE:
-                        dataUtil.addClubCourse(gr.getClubCourse());
-                        resp.setClubCourse(gr.getClubCourse());
-                        break;
+                    
                     case RequestDTO.ADD_SCORER:
-                        resp = dataUtil.addScorer(gr.getScorer(), gr.getGolfGroupID());
+                        resp = dataUtil.addScorer(dto.getScorer(), dto.getGolfGroupID());
                         break;
-                    case RequestDTO.UPDATE_CLUB_COURSE:
-                        dataUtil.updateClubCourse(gr.getClubCourse());
+                    case RequestDTO.UPDATE_SCORER:
+                        dataUtil.updateScorer(dto.getScorer());
                         break;
+                    
                     case RequestDTO.GET_TOURNAMENT_PLAYERS:
-                        resp = dataUtil.getTournamentPlayers(gr.getTournamentID());
+                        resp = dataUtil.getTournamentPlayers(dto.getTournamentID());
                         break;
                     case RequestDTO.REMOVE_TOURNAMENT_PLAYER:
-                        resp = dataUtil.removeTournamentPlayer(gr.getTournamentID(),
-                                gr.getPlayerID());
+                        resp = dataUtil.removeTournamentPlayer(dto.getTournamentID(),
+                                dto.getPlayerID());
                         break;
-                        case RequestDTO.UPDATE_TOURNAMENT:
-                            resp = dataUtil.updateTournament(gr.getTournament());
-                            break;
+                    case RequestDTO.UPDATE_TOURNAMENT:
+                        resp = dataUtil.updateTournament(dto.getTournament());
+                        break;
+                        case RequestDTO.GET_PLAYER_HISTORY:
+                        resp = leaderBoardUtil.getPlayerHistory(dto.getPlayerID());
+                        break;
                     default:
                         platformUtil.addErrorStore(7, "Request Type specified not on", "GolfAdminServlet");
                         resp.setStatusCode(7);
                         break;
                 }
-
+                
             } catch (DuplicateException e) {
                 resp.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
                 resp.setMessage("Record already exists in the database");
                 log.log(Level.WARNING, "Duplicate record attempted", e);
                 platformUtil.addErrorStore(8, "Duplicate record attempted", "GolfAdminServlet");
-
+                
             } catch (DataException e) {
                 resp.setStatusCode(ResponseDTO.DATA_EXCEPTION);
                 resp.setMessage("Database failed. Please try again later");
                 log.log(Level.SEVERE, "Database failed", e);
                 platformUtil.addErrorStore(8, "Database related error\n"
                         + e.description, "GolfAdminServlet");
-
+                
             } catch (Exception e) {
                 resp.setStatusCode(ResponseDTO.GENERIC_EXCEPTION);
                 resp.setMessage("Server process failed. Please try again later");
@@ -214,7 +214,7 @@ public class GolfAdminServlet extends HttpServlet {
                         + dataUtil.getErrorString(e), "GolfAdminServlet");
             } finally {
                 String json = gson.toJson(resp);
-                if (gr.isZippedResponse()) {
+                if (dto.isZippedResponse()) {
                     response.setContentType("application/zip;charset=UTF-8");
                     File zipped;
                     try {
@@ -236,28 +236,28 @@ public class GolfAdminServlet extends HttpServlet {
                     out.println(json);
                     out.close();
                 }
-
+                
                 long end = System.currentTimeMillis();
-                platformUtil.addTimeElapsedWarning(start, end, gr, "GolfAdminServlet");
+                platformUtil.addTimeElapsedWarning(start, end, dto, "GolfAdminServlet");
                 log.log(Level.INFO, "---> GolfAdminServlet completed in {0} seconds", getElapsed(start, end));
             }
         }
     }
-
+    
     public static double getElapsed(long start, long end) {
         BigDecimal m = new BigDecimal(end - start).divide(new BigDecimal(1000));
         return m.doubleValue();
     }
-
+    
     private RequestDTO getRequest(Gson gson, HttpServletRequest req) {
-
+        
         String json = req.getParameter("JSON");
         RequestDTO cr = gson.fromJson(json, RequestDTO.class);
-
+        
         if (cr == null) {
             cr = new RequestDTO();
         }
-
+        
         return cr;
     }
     private static final Logger log = Logger.getLogger("GolfAdmin");

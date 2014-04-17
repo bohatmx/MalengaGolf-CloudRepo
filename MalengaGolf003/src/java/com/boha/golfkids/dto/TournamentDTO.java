@@ -16,16 +16,17 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     private int tournamentID;
     private long closingDate;
     private long endDate;
-    private int golfRounds;
+    private int golfRounds, numberOfRegisteredPlayers;
     private int closedForScoringFlag;
     private long startDate;
     private String tourneyName, clubName;
     private int clubID;
     private int clubCourseID;
-    private int golfGroupID, par = 72;
+    private int golfGroupID, par = 72, holesPerRound;
     private List<TourneyPlayerScoreDTO> scores;
     private List<VolunteerDTO> volunteers;
-
+    private List<TournamentCourseDTO> tournamentCourses;
+    
     public TournamentDTO(Tournament a) {
         tournamentID = a.getTournamentID();
         closedForScoringFlag = a.getClosedForScoringFlag();
@@ -36,17 +37,16 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
             endDate = a.getEndDate().getTime();
         }
         golfRounds = a.getGolfRounds();
+        holesPerRound = a.getHolesPerRound();
         if (a.getStartDate() != null) {
             startDate = a.getStartDate().getTime();
         }
         tourneyName = a.getTourneyName();
-        if (a.getClubCourse() != null) {
-            clubCourseID = a.getClubCourse().getClubCourseID();
-            par = a.getClubCourse().getPar();
-        }
+        par = a.getPar();
         if (a.getClub() != null) {
             clubID = a.getClub().getClubID();
             clubName = a.getClub().getClubName();
+
         }
         if (a.getGolfGroup() != null) {
             golfGroupID = a.getGolfGroup().getGolfGroupID();
@@ -54,8 +54,34 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
 
     }
 
+    public int getHolesPerRound() {
+        return holesPerRound;
+    }
+
+    public List<TournamentCourseDTO> getTournamentCourses() {
+        return tournamentCourses;
+    }
+
+    public void setTournamentCourses(List<TournamentCourseDTO> tournamentCourses) {
+        this.tournamentCourses = tournamentCourses;
+    }
+
+    
+   
+    public void setHolesPerRound(int holesPerRound) {
+        this.holesPerRound = holesPerRound;
+    }
+
     public int getTournamentID() {
         return tournamentID;
+    }
+
+    public int getNumberOfRegisteredPlayers() {
+        return numberOfRegisteredPlayers;
+    }
+
+    public void setNumberOfRegisteredPlayers(int numberOfRegisteredPlayers) {
+        this.numberOfRegisteredPlayers = numberOfRegisteredPlayers;
     }
 
     public void setTournamentID(int tournamentID) {

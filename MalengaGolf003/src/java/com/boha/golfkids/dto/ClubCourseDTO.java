@@ -1,135 +1,71 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package com.boha.golfkids.dto;
 
+import com.boha.golfkids.data.Club;
 import com.boha.golfkids.data.ClubCourse;
 
 /**
- * Club golf course
+ *
  * @author aubreyM
  */
 public class ClubCourseDTO {
+
     private int clubCourseID;
-	private String courseName;
-        private int clubID;
-	private double latitude;
-	private double longitude;
-	private int par;
-	private int par1;
-	private int par10;
-	private int par11;
-	private int par12;
+    private String courseName, clubName;
+    private int holes;
+    private int par;
+    private int parHole1;
+    private int parHole2;
+    private int parHole3;
+    private int parHole4;
+    private int parHole5;
+    private int parHole6;
+    private int parHole7;
+    private int parHole8;
+    private int parHole9;
+    private int parHole10;
+    private int parHole11;
+    private int parHole12;
+    private int parHole13;
+    private int parHole14;
+    private int parHole15;
+    private int parHole16;
+    private int parHole17;
+    private int parHole18;
+    private int clubID;
 
-	private int par13;
+    public ClubCourseDTO(ClubCourse a) {
+        clubCourseID = a.getClubCourseID();
+        courseName = a.getCourseName();
+        Club c = a.getClub();
+        clubID = c.getClubID();
+        clubName = c.getClubName();
+        holes = a.getHoles();
+        par = a.getPar();
 
-	private int par14;
-
-	private int par15;
-
-	private int par16;
-
-	private int par17;
-
-	private int par18;
-
-	private int par2;
-
-	private int par3;
-
-	private int par4;
-
-	private int par5;
-
-	private int par6;
-
-	private int par7;
-
-	private int par8;
-
-	private int par9;
-        //
-        private int length1;
-
-	private int length10;
-
-	private int length11;
-
-	private int length12;
-
-	private int length13;
-
-	private int length14;
-
-	private int length15;
-
-	private int length16;
-
-	private int length17;
-
-	private int length18;
-
-	private int length2;
-
-	private int length3;
-
-	private int length4;
-
-	private int length5;
-
-	private int length6;
-
-	private int length7;
-
-	private int length8;
-
-	private int length9;
-public ClubCourseDTO(ClubCourse a) {
-    clubCourseID = a.getClubCourseID();
-    courseName = a.getCourseName();
-    clubID = a.getClub().getClubID();
-    latitude = a.getLatitude();
-    longitude = a.getLongitude();
-    par = a.getPar();
-    par1 = a.getPar1();
-    par2 = a.getPar2();
-    par3 = a.getPar3();
-    par4 = a.getPar4();
-    par5 = a.getPar5();
-    par6 = a.getPar6();
-    par7 = a.getPar7();
-    par8 = a.getPar8();
-    par9 = a.getPar9();
-    par10 = a.getPar10();
-    par11 = a.getPar11();
-    par12 = a.getPar12();
-    par13 = a.getPar13();
-    par14 = a.getPar14();
-    par15 = a.getPar15();
-    par16 = a.getPar16();
-    par17 = a.getPar17();
-    par18 = a.getPar18();
-    //
-    length1 = a.getLength1();
-    length2 = a.getLength2();
-    length3 = a.getLength3();
-    length4 = a.getLength4();
-    length5 = a.getLength5();
-    length6 = a.getLength6();
-    length7 = a.getLength7();
-    length8 = a.getLength8();
-    length9 = a.getLength9();
-    length10 = a.getLength10();
-    length11 = a.getLength11();
-    length12 = a.getLength12();
-    length13 = a.getLength13();
-    length14 = a.getLength14();
-    length15 = a.getLength15();
-    length16 = a.getLength16();
-    length17 = a.getLength17();
-    length18 = a.getLength18();
-}
+        parHole1 = a.getParHole1();
+        parHole2 = a.getParHole2();
+        parHole3 = a.getParHole3();
+        parHole4 = a.getParHole4();
+        parHole5 = a.getParHole5();
+        parHole6 = a.getParHole6();
+        parHole7 = a.getParHole7();
+        parHole8 = a.getParHole8();
+        parHole9 = a.getParHole9();
+        parHole10 = a.getParHole10();
+        parHole11 = a.getParHole11();
+        parHole12 = a.getParHole12();
+        parHole13 = a.getParHole13();
+        parHole14 = a.getParHole14();
+        parHole15 = a.getParHole15();
+        parHole16 = a.getParHole16();
+        parHole17 = a.getParHole17();
+        parHole18 = a.getParHole18();
+    }
 
     public int getClubCourseID() {
         return clubCourseID;
@@ -147,28 +83,20 @@ public ClubCourseDTO(ClubCourse a) {
         this.courseName = courseName;
     }
 
-    public int getClubID() {
-        return clubID;
+    public String getClubName() {
+        return clubName;
     }
 
-    public void setClubID(int clubID) {
-        this.clubID = clubID;
+    public void setClubName(String clubName) {
+        this.clubName = clubName;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public int getHoles() {
+        return holes;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setHoles(int holes) {
+        this.holes = holes;
     }
 
     public int getPar() {
@@ -179,292 +107,156 @@ public ClubCourseDTO(ClubCourse a) {
         this.par = par;
     }
 
-    public int getPar1() {
-        return par1;
+    public int getParHole1() {
+        return parHole1;
     }
 
-    public void setPar1(int par1) {
-        this.par1 = par1;
+    public void setParHole1(int parHole1) {
+        this.parHole1 = parHole1;
     }
 
-    public int getPar10() {
-        return par10;
+    public int getParHole2() {
+        return parHole2;
     }
 
-    public void setPar10(int par10) {
-        this.par10 = par10;
+    public void setParHole2(int parHole2) {
+        this.parHole2 = parHole2;
     }
 
-    public int getPar11() {
-        return par11;
+    public int getParHole3() {
+        return parHole3;
     }
 
-    public void setPar11(int par11) {
-        this.par11 = par11;
+    public void setParHole3(int parHole3) {
+        this.parHole3 = parHole3;
     }
 
-    public int getPar12() {
-        return par12;
+    public int getParHole4() {
+        return parHole4;
     }
 
-    public void setPar12(int par12) {
-        this.par12 = par12;
+    public void setParHole4(int parHole4) {
+        this.parHole4 = parHole4;
     }
 
-    public int getPar13() {
-        return par13;
+    public int getParHole5() {
+        return parHole5;
     }
 
-    public void setPar13(int par13) {
-        this.par13 = par13;
+    public void setParHole5(int parHole5) {
+        this.parHole5 = parHole5;
     }
 
-    public int getPar14() {
-        return par14;
+    public int getParHole6() {
+        return parHole6;
     }
 
-    public void setPar14(int par14) {
-        this.par14 = par14;
+    public void setParHole6(int parHole6) {
+        this.parHole6 = parHole6;
     }
 
-    public int getPar15() {
-        return par15;
+    public int getParHole7() {
+        return parHole7;
     }
 
-    public void setPar15(int par15) {
-        this.par15 = par15;
+    public void setParHole7(int parHole7) {
+        this.parHole7 = parHole7;
     }
 
-    public int getPar16() {
-        return par16;
+    public int getParHole8() {
+        return parHole8;
     }
 
-    public void setPar16(int par16) {
-        this.par16 = par16;
+    public void setParHole8(int parHole8) {
+        this.parHole8 = parHole8;
     }
 
-    public int getPar17() {
-        return par17;
+    public int getParHole9() {
+        return parHole9;
     }
 
-    public void setPar17(int par17) {
-        this.par17 = par17;
+    public void setParHole9(int parHole9) {
+        this.parHole9 = parHole9;
     }
 
-    public int getPar18() {
-        return par18;
+    public int getParHole10() {
+        return parHole10;
     }
 
-    public void setPar18(int par18) {
-        this.par18 = par18;
+    public void setParHole10(int parHole10) {
+        this.parHole10 = parHole10;
     }
 
-    public int getPar2() {
-        return par2;
+    public int getParHole11() {
+        return parHole11;
     }
 
-    public void setPar2(int par2) {
-        this.par2 = par2;
+    public void setParHole11(int parHole11) {
+        this.parHole11 = parHole11;
     }
 
-    public int getPar3() {
-        return par3;
+    public int getParHole12() {
+        return parHole12;
     }
 
-    public void setPar3(int par3) {
-        this.par3 = par3;
+    public void setParHole12(int parHole12) {
+        this.parHole12 = parHole12;
     }
 
-    public int getPar4() {
-        return par4;
+    public int getParHole13() {
+        return parHole13;
     }
 
-    public void setPar4(int par4) {
-        this.par4 = par4;
+    public void setParHole13(int parHole13) {
+        this.parHole13 = parHole13;
     }
 
-    public int getPar5() {
-        return par5;
+    public int getParHole14() {
+        return parHole14;
     }
 
-    public void setPar5(int par5) {
-        this.par5 = par5;
+    public void setParHole14(int parHole14) {
+        this.parHole14 = parHole14;
     }
 
-    public int getPar6() {
-        return par6;
+    public int getParHole15() {
+        return parHole15;
     }
 
-    public void setPar6(int par6) {
-        this.par6 = par6;
+    public void setParHole15(int parHole15) {
+        this.parHole15 = parHole15;
     }
 
-    public int getPar7() {
-        return par7;
+    public int getParHole16() {
+        return parHole16;
     }
 
-    public void setPar7(int par7) {
-        this.par7 = par7;
+    public void setParHole16(int parHole16) {
+        this.parHole16 = parHole16;
     }
 
-    public int getPar8() {
-        return par8;
+    public int getParHole17() {
+        return parHole17;
     }
 
-    public void setPar8(int par8) {
-        this.par8 = par8;
+    public void setParHole17(int parHole17) {
+        this.parHole17 = parHole17;
     }
 
-    public int getPar9() {
-        return par9;
+    public int getParHole18() {
+        return parHole18;
     }
 
-    public void setPar9(int par9) {
-        this.par9 = par9;
+    public void setParHole18(int parHole18) {
+        this.parHole18 = parHole18;
     }
 
-    public int getLength1() {
-        return length1;
+    public int getClubID() {
+        return clubID;
     }
 
-    public void setLength1(int length1) {
-        this.length1 = length1;
-    }
-
-    public int getLength10() {
-        return length10;
-    }
-
-    public void setLength10(int length10) {
-        this.length10 = length10;
-    }
-
-    public int getLength11() {
-        return length11;
-    }
-
-    public void setLength11(int length11) {
-        this.length11 = length11;
-    }
-
-    public int getLength12() {
-        return length12;
-    }
-
-    public void setLength12(int length12) {
-        this.length12 = length12;
-    }
-
-    public int getLength13() {
-        return length13;
-    }
-
-    public void setLength13(int length13) {
-        this.length13 = length13;
-    }
-
-    public int getLength14() {
-        return length14;
-    }
-
-    public void setLength14(int length14) {
-        this.length14 = length14;
-    }
-
-    public int getLength15() {
-        return length15;
-    }
-
-    public void setLength15(int length15) {
-        this.length15 = length15;
-    }
-
-    public int getLength16() {
-        return length16;
-    }
-
-    public void setLength16(int length16) {
-        this.length16 = length16;
-    }
-
-    public int getLength17() {
-        return length17;
-    }
-
-    public void setLength17(int length17) {
-        this.length17 = length17;
-    }
-
-    public int getLength18() {
-        return length18;
-    }
-
-    public void setLength18(int length18) {
-        this.length18 = length18;
-    }
-
-    public int getLength2() {
-        return length2;
-    }
-
-    public void setLength2(int length2) {
-        this.length2 = length2;
-    }
-
-    public int getLength3() {
-        return length3;
-    }
-
-    public void setLength3(int length3) {
-        this.length3 = length3;
-    }
-
-    public int getLength4() {
-        return length4;
-    }
-
-    public void setLength4(int length4) {
-        this.length4 = length4;
-    }
-
-    public int getLength5() {
-        return length5;
-    }
-
-    public void setLength5(int length5) {
-        this.length5 = length5;
-    }
-
-    public int getLength6() {
-        return length6;
-    }
-
-    public void setLength6(int length6) {
-        this.length6 = length6;
-    }
-
-    public int getLength7() {
-        return length7;
-    }
-
-    public void setLength7(int length7) {
-        this.length7 = length7;
-    }
-
-    public int getLength8() {
-        return length8;
-    }
-
-    public void setLength8(int length8) {
-        this.length8 = length8;
-    }
-
-    public int getLength9() {
-        return length9;
-    }
-
-    public void setLength9(int length9) {
-        this.length9 = length9;
+    public void setClubID(int clubID) {
+        this.clubID = clubID;
     }
 
 }

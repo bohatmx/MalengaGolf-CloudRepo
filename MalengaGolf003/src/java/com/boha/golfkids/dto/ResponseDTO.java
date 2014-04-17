@@ -14,7 +14,10 @@ public class ResponseDTO {
 
     private int statusCode;
     private String message;
-     private TourneyPlayerScoreDTO tourneyPlayerScore;
+    private PersonalPlayerDTO personalPlayer;
+    private List<PersonalPlayerDTO> personalPlayerList;
+    private List<PersonalScoreDTO> personalScoreList;
+    private TourneyPlayerScoreDTO tourneyPlayerScore;
     private List<GolfGroupDTO> golfGroups;
     private List<ParentDTO> parents;
     private List<PlayerDTO> players;
@@ -31,16 +34,23 @@ public class ResponseDTO {
     private List<GolfGroupPlayerDTO> golfGroupPlayers;
     private List<GolfGroupParentDTO> golfGroupParents;
     private List<ScorerDTO> scorers;
-    private List<ClubCourseDTO> clubCourses;
     private GolfGroupDTO golfGroup;
     private AdministratorDTO administrator;
+    private List<LeaderBoardBucket> leaderBoardBucketList;
     
-    private ClubCourseDTO clubCourse;
     //
     public static final int LOGIN_EXCEPTION = 101;
     public static final int DATA_EXCEPTION = 102;
     public static final int DUPLICATE_EXCEPTION = 103;
     public static final int GENERIC_EXCEPTION = 109;
+
+    public List<LeaderBoardBucket> getLeaderBoardBucketList() {
+        return leaderBoardBucketList;
+    }
+
+    public void setLeaderBoardBucketList(List<LeaderBoardBucket> leaderBoardBucketList) {
+        this.leaderBoardBucketList = leaderBoardBucketList;
+    }
 
     public int getStatusCode() {
         return statusCode;
@@ -62,13 +72,31 @@ public class ResponseDTO {
         this.tourneyPlayerScore = tourneyPlayerScore;
     }
 
-    public List<ClubCourseDTO> getClubCourses() {
-        return clubCourses;
+    public PersonalPlayerDTO getPersonalPlayer() {
+        return personalPlayer;
     }
 
-    public void setClubCourses(List<ClubCourseDTO> clubCourses) {
-        this.clubCourses = clubCourses;
+    public void setPersonalPlayer(PersonalPlayerDTO personalPlayer) {
+        this.personalPlayer = personalPlayer;
     }
+
+    public List<PersonalPlayerDTO> getPersonalPlayerList() {
+        return personalPlayerList;
+    }
+
+    public void setPersonalPlayerList(List<PersonalPlayerDTO> personalPlayerList) {
+        this.personalPlayerList = personalPlayerList;
+    }
+
+    public List<PersonalScoreDTO> getPersonalScoreList() {
+        return personalScoreList;
+    }
+
+    public void setPersonalScoreList(List<PersonalScoreDTO> personalScoreList) {
+        this.personalScoreList = personalScoreList;
+    }
+
+  
 
     public void setAdministrator(AdministratorDTO administrator) {
         this.administrator = administrator;
@@ -138,13 +166,7 @@ public class ResponseDTO {
         this.teeTimeList = teeTimeList;
     }
 
-    public ClubCourseDTO getClubCourse() {
-        return clubCourse;
-    }
-
-    public void setClubCourse(ClubCourseDTO clubCourse) {
-        this.clubCourse = clubCourse;
-    }
+   
 
     public List<ParentDTO> getParents() {
         return parents;

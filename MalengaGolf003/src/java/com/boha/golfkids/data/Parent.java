@@ -32,6 +32,11 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Parent.login", 
             query = "SELECT a FROM Parent a "
                     + "where a.email = :email and a.pin = :pin"),
+    
+    @NamedQuery(name = "Parent.findByEmail", 
+            query = "SELECT a FROM Parent a "
+                    + "where a.email = :email"),
+    
     @NamedQuery(name = "Parent.findbyGolfGroup", 
             query = "SELECT p FROM Parent p, GolfGroupParent a "
                     + "where p.parentID = a.parent.parentID "
@@ -53,7 +58,6 @@ public class Parent implements Serializable {
     @Size(max = 45)
     @Column(name = "lastName")
     private String lastName;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 95)
     @Column(name = "email")
     private String email;

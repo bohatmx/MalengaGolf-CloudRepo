@@ -5,8 +5,6 @@
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Player;
-import com.boha.golfkids.data.TourneyPlayerScore;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +25,7 @@ public class PlayerDTO {
     private String pin;
     private int yearJoined;
     private int parentID;
+    private int numberOfTournaments;
     private List<TourneyPlayerScoreDTO> scores;
 
     public PlayerDTO(Player a) {
@@ -51,6 +50,14 @@ public class PlayerDTO {
 
     public int getParentID() {
         return parentID;
+    }
+
+    public int getNumberOfTournaments() {
+        return numberOfTournaments;
+    }
+
+    public void setNumberOfTournaments(int numberOfTournaments) {
+        this.numberOfTournaments = numberOfTournaments;
     }
 
     public void setParentID(int parentID) {

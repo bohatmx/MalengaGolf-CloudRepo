@@ -5,8 +5,6 @@
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Club;
-import com.boha.golfkids.data.ClubCourse;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +13,7 @@ import java.util.List;
  */
 public class ClubDTO {
 
-    private int clubID;
+    private int clubID, par;
     private String address;
     private String clubName, provinceName;
     private String email;
@@ -27,6 +25,7 @@ public class ClubDTO {
 
     public ClubDTO(Club a) {
         address = a.getAddress();
+        par = a.getPar();
         clubName = a.getClubName();
         email = a.getEmail();
         telephone = a.getTelephone();
@@ -48,9 +47,6 @@ public class ClubDTO {
         this.clubCourses = clubCourses;
     }
 
-   
-
-   
 
     public int getClubID() {
         return clubID;
@@ -58,6 +54,14 @@ public class ClubDTO {
 
     public void setClubID(int clubID) {
         this.clubID = clubID;
+    }
+
+    public int getPar() {
+        return par;
+    }
+
+    public void setPar(int par) {
+        this.par = par;
     }
 
     public String getAddress() {

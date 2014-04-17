@@ -21,6 +21,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -39,13 +40,28 @@ import javax.validation.constraints.Size;
             + "where c.province.provinceID = :id order by c.clubName")
 })
 public class Club implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "club")
+    private List<ClubCourse> clubCourseList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "club")
+    private List<PersonalScore> personalScoreList;
+    @OneToMany(mappedBy = "club")
+    private List<PersonalPlayer> personalPlayerList;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "par")
+    private int par;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "latitude")
+    private Double latitude;
+    @Column(name = "longitude")
+    private Double longitude;
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "clubID")
-    private Integer clubID;
+    private int clubID;
     @Size(max = 100)
     @Column(name = "clubName")
     private String clubName;
@@ -56,17 +72,12 @@ public class Club implements Serializable {
     @Size(max = 25)
     @Column(name = "telephone")
     private String telephone;
-    @Column(name = "latitude")
-    private double latitude;
-    @Column(name = "longitude")
-    private double longitude;
     @Size(max = 255)
     @Column(name = "address")
     private String address;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "club", fetch = FetchType.EAGER)
     private List<Tournament> tournamentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "club", fetch = FetchType.EAGER)
-    private List<ClubCourse> clubCourseList;
+    
     @JoinColumn(name = "provinceID", referencedColumnName = "provinceID")
     @ManyToOne(fetch = FetchType.EAGER)
     private Province province;
@@ -74,15 +85,15 @@ public class Club implements Serializable {
     public Club() {
     }
 
-    public Club(Integer clubID) {
+    public Club(int clubID) {
         this.clubID = clubID;
     }
 
-    public Integer getClubID() {
+    public int getClubID() {
         return clubID;
     }
 
-    public void setClubID(Integer clubID) {
+    public void setClubID(int clubID) {
         this.clubID = clubID;
     }
 
@@ -110,21 +121,6 @@ public class Club implements Serializable {
         this.telephone = telephone;
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
 
     public String getAddress() {
         return address;
@@ -142,14 +138,6 @@ public class Club implements Serializable {
         this.tournamentList = tournamentList;
     }
 
-    public List<ClubCourse> getClubCourseList() {
-        return clubCourseList;
-    }
-
-    public void setClubCourseList(List<ClubCourse> clubCourseList) {
-        this.clubCourseList = clubCourseList;
-    }
-
     public Province getProvince() {
         return province;
     }
@@ -158,29 +146,58 @@ public class Club implements Serializable {
         this.province = province;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (clubID != null ? clubID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Club)) {
-            return false;
-        }
-        Club other = (Club) object;
-        if ((this.clubID == null && other.clubID != null) || (this.clubID != null && !this.clubID.equals(other.clubID))) {
-            return false;
-        }
-        return true;
-    }
-
+  
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Club[ clubID=" + clubID + " ]";
+    }
+
+    public int getPar() {
+        return par;
+    }
+
+    public void setPar(int par) {
+        this.par = par;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public List<PersonalPlayer> getPersonalPlayerList() {
+        return personalPlayerList;
+    }
+
+    public void setPersonalPlayerList(List<PersonalPlayer> personalPlayerList) {
+        this.personalPlayerList = personalPlayerList;
+    }
+
+    public List<PersonalScore> getPersonalScoreList() {
+        return personalScoreList;
+    }
+
+    public void setPersonalScoreList(List<PersonalScore> personalScoreList) {
+        this.personalScoreList = personalScoreList;
+    }
+
+    public List<ClubCourse> getClubCourseList() {
+        return clubCourseList;
+    }
+
+    public void setClubCourseList(List<ClubCourse> clubCourseList) {
+        this.clubCourseList = clubCourseList;
     }
 
 }

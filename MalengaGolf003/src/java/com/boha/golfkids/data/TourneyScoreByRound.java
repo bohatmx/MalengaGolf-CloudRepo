@@ -19,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -36,6 +37,11 @@ import javax.persistence.Table;
                     + "where t.tourneyPlayerScore.tournament.tournamentID = :id "
                     + " order by t.tourneyPlayerScore.player.playerID, t.golfRound"),
 
+    @NamedQuery(name = "TourneyScoreByRound.getByPlayer",
+            query = "select a from TourneyScoreByRound a "
+                    + "where a.tourneyPlayerScore.player.playerID = :id "
+                    + "order by a.tourneyPlayerScore.tournament.tournamentID, a.golfRound"),
+    
     @NamedQuery(name = "TourneyScoreByRound.getByTourneyPlayer",
             query = "select a from TourneyScoreByRound a "
                     + "where a.tourneyPlayerScore.tournament.tournamentID = :tID "
@@ -50,12 +56,10 @@ import javax.persistence.Table;
 
 
 public class TourneyScoreByRound implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "tourneyScoreByRoundID")
-    private int tourneyScoreByRoundID;
+    @JoinColumn(name = "clubCourseID", referencedColumnName = "clubCourseID")
+    @ManyToOne(optional = false)
+    private ClubCourse clubCourse;
+    
     @Column(name = "score1")
     private int score1;
     @Column(name = "score2")
@@ -94,8 +98,26 @@ public class TourneyScoreByRound implements Serializable {
     private int score18;
     @Column(name = "golfRound")
     private int golfRound;
-     @Column(name = "totalScore")
+    @Column(name = "totalScore")
     private int totalScore;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "holesPerRound")
+    private int holesPerRound;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "par")
+    private int par;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "tournamentIDx")
+    private int tournamentIDx;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "tourneyScoreByRoundID")
+    private int tourneyScoreByRoundID;
     @JoinColumn(name = "tourneyPlayerScoreID", referencedColumnName = "tourneyPlayerScoreID")
     @ManyToOne(fetch = FetchType.EAGER)
     private TourneyPlayerScore tourneyPlayerScore;
@@ -114,14 +136,40 @@ public class TourneyScoreByRound implements Serializable {
     public void setTourneyScoreByRoundID(int tourneyScoreByRoundID) {
         this.tourneyScoreByRoundID = tourneyScoreByRoundID;
     }
-
-    public int getTotalScore() {
-        return totalScore;
+    public TourneyPlayerScore getTourneyPlayerScore() {
+        return tourneyPlayerScore;
+    }
+    public void setTourneyPlayerScore(TourneyPlayerScore tourneyPlayerScore) {
+        this.tourneyPlayerScore = tourneyPlayerScore;
+    }
+    @Override
+    public String toString() {
+        return "com.boha.golfkids.data.TourneyScoreByRound[ tourneyScoreByRoundID=" + tourneyScoreByRoundID + " ]";
+    }
+    public int getTournamentIDx() {
+        return tournamentIDx;
+    }
+    public void setTournamentIDx(int tournamentIDx) {
+        this.tournamentIDx = tournamentIDx;
     }
 
-    public void setTotalScore(int totalScore) {
-        this.totalScore = totalScore;
+    public int getHolesPerRound() {
+        return holesPerRound;
     }
+
+    public void setHolesPerRound(int holesPerRound) {
+        this.holesPerRound = holesPerRound;
+    }
+
+    public int getPar() {
+        return par;
+    }
+
+    public void setPar(int par) {
+        this.par = par;
+    }
+
+  
 
     public int getScore1() {
         return score1;
@@ -247,6 +295,7 @@ public class TourneyScoreByRound implements Serializable {
         return score16;
     }
 
+
     public void setScore16(int score16) {
         this.score16 = score16;
     }
@@ -275,18 +324,21 @@ public class TourneyScoreByRound implements Serializable {
         this.golfRound = golfRound;
     }
 
-    public TourneyPlayerScore getTourneyPlayerScore() {
-        return tourneyPlayerScore;
+    public int getTotalScore() {
+        return totalScore;
     }
 
-    public void setTourneyPlayerScore(TourneyPlayerScore tourneyPlayerScore) {
-        this.tourneyPlayerScore = tourneyPlayerScore;
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
     }
 
-
-    @Override
-    public String toString() {
-        return "com.boha.golfkids.data.TourneyScoreByRound[ tourneyScoreByRoundID=" + tourneyScoreByRoundID + " ]";
+    public ClubCourse getClubCourse() {
+        return clubCourse;
     }
+
+    public void setClubCourse(ClubCourse clubCourse) {
+        this.clubCourse = clubCourse;
+    }
+
     
 }

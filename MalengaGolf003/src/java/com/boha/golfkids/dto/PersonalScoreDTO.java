@@ -4,17 +4,15 @@
  */
 package com.boha.golfkids.dto;
 
-import com.boha.golfkids.data.TourneyScoreByRound;
+import com.boha.golfkids.data.PersonalScore;
 
 /**
  *
  * @author aubreyM
  */
-public class TourneyScoreByRoundDTO {
+public class PersonalScoreDTO {
 
-    private int tourneyScoreByRoundID;
-    private ClubCourseDTO clubCourse;
-    private int golfRound;
+    private int personalScoreID;
     private int score1;
     private int score2;
     private int score3;
@@ -33,20 +31,30 @@ public class TourneyScoreByRoundDTO {
     private int score16;
     private int score17;
     private int score18;
-    private int totalScore, par, holesPerRound;
-    private int tourneyPlayerScoreID, tournamentID;
+    private int totalScore;
+    private int personalPlayerID, clubID;
+    private String clubName;
+    private long datePlayed;
+    private int fairwaysHit;
+    private int greensHit;
+    private int numberOfPutts;
+    private int timeOfDay;
 
-    public TourneyScoreByRoundDTO() {
+    public PersonalScoreDTO() {
     }
 
-    public TourneyScoreByRoundDTO(TourneyScoreByRound a) {
-        clubCourse = new ClubCourseDTO(a.getClubCourse());
-        tourneyPlayerScoreID = a.getTourneyPlayerScore().getTourneyPlayerScoreID();
-        tourneyScoreByRoundID = a.getTourneyScoreByRoundID();
-        tournamentID = a.getTournamentIDx();
-        golfRound = a.getGolfRound();
-        par = a.getPar();
-        holesPerRound = a.getHolesPerRound();
+    public PersonalScoreDTO(PersonalScore a) {
+        personalPlayerID = a.getPersonalPlayer().getPersonalPlayerID();
+        personalScoreID = a.getPersonalScoreID();
+        datePlayed = a.getDatePlayed().getTime();
+        fairwaysHit = a.getFairwaysHit();
+        greensHit = a.getGreensHit();
+        numberOfPutts = a.getNumberOfPutts();
+        timeOfDay = a.getTimeOfDay();
+        if (a.getClub() != null) {
+            clubID = a.getClub().getClubID();
+            clubName = a.getClub().getClubName();
+        }
         score1 = a.getScore1();
         score2 = a.getScore2();
         score3 = a.getScore3();
@@ -68,60 +76,28 @@ public class TourneyScoreByRoundDTO {
         totalScore = a.getTotalScore();
     }
 
-    public ClubCourseDTO getClubCourse() {
-        return clubCourse;
-    }
-
-    public void setClubCourse(ClubCourseDTO clubCourse) {
-        this.clubCourse = clubCourse;
-    }
-
-    public int getTourneyScoreByRoundID() {
-        return tourneyScoreByRoundID;
-    }
-
     public int getTotalScore() {
         return totalScore;
     }
 
-    public int getPar() {
-        return par;
+    public int getClubID() {
+        return clubID;
     }
 
-    public void setPar(int par) {
-        this.par = par;
+    public void setClubID(int clubID) {
+        this.clubID = clubID;
     }
 
-    public int getHolesPerRound() {
-        return holesPerRound;
+    public String getClubName() {
+        return clubName;
     }
 
-    public void setHolesPerRound(int holesPerRound) {
-        this.holesPerRound = holesPerRound;
-    }
-
-    public int getTournamentID() {
-        return tournamentID;
-    }
-
-    public void setTournamentID(int tournamentID) {
-        this.tournamentID = tournamentID;
+    public void setClubName(String clubName) {
+        this.clubName = clubName;
     }
 
     public void setTotalScore(int totalScore) {
         this.totalScore = totalScore;
-    }
-
-    public void setTourneyScoreByRoundID(int tourneyScoreByRoundID) {
-        this.tourneyScoreByRoundID = tourneyScoreByRoundID;
-    }
-
-    public int getGolfRound() {
-        return golfRound;
-    }
-
-    public void setGolfRound(int golfRound) {
-        this.golfRound = golfRound;
     }
 
     public int getScore1() {
@@ -268,11 +244,60 @@ public class TourneyScoreByRoundDTO {
         this.score18 = score18;
     }
 
-    public int getTourneyPlayerScoreID() {
-        return tourneyPlayerScoreID;
+    public int getPersonalScoreID() {
+        return personalScoreID;
     }
 
-    public void setTourneyPlayerScoreID(int tourneyPlayerScoreID) {
-        this.tourneyPlayerScoreID = tourneyPlayerScoreID;
+    public void setPersonalScoreID(int personalScoreID) {
+        this.personalScoreID = personalScoreID;
     }
+
+    public int getPersonalPlayerID() {
+        return personalPlayerID;
+    }
+
+    public void setPersonalPlayerID(int personalPlayerID) {
+        this.personalPlayerID = personalPlayerID;
+    }
+
+    public long getDatePlayed() {
+        return datePlayed;
+    }
+
+    public void setDatePlayed(long datePlayed) {
+        this.datePlayed = datePlayed;
+    }
+
+    public int getFairwaysHit() {
+        return fairwaysHit;
+    }
+
+    public void setFairwaysHit(int fairwaysHit) {
+        this.fairwaysHit = fairwaysHit;
+    }
+
+    public int getGreensHit() {
+        return greensHit;
+    }
+
+    public void setGreensHit(int greensHit) {
+        this.greensHit = greensHit;
+    }
+
+    public int getNumberOfPutts() {
+        return numberOfPutts;
+    }
+
+    public void setNumberOfPutts(int numberOfPutts) {
+        this.numberOfPutts = numberOfPutts;
+    }
+
+    public int getTimeOfDay() {
+        return timeOfDay;
+    }
+
+    public void setTimeOfDay(int timeOfDay) {
+        this.timeOfDay = timeOfDay;
+    }
+
 }

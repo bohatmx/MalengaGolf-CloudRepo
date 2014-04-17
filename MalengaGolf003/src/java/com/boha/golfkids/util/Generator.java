@@ -4,35 +4,13 @@
  */
 package com.boha.golfkids.util;
 
-import com.boha.golfkids.data.Agegroup;
-import com.boha.golfkids.data.ClubCourse;
-import com.boha.golfkids.data.GolfGroup;
-import com.boha.golfkids.data.GolfGroupParent;
-import com.boha.golfkids.data.GolfGroupPlayer;
-import com.boha.golfkids.data.Parent;
-import com.boha.golfkids.data.Player;
-import com.boha.golfkids.data.Tournament;
-import com.boha.golfkids.data.TourneyPlayerScore;
-import com.boha.golfkids.data.TourneyScoreByRound;
-import com.boha.golfkids.servlet.GenRequest;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
-
 /**
  *
  * @author aubreyM
  */
 public class Generator {
 
+    /*
     public static String generateTournament(GenRequest genRequest,
             DataUtil dataUtil) throws DataException {
         StringBuilder sb = new StringBuilder();
@@ -158,6 +136,7 @@ public class Generator {
         return sb.toString();
     }
 
+    /*
     private static TourneyScoreByRound scorePlayerFirstNine(
             TourneyPlayerScore tps, ClubCourse cc, int round) {
         try {
@@ -432,10 +411,10 @@ public class Generator {
         }
         tsbr.setScore9(score9);
         return tsbr;
-    }
-
+    }*/
+    /*
     private static void scorePlayerBackNine(TourneyScoreByRound tsbr,
-            ClubCourse cc) {
+            Club cc) {
         try {
             Thread.sleep(10);
         } catch (InterruptedException ex) {
@@ -690,7 +669,8 @@ public class Generator {
         }
         tsbr.setScore18(score18);
     }
-
+*/
+    /*
     private static Agegroup getPlayersAgeGroup(GolfGroupPlayer ggPlayer,
             DataUtil dataUtil) {
         Date today = new Date();
@@ -898,4 +878,6 @@ public class Generator {
         "Remington", "Priest", "Church", "Charles", "Burmingham", "Naidoo", "Bala", "van Wyk", "Zulu",
         "Nxasa", "Sithole", "Nkosi"
     };
+    */
 }
+

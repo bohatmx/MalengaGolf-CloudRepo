@@ -22,7 +22,6 @@ public class RequestDTO {
     private List<PlayerDTO> playerList;
     private TourneyPlayerScoreDTO tourneyPlayerScore;
     private ParentDTO parent;
-    private ClubCourseDTO clubCourse;
     private ClubDTO club;
     private ScorerDTO scorer;
     private List<TourneyPlayerScoreDTO> players;
@@ -71,7 +70,27 @@ public class RequestDTO {
     public static final int ADD_SCORER = 39;
     public static final int UPDATE_SCORER = 40;
     public static final int GET_TOURNAMENT_PLAYERS = 41;
+    public static final int CLOSE_TOURNAMENT = 42;
+    public static final int GET_PLAYER_HISTORY = 43;
+    
+    public static final int ADD_PERSONAL_PLAYER = 44;
+    public static final int UPDATE_PERSONAL_PLAYER = 45;
+    public static final int ADD_PERSONAL_SCORE = 46;
+    public static final int GET_PERSONAL_SCORES = 47;
+    public static final int PERSONAL_PLAYER_LOGIN = 48;
+    
+    private int personalPlayerID;
+    private PersonalPlayerDTO personalPlayer;
+    private PersonalScoreDTO personalScore;
+
     //
+    public int getPersonalPlayerID() {
+        return personalPlayerID;
+    }
+
+    public void setPersonalPlayerID(int personalPlayerID) {
+        this.personalPlayerID = personalPlayerID;
+    }
 
     public ScorerDTO getScorer() {
         return scorer;
@@ -83,6 +102,22 @@ public class RequestDTO {
 
     public int getCountryID() {
         return countryID;
+    }
+
+    public PersonalPlayerDTO getPersonalPlayer() {
+        return personalPlayer;
+    }
+
+    public void setPersonalPlayer(PersonalPlayerDTO personalPlayer) {
+        this.personalPlayer = personalPlayer;
+    }
+
+    public PersonalScoreDTO getPersonalScore() {
+        return personalScore;
+    }
+
+    public void setPersonalScore(PersonalScoreDTO personalScore) {
+        this.personalScore = personalScore;
     }
 
     public void setCountryID(int countryID) {
@@ -119,14 +154,6 @@ public class RequestDTO {
 
     public void setClub(ClubDTO club) {
         this.club = club;
-    }
-
-    public ClubCourseDTO getClubCourse() {
-        return clubCourse;
-    }
-
-    public void setClubCourse(ClubCourseDTO clubCourse) {
-        this.clubCourse = clubCourse;
     }
 
     public List<TourneyPlayerScoreDTO> getPlayers() {

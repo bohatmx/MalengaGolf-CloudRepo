@@ -52,10 +52,10 @@ public class GeneratorServlet extends HttpServlet {
             String sb = "";
             switch(req.getRequestType()) {
                 case GenRequest.GENERATE_PLAYERS:
-                    sb = Generator.generatePlayers(req.getGolfGroupID(),dataUtil);
+                   // sb = Generator.generatePlayers(req.getGolfGroupID(),dataUtil);
                     break;
                 case GenRequest.GENERATE_TOURNAMENT:
-                    sb = Generator.generateTournament(req, dataUtil);
+                    //sb = Generator.generateTournament(req, dataUtil);
                     break;
             }
             out.println("<!DOCTYPE html>");
@@ -69,7 +69,7 @@ public class GeneratorServlet extends HttpServlet {
             out.println("<p>" + sb.toString());
             out.println("</body>");
             out.println("</html>");
-        } catch (DataException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(GeneratorServlet.class.getName()).log(Level.SEVERE, "FAILED GENERATOR", ex);
         } finally {            
             out.close();

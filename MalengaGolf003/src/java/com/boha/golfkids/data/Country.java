@@ -32,6 +32,13 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Country.findAll", 
             query = "SELECT c FROM Country c order by c.countryName")})
 public class Country implements Serializable {
+    @OneToMany(mappedBy = "country")
+    private List<PersonalPlayer> personalPlayerList;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "latitude")
+    private Double latitude;
+    @Column(name = "longitude")
+    private Double longitude;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,10 +52,6 @@ public class Country implements Serializable {
     private String countryName;
     @Column(name = "countryCode")
     private String countryCode;
-    @Column(name = "latitude")
-    private double latitude;
-    @Column(name = "longitude")
-    private double longitude;
     @OneToMany(mappedBy = "country", fetch = FetchType.EAGER)
     private List<GolfGroup> golfGroupList;
     @OneToMany(mappedBy = "country", fetch = FetchType.EAGER)
@@ -82,21 +85,6 @@ public class Country implements Serializable {
         this.countryName = countryName;
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
 
     public List<GolfGroup> getGolfGroupList() {
         return golfGroupList;
@@ -145,6 +133,30 @@ public class Country implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Country[ countryID=" + countryID + " ]";
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public List<PersonalPlayer> getPersonalPlayerList() {
+        return personalPlayerList;
+    }
+
+    public void setPersonalPlayerList(List<PersonalPlayer> personalPlayerList) {
+        this.personalPlayerList = personalPlayerList;
     }
     
 }

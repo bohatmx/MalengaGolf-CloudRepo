@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -35,15 +34,34 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "tournament")
 @NamedQueries({
-    @NamedQuery(name = "Tournament.findByGolfGroup", 
+    @NamedQuery(name = "Tournament.findByGolfGroup",
             query = "SELECT t FROM Tournament t "
-                    + "where t.golfGroup.golfGroupID = :id "
+            + "where t.golfGroup.golfGroupID = :id "
+            + "order by t.startDate desc"),
+    @NamedQuery(name = "Tournament.findByPlayer",
+            query = "SELECT distinct t FROM Tournament t, TourneyPlayerScore b "
+                    + "where t.tournamentID = b.tournament.tournamentID "
+                    + "and b.player.playerID = :id "
                     + "order by t.startDate desc"),
-    
-@NamedQuery(name = "Tournament.findByClub",
-        query = "select a from Tournament a where a.club.clubID = :id")
+
+    @NamedQuery(name = "Tournament.findByClub",
+            query = "select a from Tournament a where a.club.clubID = :id")
 })
 public class Tournament implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
+    private List<TournamentCourse> tournamentCourseList;
+    
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "holesPerRound")
+    private int holesPerRound;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "par")
+    private int par;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament", fetch = FetchType.LAZY)
+    private List<LeaderBoard> leaderBoardList;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,7 +90,7 @@ public class Tournament implements Serializable {
     @NotNull
     @Column(name = "golfRounds")
     private int golfRounds;
-    
+
     @Column(name = "closedForScoringFlag")
     private int closedForScoringFlag;
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
@@ -81,9 +99,7 @@ public class Tournament implements Serializable {
     @JoinColumn(name = "clubID", referencedColumnName = "clubID")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Club club;
-    @JoinColumn(name = "clubCourseID", referencedColumnName = "clubCourseID")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private ClubCourse clubCourse;
+
     @OneToMany(mappedBy = "tournament", fetch = FetchType.EAGER)
     private List<TourneyPlayerScore> tourneyPlayerScoreList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament", fetch = FetchType.EAGER)
@@ -176,15 +192,6 @@ public class Tournament implements Serializable {
         this.club = club;
     }
 
-    public ClubCourse getClubCourse() {
-        return clubCourse;
-    }
-
-    public void setClubCourse(ClubCourse clubCourse) {
-        this.clubCourse = clubCourse;
-    }
-
-    
     public List<TourneyPlayerScore> getTourneyPlayerScoreList() {
         return tourneyPlayerScoreList;
     }
@@ -225,5 +232,40 @@ public class Tournament implements Serializable {
     public String toString() {
         return "com.boha.golfkids.data.Tournament[ tournamentID=" + tournamentID + " ]";
     }
+
+    public List<LeaderBoard> getLeaderBoardList() {
+        return leaderBoardList;
+    }
+
+    public void setLeaderBoardList(List<LeaderBoard> leaderBoardList) {
+        this.leaderBoardList = leaderBoardList;
+    }
+
+    public int getHolesPerRound() {
+        return holesPerRound;
+    }
+
+    public void setHolesPerRound(int holesPerRound) {
+        this.holesPerRound = holesPerRound;
+    }
+
+    public int getPar() {
+        return par;
+    }
+
+    public void setPar(int par) {
+        this.par = par;
+    }
+
+    public List<TournamentCourse> getTournamentCourseList() {
+        return tournamentCourseList;
+    }
+
+    public void setTournamentCourseList(List<TournamentCourse> tournamentCourseList) {
+        this.tournamentCourseList = tournamentCourseList;
+    }
+
+  
     
+
 }

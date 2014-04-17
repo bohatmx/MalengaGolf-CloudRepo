@@ -4,6 +4,7 @@
  */
 package com.boha.golfkids.dto;
 
+import com.boha.golfkids.data.Tournament;
 import com.boha.golfkids.data.TourneyPlayerScore;
 import java.util.List;
 
@@ -31,15 +32,21 @@ public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> 
     private AgeGroupDTO ageGroup;
     private PlayerDTO player;
     private int tournamentID;
-    private int administratorID;
+    private int administratorID, par, holesPerRound;
     private boolean orderByName;
-    private String fullName;
+    private String fullName, tournamentName;
+    private List<ClubCourseDTO> clubCourses;
     private List<TeeTimeDTO> teeTimeList;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
 
     public TourneyPlayerScoreDTO(TourneyPlayerScore a) {
         tourneyPlayerScoreID = a.getTourneyPlayerScoreID();
-        tournamentID = a.getTournament().getTournamentID();
+        Tournament t = a.getTournament();
+        
+        tournamentID = t.getTournamentID();
+        tournamentName = t.getTourneyName();
+        par = t.getPar();
+        holesPerRound = t.getHolesPerRound();
         dateRegistered = a.getDateRegistered().getTime();
         if (a.getAdministrator() != null)
             administratorID = a.getAdministrator().getAdministratorID();
@@ -69,6 +76,14 @@ public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> 
 
     }
 
+    public List<ClubCourseDTO> getClubCourses() {
+        return clubCourses;
+    }
+
+    public void setClubCourses(List<ClubCourseDTO> clubCourses) {
+        this.clubCourses = clubCourses;
+    }
+
     public List<TourneyScoreByRoundDTO> getTourneyScoreByRoundList() {
         return tourneyScoreByRoundList;
     }
@@ -77,8 +92,32 @@ public class TourneyPlayerScoreDTO implements Comparable<TourneyPlayerScoreDTO> 
         this.tourneyScoreByRoundList = tourneyScoreByRoundList;
     }
 
+    public int getPar() {
+        return par;
+    }
+
+    public void setPar(int par) {
+        this.par = par;
+    }
+
+    public int getHolesPerRound() {
+        return holesPerRound;
+    }
+
+    public void setHolesPerRound(int holesPerRound) {
+        this.holesPerRound = holesPerRound;
+    }
+
     public long getTeeTime() {
         return teeTime;
+    }
+
+    public String getTournamentName() {
+        return tournamentName;
+    }
+
+    public void setTournamentName(String tournamentName) {
+        this.tournamentName = tournamentName;
     }
 
     public List<TeeTimeDTO> getTeeTimeList() {

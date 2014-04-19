@@ -56,7 +56,6 @@ public class GolfAdminServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         long start = System.currentTimeMillis();
-        ;
         Gson gson = new Gson();
         ResponseDTO resp = new ResponseDTO();
         RequestDTO dto = getRequest(gson, request);
@@ -74,6 +73,9 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.CLOSE_TOURNAMENT:
                         resp = dataUtil.closeTournament(dto.getTournamentID(), leaderBoardUtil);
                         break;
+                    case RequestDTO.UPDATE_WINNER_FLAG:
+                        resp = dataUtil.updateWinnerFlag(dto.getLeaderBoardID(), dto.getWinnerFlag());
+                        break;
                     case RequestDTO.GET_TEE_TIMES:
                         resp.setTeeTimeList(dataUtil.getTeeTimes(dto.getTournamentID()));
                         break;
@@ -82,20 +84,20 @@ public class GolfAdminServlet extends HttpServlet {
                                 dto.getCountryID());
                         break;
                     case RequestDTO.GET_LEADERBOARD:
-                        resp = leaderBoardUtil.getLeaderBoard(dto.getTournamentID(), dataUtil);
+                        resp = leaderBoardUtil.getSectionedLeaderBoards(dto.getTournamentID(), dataUtil);
                         break;
                     case RequestDTO.GET_LEADERBOARD_BOYS:
                         break;
                     case RequestDTO.GET_LEADERBOARD_GIRLS:
                         break;
                     case RequestDTO.UPDATE_TOURNAMENT_SCORES:
-                        resp = dataUtil.updateTournamentScoreByRound(dto.getTourneyPlayerScore());
+                        resp = dataUtil.updateTournamentScoreByRound(dto.getLeaderBoard());
                         break;
                     case RequestDTO.UPDATE_TOURNAMENT_SCORE_TOTALS:
-                        resp = dataUtil.updateTournamentScore(dto.getTourneyPlayerScore());
+                        resp = dataUtil.updateTournamentScore(dto.getLeaderBoard());
                         break;
                     case RequestDTO.ADD_TOURNAMENT_PLAYERS:
-                        resp = dataUtil.addTournamentPlayer(dto.getTourneyPlayerScore());
+                        resp = dataUtil.addTournamentPlayer(dto.getLeaderBoard());
                         break;
                     case RequestDTO.ADD_TEE_TIMES:
                         resp = dataUtil.addTeeTimes(dto.getTeeTimeList());

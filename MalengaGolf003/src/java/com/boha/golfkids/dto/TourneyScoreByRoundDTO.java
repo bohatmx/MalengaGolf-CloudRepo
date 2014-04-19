@@ -34,14 +34,14 @@ public class TourneyScoreByRoundDTO {
     private int score17;
     private int score18;
     private int totalScore, par, holesPerRound;
-    private int tourneyPlayerScoreID, tournamentID;
+    private int leaderBoardID, tournamentID;
 
     public TourneyScoreByRoundDTO() {
     }
 
     public TourneyScoreByRoundDTO(TourneyScoreByRound a) {
         clubCourse = new ClubCourseDTO(a.getClubCourse());
-        tourneyPlayerScoreID = a.getTourneyPlayerScore().getTourneyPlayerScoreID();
+        leaderBoardID = a.getLeaderBoard().getLeaderBoardID();
         tourneyScoreByRoundID = a.getTourneyScoreByRoundID();
         tournamentID = a.getTournamentIDx();
         golfRound = a.getGolfRound();
@@ -268,11 +268,13 @@ public class TourneyScoreByRoundDTO {
         this.score18 = score18;
     }
 
-    public int getTourneyPlayerScoreID() {
-        return tourneyPlayerScoreID;
+    public int getLeaderBoardID() {
+        return leaderBoardID;
     }
 
-    public void setTourneyPlayerScoreID(int tourneyPlayerScoreID) {
-        this.tourneyPlayerScoreID = tourneyPlayerScoreID;
+    public void setLeaderBoardID(int leaderBoardID) {
+        this.leaderBoardID = leaderBoardID;
     }
+
+   
 }

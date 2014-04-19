@@ -10,7 +10,6 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,38 +29,40 @@ import javax.validation.constraints.NotNull;
 @NamedQueries({
     @NamedQuery(name = "TourneyScoreByRound.getScoreTotals", 
             query = "SELECT t FROM TourneyScoreByRound t "
-                    + "where t.tourneyPlayerScore = :t"),
+                    + "where t.leaderBoard = :t"),
+    
+    @NamedQuery(name = "TourneyScoreByRound.getByTourneyAgeGroup", 
+            query = "SELECT t FROM TourneyScoreByRound t where t.leaderBoard.ageGroup.ageGroupID = :aID "
+                    + "and t.leaderBoard.tournament.tournamentID = :tID "
+                    + " order by t.leaderBoard.player.playerID, t.golfRound"),
     
     @NamedQuery(name = "TourneyScoreByRound.getByTourney", 
             query = "SELECT t FROM TourneyScoreByRound t "
-                    + "where t.tourneyPlayerScore.tournament.tournamentID = :id "
-                    + " order by t.tourneyPlayerScore.player.playerID, t.golfRound"),
+                    + "where t.leaderBoard.tournament.tournamentID = :id "
+                    + " order by t.leaderBoard.player.playerID, t.golfRound"),
 
     @NamedQuery(name = "TourneyScoreByRound.getByPlayer",
             query = "select a from TourneyScoreByRound a "
-                    + "where a.tourneyPlayerScore.player.playerID = :id "
-                    + "order by a.tourneyPlayerScore.tournament.tournamentID, a.golfRound"),
+                    + "where a.leaderBoard.player.playerID = :id "
+                    + "order by a.leaderBoard.tournament.tournamentID, a.golfRound"),
     
     @NamedQuery(name = "TourneyScoreByRound.getByTourneyPlayer",
             query = "select a from TourneyScoreByRound a "
-                    + "where a.tourneyPlayerScore.tournament.tournamentID = :tID "
-                    + "and a.tourneyPlayerScore.player.playerID = :pID "
+                    + "where a.leaderBoard.tournament.tournamentID = :tID "
+                    + "and a.leaderBoard.player.playerID = :pID "
                     + "order by a.golfRound"),
     
     @NamedQuery(name = "TourneyScoreByRound.removeTourneyPlayer",
             query = "delete from TourneyScoreByRound a "
-                    + "where a.tourneyPlayerScore.tournament.tournamentID = :tID "
-                    + "and a.tourneyPlayerScore.player.playerID = :pID")
+                    + "where a.tournamentIDx = :tID "
+                    + "and a.leaderBoard.player.playerID = :pID")
 })
 
 
 public class TourneyScoreByRound implements Serializable {
-    @JoinColumn(name = "clubCourseID", referencedColumnName = "clubCourseID")
-    @ManyToOne(optional = false)
-    private ClubCourse clubCourse;
-    
     @Column(name = "score1")
     private int score1;
+    
     @Column(name = "score2")
     private int score2;
     @Column(name = "score3")
@@ -100,6 +101,12 @@ public class TourneyScoreByRound implements Serializable {
     private int golfRound;
     @Column(name = "totalScore")
     private int totalScore;
+    @JoinColumn(name = "leaderBoardID", referencedColumnName = "leaderBoardID")
+    @ManyToOne(optional = false)
+    private LeaderBoard leaderBoard;
+    @JoinColumn(name = "clubCourseID", referencedColumnName = "clubCourseID")
+    @ManyToOne(optional = false)
+    private ClubCourse clubCourse;
     @Basic(optional = false)
     @NotNull
     @Column(name = "holesPerRound")
@@ -118,9 +125,7 @@ public class TourneyScoreByRound implements Serializable {
     @Basic(optional = false)
     @Column(name = "tourneyScoreByRoundID")
     private int tourneyScoreByRoundID;
-    @JoinColumn(name = "tourneyPlayerScoreID", referencedColumnName = "tourneyPlayerScoreID")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private TourneyPlayerScore tourneyPlayerScore;
+    
 
     public TourneyScoreByRound() {
     }
@@ -136,12 +141,7 @@ public class TourneyScoreByRound implements Serializable {
     public void setTourneyScoreByRoundID(int tourneyScoreByRoundID) {
         this.tourneyScoreByRoundID = tourneyScoreByRoundID;
     }
-    public TourneyPlayerScore getTourneyPlayerScore() {
-        return tourneyPlayerScore;
-    }
-    public void setTourneyPlayerScore(TourneyPlayerScore tourneyPlayerScore) {
-        this.tourneyPlayerScore = tourneyPlayerScore;
-    }
+   
     @Override
     public String toString() {
         return "com.boha.golfkids.data.TourneyScoreByRound[ tourneyScoreByRoundID=" + tourneyScoreByRoundID + " ]";
@@ -168,8 +168,12 @@ public class TourneyScoreByRound implements Serializable {
     public void setPar(int par) {
         this.par = par;
     }
-
-  
+    public ClubCourse getClubCourse() {
+        return clubCourse;
+    }
+    public void setClubCourse(ClubCourse clubCourse) {
+        this.clubCourse = clubCourse;
+    }
 
     public int getScore1() {
         return score1;
@@ -287,6 +291,7 @@ public class TourneyScoreByRound implements Serializable {
         return score15;
     }
 
+
     public void setScore15(int score15) {
         this.score15 = score15;
     }
@@ -294,7 +299,6 @@ public class TourneyScoreByRound implements Serializable {
     public int getScore16() {
         return score16;
     }
-
 
     public void setScore16(int score16) {
         this.score16 = score16;
@@ -332,13 +336,15 @@ public class TourneyScoreByRound implements Serializable {
         this.totalScore = totalScore;
     }
 
-    public ClubCourse getClubCourse() {
-        return clubCourse;
+    public LeaderBoard getLeaderBoard() {
+        return leaderBoard;
     }
 
-    public void setClubCourse(ClubCourse clubCourse) {
-        this.clubCourse = clubCourse;
+    public void setLeaderBoard(LeaderBoard leaderBoard) {
+        this.leaderBoard = leaderBoard;
     }
+
+   
 
     
 }

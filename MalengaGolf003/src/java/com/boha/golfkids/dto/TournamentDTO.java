@@ -23,7 +23,7 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     private int clubID;
     private int clubCourseID;
     private int golfGroupID, par = 72, holesPerRound;
-    private List<TourneyPlayerScoreDTO> scores;
+    private List<LeaderBoardDTO> scores;
     private List<VolunteerDTO> volunteers;
     private List<TournamentCourseDTO> tournamentCourses;
     
@@ -156,14 +156,15 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
         this.golfGroupID = golfGroupID;
     }
 
-    public List<TourneyPlayerScoreDTO> getScores() {
+    public List<LeaderBoardDTO> getScores() {
         return scores;
     }
 
-    public void setScores(List<TourneyPlayerScoreDTO> scores) {
+    public void setScores(List<LeaderBoardDTO> scores) {
         this.scores = scores;
     }
 
+  
     public List<VolunteerDTO> getVolunteers() {
         return volunteers;
     }

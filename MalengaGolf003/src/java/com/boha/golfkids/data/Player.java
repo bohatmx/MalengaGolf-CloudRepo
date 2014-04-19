@@ -43,7 +43,7 @@ import javax.validation.constraints.Size;
                     + "where a.email = :email"),
     
     @NamedQuery(name = "Player.findByTourney", 
-            query = "SELECT distinct a FROM Player a, TourneyPlayerScore b "
+            query = "SELECT distinct a FROM Player a, LeaderBoard b "
                     + "where a.playerID = b.player.playerID "
                     + "and b.tournament.tournamentID = :id"),
     
@@ -93,8 +93,7 @@ public class Player implements Serializable {
     @JoinColumn(name = "parentID", referencedColumnName = "parentID")
     @ManyToOne(fetch = FetchType.EAGER)
     private Parent parent;
-    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
-    private List<TourneyPlayerScore> tourneyPlayerScoreList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "player", fetch = FetchType.EAGER)
     private List<GolfGroupPlayer> golfGroupPlayerList;
 
@@ -199,15 +198,6 @@ public class Player implements Serializable {
 
     public void setParent(Parent parent) {
         this.parent = parent;
-    }
-
-
-    public List<TourneyPlayerScore> getTourneyPlayerScoreList() {
-        return tourneyPlayerScoreList;
-    }
-
-    public void setTourneyPlayerScoreList(List<TourneyPlayerScore> tourneyPlayerScoreList) {
-        this.tourneyPlayerScoreList = tourneyPlayerScoreList;
     }
 
     public List<GolfGroupPlayer> getGolfGroupPlayerList() {

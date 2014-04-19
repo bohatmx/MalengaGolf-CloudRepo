@@ -72,8 +72,7 @@ public class Administrator implements Serializable {
     @Size(max = 45)
     @Column(name = "lastName")
     private String lastName;
-    @OneToMany(mappedBy = "administrator", fetch = FetchType.EAGER)
-    private List<TourneyPlayerScore> tourneyPlayerScoreList;
+    
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
     @ManyToOne(fetch = FetchType.EAGER)
     private GolfGroup golfGroup;
@@ -144,14 +143,6 @@ public class Administrator implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public List<TourneyPlayerScore> getTourneyPlayerScoreList() {
-        return tourneyPlayerScoreList;
-    }
-
-    public void setTourneyPlayerScoreList(List<TourneyPlayerScore> tourneyPlayerScoreList) {
-        this.tourneyPlayerScoreList = tourneyPlayerScoreList;
     }
 
    

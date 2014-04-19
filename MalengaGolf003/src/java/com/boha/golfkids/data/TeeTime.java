@@ -32,8 +32,14 @@ import javax.validation.constraints.NotNull;
 @Table(name = "teeTime")
 @NamedQueries({
     @NamedQuery(name = "TeeTime.findByTournament", 
-            query = "SELECT t FROM TeeTime t where t.tourneyPlayerScore.tournament.tournamentID = :id order by t.golfRound, t.teeTime")})
+            query = "SELECT t FROM TeeTime t where t.tournament.tournamentID = :id order by t.golfRound, t.teeTime")})
 public class TeeTime implements Serializable {
+    @JoinColumn(name = "tournamentID", referencedColumnName = "tournamentID")
+    @ManyToOne(optional = false)
+    private Tournament tournament;
+    @JoinColumn(name = "leaderBoardID", referencedColumnName = "leaderBoardID")
+    @ManyToOne(optional = false)
+    private LeaderBoard leaderBoard;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,9 +55,7 @@ public class TeeTime implements Serializable {
     @Column(name = "teeTime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date teeTime;
-    @JoinColumn(name = "tourneyPlayerScoreID", referencedColumnName = "tourneyPlayerScoreID")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    private TourneyPlayerScore tourneyPlayerScore;
+    
 
     public TeeTime() {
     }
@@ -90,13 +94,7 @@ public class TeeTime implements Serializable {
         this.teeTime = teeTime;
     }
 
-    public TourneyPlayerScore getTourneyPlayerScore() {
-        return tourneyPlayerScore;
-    }
-
-    public void setTourneyPlayerScore(TourneyPlayerScore tourneyPlayerScore) {
-        this.tourneyPlayerScore = tourneyPlayerScore;
-    }
+ 
 
   
 
@@ -124,5 +122,23 @@ public class TeeTime implements Serializable {
     public String toString() {
         return "com.boha.golfkids.data.TeeTime[ teeTimeID=" + teeTimeID + " ]";
     }
+
+    public LeaderBoard getLeaderBoard() {
+        return leaderBoard;
+    }
+
+    public void setLeaderBoard(LeaderBoard leaderBoard) {
+        this.leaderBoard = leaderBoard;
+    }
+
+    public Tournament getTournament() {
+        return tournament;
+    }
+
+    public void setTournament(Tournament tournament) {
+        this.tournament = tournament;
+    }
+
+
     
 }

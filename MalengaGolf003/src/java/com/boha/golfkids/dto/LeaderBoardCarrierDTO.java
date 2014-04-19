@@ -12,10 +12,19 @@ import java.util.List;
  *
  * @author aubreyM
  */
-public class LeaderBoardBucket {
-   
+public class LeaderBoardCarrierDTO {
+    
+    private AgeGroupDTO ageGroup;
+    
     private List<LeaderBoardDTO> leaderBoardList;
-    private TournamentDTO tournamentDTO;
+
+    public AgeGroupDTO getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(AgeGroupDTO ageGroup) {
+        this.ageGroup = ageGroup;
+    }
 
     public List<LeaderBoardDTO> getLeaderBoardList() {
         return leaderBoardList;
@@ -25,11 +34,7 @@ public class LeaderBoardBucket {
         this.leaderBoardList = leaderBoardList;
     }
 
-    public TournamentDTO getTournamentDTO() {
-        return tournamentDTO;
-    }
-
-    public void setTournamentDTO(TournamentDTO tournamentDTO) {
-        this.tournamentDTO = tournamentDTO;
-    }
+    
+    
+    
 }

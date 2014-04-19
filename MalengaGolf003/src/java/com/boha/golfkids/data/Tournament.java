@@ -39,7 +39,7 @@ import javax.validation.constraints.Size;
             + "where t.golfGroup.golfGroupID = :id "
             + "order by t.startDate desc"),
     @NamedQuery(name = "Tournament.findByPlayer",
-            query = "SELECT distinct t FROM Tournament t, TourneyPlayerScore b "
+            query = "SELECT distinct t FROM Tournament t, LeaderBoard b "
                     + "where t.tournamentID = b.tournament.tournamentID "
                     + "and b.player.playerID = :id "
                     + "order by t.startDate desc"),
@@ -48,6 +48,8 @@ import javax.validation.constraints.Size;
             query = "select a from Tournament a where a.club.clubID = :id")
 })
 public class Tournament implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
+    private List<TeeTime> teeTimeList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<TournamentCourse> tournamentCourseList;
     
@@ -100,8 +102,7 @@ public class Tournament implements Serializable {
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Club club;
 
-    @OneToMany(mappedBy = "tournament", fetch = FetchType.EAGER)
-    private List<TourneyPlayerScore> tourneyPlayerScoreList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament", fetch = FetchType.EAGER)
     private List<TournamentVolunteer> tournamentVolunteerList;
 
@@ -192,14 +193,6 @@ public class Tournament implements Serializable {
         this.club = club;
     }
 
-    public List<TourneyPlayerScore> getTourneyPlayerScoreList() {
-        return tourneyPlayerScoreList;
-    }
-
-    public void setTourneyPlayerScoreList(List<TourneyPlayerScore> tourneyPlayerScoreList) {
-        this.tourneyPlayerScoreList = tourneyPlayerScoreList;
-    }
-
     public List<TournamentVolunteer> getTournamentVolunteerList() {
         return tournamentVolunteerList;
     }
@@ -263,6 +256,14 @@ public class Tournament implements Serializable {
 
     public void setTournamentCourseList(List<TournamentCourse> tournamentCourseList) {
         this.tournamentCourseList = tournamentCourseList;
+    }
+
+    public List<TeeTime> getTeeTimeList() {
+        return teeTimeList;
+    }
+
+    public void setTeeTimeList(List<TeeTime> teeTimeList) {
+        this.teeTimeList = teeTimeList;
     }
 
   

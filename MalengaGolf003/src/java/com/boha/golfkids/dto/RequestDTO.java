@@ -20,11 +20,11 @@ public class RequestDTO {
     private PlayerDTO player;
     private AdministratorDTO administrator;
     private List<PlayerDTO> playerList;
-    private TourneyPlayerScoreDTO tourneyPlayerScore;
+    private LeaderBoardDTO leaderBoard;
     private ParentDTO parent;
     private ClubDTO club;
     private ScorerDTO scorer;
-    private List<TourneyPlayerScoreDTO> players;
+    private List<LeaderBoardDTO> players;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private List<TeeTimeDTO> teeTimeList;
     private int requestType;
@@ -78,10 +78,44 @@ public class RequestDTO {
     public static final int ADD_PERSONAL_SCORE = 46;
     public static final int GET_PERSONAL_SCORES = 47;
     public static final int PERSONAL_PLAYER_LOGIN = 48;
+    public static final int UPDATE_WINNER_FLAG = 50;
+    private int winnerFlag, leaderBoardID;
     
     private int personalPlayerID;
     private PersonalPlayerDTO personalPlayer;
     private PersonalScoreDTO personalScore;
+
+    public LeaderBoardDTO getLeaderBoard() {
+        return leaderBoard;
+    }
+
+    public void setLeaderBoard(LeaderBoardDTO leaderBoard) {
+        this.leaderBoard = leaderBoard;
+    }
+
+    public List<LeaderBoardDTO> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<LeaderBoardDTO> players) {
+        this.players = players;
+    }
+
+    public int getWinnerFlag() {
+        return winnerFlag;
+    }
+
+    public void setWinnerFlag(int winnerFlag) {
+        this.winnerFlag = winnerFlag;
+    }
+
+    public int getLeaderBoardID() {
+        return leaderBoardID;
+    }
+
+    public void setLeaderBoardID(int leaderBoardID) {
+        this.leaderBoardID = leaderBoardID;
+    }
 
     //
     public int getPersonalPlayerID() {
@@ -128,14 +162,7 @@ public class RequestDTO {
         return provinceID;
     }
 
-    public TourneyPlayerScoreDTO getTourneyPlayerScore() {
-        return tourneyPlayerScore;
-    }
-
-    public void setTourneyPlayerScore(TourneyPlayerScoreDTO tourneyPlayerScore) {
-        this.tourneyPlayerScore = tourneyPlayerScore;
-    }
-
+ 
     public PlayerDTO getPlayer() {
         return player;
     }
@@ -156,10 +183,7 @@ public class RequestDTO {
         this.club = club;
     }
 
-    public List<TourneyPlayerScoreDTO> getPlayers() {
-        return players;
-    }
-
+    
     public List<TourneyScoreByRoundDTO> getTourneyScoreByRoundList() {
         return tourneyScoreByRoundList;
     }
@@ -190,10 +214,6 @@ public class RequestDTO {
 
     public void setPlayerList(List<PlayerDTO> playerList) {
         this.playerList = playerList;
-    }
-
-    public void setPlayers(List<TourneyPlayerScoreDTO> players) {
-        this.players = players;
     }
 
     public String getEmail() {

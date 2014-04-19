@@ -26,7 +26,7 @@ public class PlayerDTO {
     private int yearJoined;
     private int parentID;
     private int numberOfTournaments;
-    private List<TourneyPlayerScoreDTO> scores;
+    private List<LeaderBoardDTO> scores;
 
     public PlayerDTO(Player a) {
         playerID = a.getPlayerID();
@@ -64,13 +64,14 @@ public class PlayerDTO {
         this.parentID = parentID;
     }
 
-    public List<TourneyPlayerScoreDTO> getScores() {
+    public List<LeaderBoardDTO> getScores() {
         return scores;
     }
 
-    public void setScores(List<TourneyPlayerScoreDTO> scores) {
+    public void setScores(List<LeaderBoardDTO> scores) {
         this.scores = scores;
     }
+
 
     public int getPlayerID() {
         return playerID;

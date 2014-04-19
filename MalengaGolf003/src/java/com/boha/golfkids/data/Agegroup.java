@@ -21,6 +21,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -32,26 +33,49 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "AgeGroup.findByGolfGroup", 
             query = "SELECT a FROM Agegroup a where a.golfGroup.golfGroupID = :id order by a.groupName"),
+    
+    @NamedQuery(name = "AgeGroup.findByAge", 
+            query = "SELECT a FROM Agegroup a where a.golfGroup.golfGroupID = :gID "
+                    + "and (:age between a.ageFrom and a.ageTo) "),
+    
+    @NamedQuery(name = "AgeGroup.findByAgeBoys", 
+            query = "SELECT a FROM Agegroup a where a.golfGroup.golfGroupID = :gID and a.gender = 1 "
+                    + "and (:age between a.ageFrom and a.ageTo) "),
+    @NamedQuery(name = "AgeGroup.findByAgeGirls", 
+            query = "SELECT a FROM Agegroup a where a.golfGroup.golfGroupID = :gID and a.gender = 2 "
+                    + "and (:age between a.ageFrom and a.ageTo) "),
+    
     @NamedQuery(name = "AgeGroup.findByGender",
-            query = "SELECT a FROM Agegroup a where a.golfGroup.golfGroupID = :id and a.gender = :gender order by a.groupName")
+            query = "SELECT a FROM Agegroup a "
+                    + "where a.golfGroup.golfGroupID = :id "
+                    + "and a.gender = :gender order by a.groupName")
 
 })
 public class Agegroup implements Serializable {
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ageFrom")
+    private int ageFrom;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ageTo")
+    private int ageTo;
+    @OneToMany(mappedBy = "ageGroup")
+    private List<LeaderBoard> leaderBoardList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ageGroupID")
-    private Integer ageGroupID;
+    private int ageGroupID;
     @Size(max = 50)
     @Column(name = "groupName")
     private String groupName;
     @Column(name = "gender")
-    private Integer gender;
+    private int gender;
     @Column(name = "numberOfHolesPerRound")
-    private Integer numberOfHolesPerRound;
-    @OneToMany(mappedBy = "ageGroup", fetch = FetchType.EAGER)
-    private List<TourneyPlayerScore> tourneyPlayerScoreList;
+    private int numberOfHolesPerRound;
+   
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private GolfGroup golfGroup;
@@ -59,15 +83,15 @@ public class Agegroup implements Serializable {
     public Agegroup() {
     }
 
-    public Agegroup(Integer ageGroupID) {
+    public Agegroup(int ageGroupID) {
         this.ageGroupID = ageGroupID;
     }
 
-    public Integer getAgeGroupID() {
+    public int getAgeGroupID() {
         return ageGroupID;
     }
 
-    public void setAgeGroupID(Integer ageGroupID) {
+    public void setAgeGroupID(int ageGroupID) {
         this.ageGroupID = ageGroupID;
     }
 
@@ -79,49 +103,23 @@ public class Agegroup implements Serializable {
         this.groupName = groupName;
     }
 
-    public Integer getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 
-    public Integer getNumberOfHolesPerRound() {
+    public int getNumberOfHolesPerRound() {
         return numberOfHolesPerRound;
     }
 
-    public void setNumberOfHolesPerRound(Integer numberOfHolesPerRound) {
+    public void setNumberOfHolesPerRound(int numberOfHolesPerRound) {
         this.numberOfHolesPerRound = numberOfHolesPerRound;
     }
 
-    public List<TourneyPlayerScore> getTourneyPlayerScoreList() {
-        return tourneyPlayerScoreList;
-    }
-
-    public void setTourneyPlayerScoreList(List<TourneyPlayerScore> tourneyPlayerScoreList) {
-        this.tourneyPlayerScoreList = tourneyPlayerScoreList;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (ageGroupID != null ? ageGroupID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Agegroup)) {
-            return false;
-        }
-        Agegroup other = (Agegroup) object;
-        if ((this.ageGroupID == null && other.ageGroupID != null) || (this.ageGroupID != null && !this.ageGroupID.equals(other.ageGroupID))) {
-            return false;
-        }
-        return true;
-    }
+   
 
     public GolfGroup getGolfGroup() {
         return golfGroup;
@@ -134,6 +132,30 @@ public class Agegroup implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Agegroup[ ageGroupID=" + ageGroupID + " ]";
+    }
+
+    public int getAgeFrom() {
+        return ageFrom;
+    }
+
+    public void setAgeFrom(int ageFrom) {
+        this.ageFrom = ageFrom;
+    }
+
+    public int getAgeTo() {
+        return ageTo;
+    }
+
+    public void setAgeTo(int ageTo) {
+        this.ageTo = ageTo;
+    }
+
+    public List<LeaderBoard> getLeaderBoardList() {
+        return leaderBoardList;
+    }
+
+    public void setLeaderBoardList(List<LeaderBoard> leaderBoardList) {
+        this.leaderBoardList = leaderBoardList;
     }
     
 }

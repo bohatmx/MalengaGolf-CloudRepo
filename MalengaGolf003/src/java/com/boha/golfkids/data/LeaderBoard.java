@@ -6,7 +6,10 @@
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,7 +20,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -30,15 +36,62 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "LeaderBoard.findByTournament",
             query = "SELECT l FROM LeaderBoard l "
             + "where l.tournament.tournamentID = :id order by l.tournament.startDate desc"),
+
     @NamedQuery(name = "LeaderBoard.findByPlayer",
             query = "SELECT l FROM LeaderBoard l "
             + "WHERE l.player.playerID = :id order by l.tournament.startDate desc"),
+
+    @NamedQuery(name = "LeaderBoard.findByAgeGroup",
+            query = "SELECT l FROM LeaderBoard l "
+                    + "where l.tournament.tournamentID = :tID "
+                    + "and l.ageGroup.ageGroupID = :aID"),
+
+    @NamedQuery(name = "LeaderBoard.countByPlayer",
+            query = "SELECT l.player.playerID, count(l) FROM "
+            + "LeaderBoard l where l.tournament.golfGroup.golfGroupID = :id "
+            + "group by l.player.playerID"),
+
+    @NamedQuery(name = "LeaderBoard.countByTourney",
+            query = "SELECT l.tournament.tournamentID, count(l) FROM "
+            + "LeaderBoard l where l.tournament.golfGroup.golfGroupID = :id "
+            + "group by l.tournament.tournamentID"),
+    @NamedQuery(name = "LeaderBoard.removePlayer",
+            query = "delete from LeaderBoard a "
+            + "where a.tournament.tournamentID = :tID "
+            + "and a.player.playerID = :pID"),
+    @NamedQuery(name = "LeaderBoard.findByPlayerTourney",
+            query = "SELECT l FROM LeaderBoard l "
+            + "where l.tournament.tournamentID = :tID "
+            + "and l.player.playerID = :pID "),
+
     @NamedQuery(name = "LeaderBoard.findByGolfGroup",
             query = "SELECT l FROM LeaderBoard l "
             + "WHERE l.tournament.golfGroup.golfGroupID = :id "
             + "order by l.tournament.startDate desc")
 })
 public class LeaderBoard implements Serializable {
+
+    @Column(name = "winnerFlag")
+    private int winnerFlag;
+    @Column(name = "tied")
+    private int tied;
+    @Column(name = "scoreRound2")
+    private int scoreRound2;
+    @Column(name = "scoreRound3")
+    private int scoreRound3;
+    @Column(name = "scoreRound4")
+    private int scoreRound4;
+    @Column(name = "scoreRound5")
+    private int scoreRound5;
+    @Column(name = "scoreRound6")
+    private int scoreRound6;
+    @JoinColumn(name = "ageGroupID", referencedColumnName = "ageGroupID")
+    @ManyToOne
+    private Agegroup ageGroup;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "leaderBoard")
+    private List<TeeTime> teeTimeList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "leaderBoard")
+    private List<TourneyScoreByRound> tourneyScoreByRoundList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,8 +103,6 @@ public class LeaderBoard implements Serializable {
     @NotNull
     @Column(name = "position")
     private int position;
-    @Column(name = "tied")
-    private int tied;
     @Basic(optional = false)
     @NotNull
     @Column(name = "parStatus")
@@ -60,16 +111,9 @@ public class LeaderBoard implements Serializable {
     @NotNull
     @Column(name = "scoreRound1")
     private int scoreRound1;
-    @Column(name = "scoreRound2")
-    private int scoreRound2;
-    @Column(name = "scoreRound3")
-    private int scoreRound3;
-    @Column(name = "scoreRound4")
-    private int scoreRound4;
-    @Column(name = "scoreRound5")
-    private int scoreRound5;
-    @Column(name = "scoreRound6")
-    private int scoreRound6;
+    @Column(name = "dateRegistered")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateRegistered;
     @Basic(optional = false)
     @NotNull
     @Column(name = "totalScore")
@@ -104,6 +148,14 @@ public class LeaderBoard implements Serializable {
         this.leaderBoardID = leaderBoardID;
     }
 
+    public Date getDateRegistered() {
+        return dateRegistered;
+    }
+
+    public void setDateRegistered(Date dateRegistered) {
+        this.dateRegistered = dateRegistered;
+    }
+
     public Player getPlayer() {
         return player;
     }
@@ -128,14 +180,6 @@ public class LeaderBoard implements Serializable {
         this.position = position;
     }
 
-    public int getTied() {
-        return tied;
-    }
-
-    public void setTied(int tied) {
-        this.tied = tied;
-    }
-
     public int getParStatus() {
         return parStatus;
     }
@@ -150,6 +194,51 @@ public class LeaderBoard implements Serializable {
 
     public void setScoreRound1(int scoreRound1) {
         this.scoreRound1 = scoreRound1;
+    }
+
+    public int getTotalScore() {
+        return totalScore;
+    }
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
+    }
+
+    @Override
+    public String toString() {
+        return "com.boha.golfkids.data.LeaderBoard[ leaderBoard=" + leaderBoardID + " ]";
+    }
+
+    public List<TeeTime> getTeeTimeList() {
+        return teeTimeList;
+    }
+
+    public void setTeeTimeList(List<TeeTime> teeTimeList) {
+        this.teeTimeList = teeTimeList;
+    }
+
+    public List<TourneyScoreByRound> getTourneyScoreByRoundList() {
+        return tourneyScoreByRoundList;
+    }
+
+    public void setTourneyScoreByRoundList(List<TourneyScoreByRound> tourneyScoreByRoundList) {
+        this.tourneyScoreByRoundList = tourneyScoreByRoundList;
+    }
+
+    public int getWinnerFlag() {
+        return winnerFlag;
+    }
+
+    public void setWinnerFlag(int winnerFlag) {
+        this.winnerFlag = winnerFlag;
+    }
+
+    public int getTied() {
+        return tied;
+    }
+
+    public void setTied(int tied) {
+        this.tied = tied;
     }
 
     public int getScoreRound2() {
@@ -192,17 +281,13 @@ public class LeaderBoard implements Serializable {
         this.scoreRound6 = scoreRound6;
     }
 
-    public int getTotalScore() {
-        return totalScore;
+    public Agegroup getAgeGroup() {
+        return ageGroup;
     }
 
-    public void setTotalScore(int totalScore) {
-        this.totalScore = totalScore;
+    public void setAgeGroup(Agegroup ageGroup) {
+        this.ageGroup = ageGroup;
     }
 
-    @Override
-    public String toString() {
-        return "com.boha.golfkids.data.LeaderBoard[ leaderBoard=" + leaderBoardID + " ]";
-    }
 
 }

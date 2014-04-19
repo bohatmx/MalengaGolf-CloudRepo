@@ -4,22 +4,21 @@
  */
 package com.boha.golfkids.util;
 
-import com.boha.golfkids.data.ClubCourse;
+import com.boha.golfkids.data.Agegroup;
 import com.boha.golfkids.data.LeaderBoard;
 import com.boha.golfkids.data.Player;
 import com.boha.golfkids.data.Tournament;
-import com.boha.golfkids.data.TourneyPlayerScore;
 import com.boha.golfkids.data.TourneyScoreByRound;
+import com.boha.golfkids.dto.AgeGroupDTO;
 import com.boha.golfkids.dto.ClubCourseDTO;
+import com.boha.golfkids.dto.LeaderBoardCarrierDTO;
 import com.boha.golfkids.dto.LeaderBoardDTO;
 import com.boha.golfkids.dto.PlayerDTO;
 import com.boha.golfkids.dto.ResponseDTO;
-import com.boha.golfkids.dto.TourneyPlayerScoreDTO;
 import com.boha.golfkids.dto.TourneyScoreByRoundDTO;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -42,26 +41,14 @@ public class LeaderBoardUtil {
     @PersistenceContext
     EntityManager em;
 
-    public ResponseDTO getLeaderBoard(int tournamentID, DataUtil dataUtil) throws DataException {
-        ResponseDTO r = new ResponseDTO();
-        List<LeaderBoardDTO> lbList = new ArrayList<>();
-        try {
-            Tournament t = dataUtil.getTournamentByID(tournamentID);
-            Query q = em.createNamedQuery("TourneyPlayerScore.findByTournament",
-                    TourneyPlayerScore.class);
-            q.setParameter("id", tournamentID);
-            List<TourneyPlayerScore> tpsList = q.getResultList();
-            Query qq = em.createNamedQuery("TourneyScoreByRound.getByTourney",
-                    TourneyScoreByRound.class);
-            qq.setParameter("id", tournamentID);
-            List<TourneyScoreByRound> rList = qq.getResultList();
-            for (TourneyPlayerScore s : tpsList) {
+    private void setScores(Tournament t,List<LeaderBoard> baseList, 
+            List<LeaderBoardDTO> lbList, List<TourneyScoreByRound> tourneyScoreList) {
+        for (LeaderBoard s : baseList) {
                 LeaderBoardDTO d = new LeaderBoardDTO();
                 d.setPlayer(new PlayerDTO(s.getPlayer()));
                 d.setRounds(t.getGolfRounds());
                 d.setTournamentID(t.getTournamentID());
-                d.setTournamentName(t.getTourneyName());
-                
+                d.setTournamentName(t.getTourneyName());               
                 d.setHolesPerRound(t.getHolesPerRound());
                 d.setScoreRound1(s.getScoreRound1());
                 d.setScoreRound2(s.getScoreRound2());
@@ -71,14 +58,86 @@ public class LeaderBoardUtil {
                 d.setScoreRound6(s.getScoreRound6());
                 d.setTotalScore(d.getTotalScore());
                 d.setTourneyScoreByRoundList(new ArrayList<TourneyScoreByRoundDTO>());
-                for (TourneyScoreByRound tsbr : rList) {
-                    if (tsbr.getTourneyPlayerScore().getTourneyPlayerScoreID()
-                            == s.getTourneyPlayerScoreID()) {
+                for (TourneyScoreByRound tsbr : tourneyScoreList) {
+                    if (tsbr.getLeaderBoard().getLeaderBoardID()
+                            == s.getLeaderBoardID()) {
                         d.getTourneyScoreByRoundList().add(new TourneyScoreByRoundDTO(tsbr));
                     }
                 }
                 lbList.add(d);
             }
+    }
+    public ResponseDTO getSectionedLeaderBoards(int tournamentID, DataUtil dataUtil) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Tournament t = dataUtil.getTournamentByID(tournamentID);
+            Query q = em.createNamedQuery("AgeGroup.findByGolfGroup", Agegroup.class);
+            q.setParameter("id", t.getGolfGroup().getGolfGroupID());
+            List<Agegroup> ageList = q.getResultList();
+            r.setLeaderBoardCarriers(new ArrayList<LeaderBoardCarrierDTO>());
+            for (Agegroup ag : ageList) {
+                List<LeaderBoardDTO> list = getLeaderBoardByAgeGroup(t, ag.getAgeGroupID());
+                LeaderBoardCarrierDTO carrier = new LeaderBoardCarrierDTO();
+                carrier.setAgeGroup(new AgeGroupDTO(ag));
+                carrier.setLeaderBoardList(list);
+                r.getLeaderBoardCarriers().add(carrier);
+                log.log(Level.OFF, "added leaderBoard for ageGroup: {0}", ag.getGroupName());
+            }
+            //create all lb
+            LeaderBoardCarrierDTO carrier = new LeaderBoardCarrierDTO();
+            carrier.setAgeGroup(null);
+            carrier.setLeaderBoardList(getLeaderBoard(tournamentID, dataUtil).getLeaderBoardList());
+            r.getLeaderBoardCarriers().add(carrier);
+            
+        }catch (Exception e) {
+            log.log(Level.SEVERE, null, e);
+            throw new DataException("Failed to get LeaderBoardByAgeGroup\n"
+                    + getErrorString(e));
+        }
+        return r;
+    }
+    private List<LeaderBoardDTO> getLeaderBoardByAgeGroup(Tournament t, int ageGroupID) throws DataException {
+        List<LeaderBoardDTO> lbList = new ArrayList<>();
+        try {
+            
+            Query q = em.createNamedQuery("LeaderBoard.findByAgeGroup",
+                    LeaderBoard.class);
+            q.setParameter("tID", t.getTournamentID());
+            q.setParameter("aID", ageGroupID);
+            List<LeaderBoard> tpsList = q.getResultList();
+            Query qq = em.createNamedQuery("TourneyScoreByRound.getByTourneyAgeGroup",
+                    TourneyScoreByRound.class);
+            qq.setParameter("tID", t.getTournamentID());
+            qq.setParameter("aID", ageGroupID);
+            List<TourneyScoreByRound> rList = qq.getResultList();
+            setScores(t, tpsList, lbList, rList);
+            //calculate current par status and position
+            calculateLeaderboard(lbList);
+            
+
+        } catch (Exception e) {
+            log.log(Level.SEVERE, null, e);
+            throw new DataException("Failed to get LeaderBoardByAgeGroup\n"
+                    + getErrorString(e));
+        }
+        
+        
+        return lbList;
+    }
+    public ResponseDTO getLeaderBoard(int tournamentID, DataUtil dataUtil) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        List<LeaderBoardDTO> lbList = new ArrayList<>();
+        try {
+            Tournament t = dataUtil.getTournamentByID(tournamentID);
+            Query q = em.createNamedQuery("LeaderBoard.findByTournament",
+                    LeaderBoard.class);
+            q.setParameter("id", tournamentID);
+            List<LeaderBoard> tpsList = q.getResultList();
+            Query qq = em.createNamedQuery("TourneyScoreByRound.getByTourney",
+                    TourneyScoreByRound.class);
+            qq.setParameter("id", tournamentID);
+            List<TourneyScoreByRound> rList = qq.getResultList();
+            setScores(t, tpsList, lbList, rList);
             //calculate current par status and position
             calculateLeaderboard(lbList);
             r.setLeaderBoardList(lbList);
@@ -254,82 +313,105 @@ public class LeaderBoardUtil {
     }
     private void setParStatus(LeaderBoardDTO lb) {
         int parStatus = 0;
+        int cnt = 0; 
         for (TourneyScoreByRoundDTO r : lb.getTourneyScoreByRoundList()) {
             setCurrentRoundStatus(lb, r);
             ClubCourseDTO cc = r.getClubCourse();
             if (r.getScore1() > 0) {
                 parStatus += cc.getParHole1() - r.getScore1();
                 lb.setLastHole(1);
+                cnt++;
             }
             if (r.getScore2() > 0) {
                 parStatus += cc.getParHole2() - r.getScore2();
                 lb.setLastHole(2);
+                cnt++;
             }
             if (r.getScore3() > 0) {
                 parStatus += cc.getParHole3() - r.getScore3();
                 lb.setLastHole(3);
+                cnt++;
             }
             if (r.getScore4() > 0) {
                 parStatus += cc.getParHole4() - r.getScore4();
                 lb.setLastHole(4);
+                cnt++;
             }
             if (r.getScore5() > 0) {
                 parStatus += cc.getParHole5() - r.getScore5();
                 lb.setLastHole(5);
+                cnt++;
             }
             if (r.getScore6() > 0) {
                 parStatus += cc.getParHole6() - r.getScore6();
                 lb.setLastHole(6);
+                cnt++;
             }
             if (r.getScore7() > 0) {
                 parStatus += cc.getParHole7() - r.getScore7();
                 lb.setLastHole(7);
+                cnt++;
             }
             if (r.getScore8() > 0) {
                 parStatus += cc.getParHole8() - r.getScore8();
                 lb.setLastHole(8);
+                cnt++;
             }
             if (r.getScore9() > 0) {
                 parStatus += cc.getParHole9() - r.getScore9();
                 lb.setLastHole(9);
+                cnt++;
             }
             if (r.getScore10() > 0) {
                 parStatus += cc.getParHole10() - r.getScore10();
                 lb.setLastHole(10);
+                cnt++;
             }
             if (r.getScore11() > 0) {
                 parStatus += cc.getParHole11() - r.getScore11();
                 lb.setLastHole(11);
+                cnt++;
             }
             if (r.getScore12() > 0) {
                 parStatus += cc.getParHole12() - r.getScore12();
                 lb.setLastHole(12);
+                cnt++;
             }
             if (r.getScore13() > 0) {
                 parStatus += cc.getParHole13() - r.getScore13();
                 lb.setLastHole(13);
+                cnt++;
             }
             if (r.getScore14() > 0) {
                 parStatus += cc.getParHole14() - r.getScore14();
                 lb.setLastHole(14);
+                cnt++;
             }
             if (r.getScore15() > 0) {
                 parStatus += cc.getParHole15() - r.getScore15();
                 lb.setLastHole(15);
+                cnt++;
             }
             if (r.getScore16() > 0) {
                 parStatus += cc.getParHole16() - r.getScore16();
                 lb.setLastHole(16);
+                cnt++;
             }
             if (r.getScore17() > 0) {
                 parStatus += cc.getParHole17() - r.getScore17();
                 lb.setLastHole(17);
+                cnt++;
             }
             if (r.getScore18() > 0) {
                 parStatus += cc.getParHole18() - r.getScore18();
                 lb.setLastHole(18);
+                cnt++;
             }
-            lb.setParStatus(parStatus);
+            if (cnt == 0) {
+                lb.setParStatus(NO_PAR_STATUS);
+            } else {
+                lb.setParStatus(parStatus);
+            }
             Logger.getAnonymousLogger().log(Level.OFF,
                     "par status calculated: {0} - {1} {2}",
                     new Object[]{parStatus, lb.getPlayer().getFirstName(), lb.getPlayer().getLastName()});

@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.LeaderBoard;
@@ -17,34 +16,39 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
 
     private int leaderBoardID, position, parStatus, tournamentID;
     private PlayerDTO player;
+    private AgeGroupDTO ageGroup;
     private boolean tied;
     private int rounds, lastHole, holesPerRound, currentRoundStatus;
     private long startDate;
-    private String tournamentName;
+    private String tournamentName, clubName;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
-    private int 
-            scoreRound1, 
-            scoreRound2, 
-            scoreRound3, 
-            scoreRound4, 
-            scoreRound5, 
+    private int winnerFlag;
+    private int scoreRound1,
+            scoreRound2,
+            scoreRound3,
+            scoreRound4,
+            scoreRound5,
             scoreRound6,
             totalScore;
 
-    public LeaderBoardDTO() {}
+    public LeaderBoardDTO() {
+    }
+
     public LeaderBoardDTO(LeaderBoard a) {
         setBasics(a);
-        
+
     }
+
     public LeaderBoardDTO(LeaderBoard a, boolean getDetail) {
         setBasics(a);
         if (getDetail) {
             tournamentName = a.getTournament().getTourneyName();
         }
     }
+
     private void setBasics(LeaderBoard a) {
-       leaderBoardID = a.getLeaderBoardID();
-       
+        leaderBoardID = a.getLeaderBoardID();
+        winnerFlag = a.getWinnerFlag();
         player = new PlayerDTO(a.getPlayer());
         position = a.getPosition();
         parStatus = a.getParStatus();
@@ -52,6 +56,10 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         startDate = t.getStartDate().getTime();
         tournamentID = t.getTournamentID();
         holesPerRound = t.getHolesPerRound();
+        clubName = t.getClub().getClubName();
+        if (a.getAgeGroup() != null) {
+            ageGroup = new AgeGroupDTO(a.getAgeGroup());
+        }
         if (a.getTied() > 0) {
             tied = true;
         }
@@ -61,11 +69,20 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         scoreRound4 = a.getScoreRound4();
         scoreRound5 = a.getScoreRound5();
         scoreRound6 = a.getScoreRound6();
-        totalScore = a.getTotalScore(); 
+        totalScore = a.getTotalScore();
         rounds = a.getTournament().getGolfRounds();
     }
+
     public int getPosition() {
         return position;
+    }
+
+    public AgeGroupDTO getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(AgeGroupDTO ageGroup) {
+        this.ageGroup = ageGroup;
     }
 
     public int getCurrentRoundStatus() {
@@ -76,7 +93,21 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         this.currentRoundStatus = currentRoundStatus;
     }
 
-    
+    public String getClubName() {
+        return clubName;
+    }
+
+    public void setClubName(String clubName) {
+        this.clubName = clubName;
+    }
+
+    public int getWinnerFlag() {
+        return winnerFlag;
+    }
+
+    public void setWinnerFlag(int winnerFlag) {
+        this.winnerFlag = winnerFlag;
+    }
 
     public int getLastHole() {
         return lastHole;
@@ -126,11 +157,9 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         this.tournamentName = tournamentName;
     }
 
-
     public void setRounds(int rounds) {
         this.rounds = rounds;
     }
-
 
     public void setLeaderBoardID(int leaderBoardID) {
         this.leaderBoardID = leaderBoardID;
@@ -152,7 +181,6 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         this.tied = tied;
     }
 
-    
     public void setPosition(int position) {
         this.position = position;
     }
@@ -222,8 +250,8 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
     }
 
     public int getTotalScore() {
-        totalScore = scoreRound1 + scoreRound2 + scoreRound4 +
-        scoreRound5 + scoreRound3 + scoreRound6;
+        totalScore = scoreRound1 + scoreRound2 + scoreRound4
+                + scoreRound5 + scoreRound3 + scoreRound6;
         return totalScore;
     }
 
@@ -231,18 +259,20 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         this.totalScore = totalScore;
     }
 
-   @Override
+    @Override
     public int compareTo(LeaderBoardDTO t) {
-        
+
         if (this.getParStatus() < t.getParStatus()) {
             return 1;
         }
-         if (this.getParStatus() > t.getParStatus()) {
+        if (this.getParStatus() > t.getParStatus()) {
             return -1;
         }
-        
+
         return 0;
     }
-    public static final int NO_PAR_STATUS = 9999;
-    
+    public static final int NO_PAR_STATUS = 9999,
+            WINNER_BY_PLAYOFF = 2,
+            WINNER_BY_COUNT_OUT = 1;
+
 }

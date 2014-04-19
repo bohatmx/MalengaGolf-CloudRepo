@@ -14,14 +14,15 @@ public class ResponseDTO {
 
     private int statusCode;
     private String message;
+    private LeaderBoardDTO leaderBoard;
     private PersonalPlayerDTO personalPlayer;
+    private List<LeaderBoardCarrierDTO> leaderBoardCarriers;
     private List<PersonalPlayerDTO> personalPlayerList;
     private List<PersonalScoreDTO> personalScoreList;
-    private TourneyPlayerScoreDTO tourneyPlayerScore;
     private List<GolfGroupDTO> golfGroups;
     private List<ParentDTO> parents;
     private List<PlayerDTO> players;
-    private List<TourneyPlayerScoreDTO> tourneyPlayers;
+    private List<LeaderBoardDTO> tourneyPlayers;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private List<TeeTimeDTO> teeTimeList;
     private List<TournamentDTO> tournaments;
@@ -36,7 +37,6 @@ public class ResponseDTO {
     private List<ScorerDTO> scorers;
     private GolfGroupDTO golfGroup;
     private AdministratorDTO administrator;
-    private List<LeaderBoardBucket> leaderBoardBucketList;
     
     //
     public static final int LOGIN_EXCEPTION = 101;
@@ -44,16 +44,34 @@ public class ResponseDTO {
     public static final int DUPLICATE_EXCEPTION = 103;
     public static final int GENERIC_EXCEPTION = 109;
 
-    public List<LeaderBoardBucket> getLeaderBoardBucketList() {
-        return leaderBoardBucketList;
+    public List<LeaderBoardCarrierDTO> getLeaderBoardCarriers() {
+        return leaderBoardCarriers;
     }
 
-    public void setLeaderBoardBucketList(List<LeaderBoardBucket> leaderBoardBucketList) {
-        this.leaderBoardBucketList = leaderBoardBucketList;
+    public void setLeaderBoardCarriers(List<LeaderBoardCarrierDTO> leaderBoardCarriers) {
+        this.leaderBoardCarriers = leaderBoardCarriers;
     }
 
+    
+  
     public int getStatusCode() {
         return statusCode;
+    }
+
+    public LeaderBoardDTO getLeaderBoard() {
+        return leaderBoard;
+    }
+
+    public void setLeaderBoard(LeaderBoardDTO leaderBoard) {
+        this.leaderBoard = leaderBoard;
+    }
+
+    public List<LeaderBoardDTO> getTourneyPlayers() {
+        return tourneyPlayers;
+    }
+
+    public void setTourneyPlayers(List<LeaderBoardDTO> tourneyPlayers) {
+        this.tourneyPlayers = tourneyPlayers;
     }
 
     public void setStatusCode(int statusCode) {
@@ -62,14 +80,6 @@ public class ResponseDTO {
 
     public AdministratorDTO getAdministrator() {
         return administrator;
-    }
-
-    public TourneyPlayerScoreDTO getTourneyPlayerScore() {
-        return tourneyPlayerScore;
-    }
-
-    public void setTourneyPlayerScore(TourneyPlayerScoreDTO tourneyPlayerScore) {
-        this.tourneyPlayerScore = tourneyPlayerScore;
     }
 
     public PersonalPlayerDTO getPersonalPlayer() {
@@ -182,14 +192,6 @@ public class ResponseDTO {
 
     public void setPlayers(List<PlayerDTO> players) {
         this.players = players;
-    }
-
-    public List<TourneyPlayerScoreDTO> getTourneyPlayers() {
-        return tourneyPlayers;
-    }
-
-    public void setTourneyPlayers(List<TourneyPlayerScoreDTO> tourneyPlayers) {
-        this.tourneyPlayers = tourneyPlayers;
     }
 
     public List<TournamentDTO> getTournaments() {

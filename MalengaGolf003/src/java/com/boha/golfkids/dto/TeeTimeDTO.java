@@ -15,14 +15,14 @@ public class TeeTimeDTO {
     private int teeTimeID;
     private int golfRound;
     private long teeTime;
-    private int tourneyPlayerScoreID;
+    private int leaderBoardID;
     
     public TeeTimeDTO(TeeTime a) {
         
         teeTimeID = a.getTeeTimeID();
         golfRound = a.getGolfRound();
         teeTime = a.getTeeTime().getTime();
-        tourneyPlayerScoreID = a.getTourneyPlayerScore().getTourneyPlayerScoreID();
+        leaderBoardID = a.getLeaderBoard().getLeaderBoardID();
     }
 
     public int getTeeTimeID() {
@@ -49,11 +49,13 @@ public class TeeTimeDTO {
         this.teeTime = teeTime;
     }
 
-    public int getTourneyPlayerScoreID() {
-        return tourneyPlayerScoreID;
+    public int getLeaderBoardID() {
+        return leaderBoardID;
     }
 
-    public void setTourneyPlayerScoreID(int tourneyPlayerScoreID) {
-        this.tourneyPlayerScoreID = tourneyPlayerScoreID;
+    public void setLeaderBoardID(int leaderBoardID) {
+        this.leaderBoardID = leaderBoardID;
     }
+
+   
 }

@@ -24,7 +24,6 @@ public class ResponseDTO {
     private List<PlayerDTO> players;
     private List<LeaderBoardDTO> tourneyPlayers;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
-    private List<TeeTimeDTO> teeTimeList;
     private List<TournamentDTO> tournaments;
     private List<LeaderBoardDTO> leaderBoardList;
     private List<CountryDTO> countries;
@@ -36,6 +35,7 @@ public class ResponseDTO {
     private List<GolfGroupParentDTO> golfGroupParents;
     private List<ScorerDTO> scorers;
     private GolfGroupDTO golfGroup;
+    private List<String> imageFileNames;
     private AdministratorDTO administrator;
     
     //
@@ -156,6 +156,14 @@ public class ResponseDTO {
         return golfGroups;
     }
 
+    public List<String> getImageFileNames() {
+        return imageFileNames;
+    }
+
+    public void setImageFileNames(List<String> imageFileNames) {
+        this.imageFileNames = imageFileNames;
+    }
+
     public void setGolfGroups(List<GolfGroupDTO> golfGroups) {
         this.golfGroups = golfGroups;
     }
@@ -167,16 +175,6 @@ public class ResponseDTO {
     public void setTourneyScoreByRoundList(List<TourneyScoreByRoundDTO> tourneyScoreByRoundList) {
         this.tourneyScoreByRoundList = tourneyScoreByRoundList;
     }
-
-    public List<TeeTimeDTO> getTeeTimeList() {
-        return teeTimeList;
-    }
-
-    public void setTeeTimeList(List<TeeTimeDTO> teeTimeList) {
-        this.teeTimeList = teeTimeList;
-    }
-
-   
 
     public List<ParentDTO> getParents() {
         return parents;

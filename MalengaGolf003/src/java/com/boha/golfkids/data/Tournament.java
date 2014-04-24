@@ -48,8 +48,7 @@ import javax.validation.constraints.Size;
             query = "select a from Tournament a where a.club.clubID = :id")
 })
 public class Tournament implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
-    private List<TeeTime> teeTimeList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<TournamentCourse> tournamentCourseList;
     
@@ -95,6 +94,10 @@ public class Tournament implements Serializable {
 
     @Column(name = "closedForScoringFlag")
     private int closedForScoringFlag;
+    
+    @Column(name = "closedForRegistrationFlag")
+    private int closedForRegistrationFlag;
+    
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private GolfGroup golfGroup;
@@ -135,6 +138,14 @@ public class Tournament implements Serializable {
 
     public void setTourneyName(String tourneyName) {
         this.tourneyName = tourneyName;
+    }
+
+    public int getClosedForRegistrationFlag() {
+        return closedForRegistrationFlag;
+    }
+
+    public void setClosedForRegistrationFlag(int closedForRegistrationFlag) {
+        this.closedForRegistrationFlag = closedForRegistrationFlag;
     }
 
     public Date getClosingDate() {
@@ -257,16 +268,6 @@ public class Tournament implements Serializable {
     public void setTournamentCourseList(List<TournamentCourse> tournamentCourseList) {
         this.tournamentCourseList = tournamentCourseList;
     }
-
-    public List<TeeTime> getTeeTimeList() {
-        return teeTimeList;
-    }
-
-    public void setTeeTimeList(List<TeeTime> teeTimeList) {
-        this.teeTimeList = teeTimeList;
-    }
-
-  
     
 
 }

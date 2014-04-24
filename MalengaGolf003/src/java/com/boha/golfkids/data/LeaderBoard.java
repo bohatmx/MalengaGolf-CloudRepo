@@ -43,8 +43,12 @@ import javax.validation.constraints.NotNull;
 
     @NamedQuery(name = "LeaderBoard.findByAgeGroup",
             query = "SELECT l FROM LeaderBoard l "
-                    + "where l.tournament.tournamentID = :tID "
-                    + "and l.ageGroup.ageGroupID = :aID"),
+            + "where l.tournament.tournamentID = :tID "
+            + "and l.ageGroup.ageGroupID = :aID"),
+    @NamedQuery(name = "LeaderBoard.findByWinnerFlag",
+            query = "SELECT l FROM LeaderBoard l "
+            + "where l.tournament.tournamentID = :tID "
+            + "and l.winnerFlag > 0"),
 
     @NamedQuery(name = "LeaderBoard.countByPlayer",
             query = "SELECT l.player.playerID, count(l) FROM "
@@ -88,8 +92,7 @@ public class LeaderBoard implements Serializable {
     @JoinColumn(name = "ageGroupID", referencedColumnName = "ageGroupID")
     @ManyToOne
     private Agegroup ageGroup;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "leaderBoard")
-    private List<TeeTime> teeTimeList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "leaderBoard")
     private List<TourneyScoreByRound> tourneyScoreByRoundList;
 
@@ -209,20 +212,20 @@ public class LeaderBoard implements Serializable {
         return "com.boha.golfkids.data.LeaderBoard[ leaderBoard=" + leaderBoardID + " ]";
     }
 
-    public List<TeeTime> getTeeTimeList() {
-        return teeTimeList;
-    }
-
-    public void setTeeTimeList(List<TeeTime> teeTimeList) {
-        this.teeTimeList = teeTimeList;
-    }
-
     public List<TourneyScoreByRound> getTourneyScoreByRoundList() {
         return tourneyScoreByRoundList;
     }
 
     public void setTourneyScoreByRoundList(List<TourneyScoreByRound> tourneyScoreByRoundList) {
         this.tourneyScoreByRoundList = tourneyScoreByRoundList;
+    }
+
+    public Agegroup getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(Agegroup ageGroup) {
+        this.ageGroup = ageGroup;
     }
 
     public int getWinnerFlag() {
@@ -280,14 +283,5 @@ public class LeaderBoard implements Serializable {
     public void setScoreRound6(int scoreRound6) {
         this.scoreRound6 = scoreRound6;
     }
-
-    public Agegroup getAgeGroup() {
-        return ageGroup;
-    }
-
-    public void setAgeGroup(Agegroup ageGroup) {
-        this.ageGroup = ageGroup;
-    }
-
 
 }

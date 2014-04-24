@@ -45,6 +45,8 @@ public class LeaderBoardUtil {
             List<LeaderBoardDTO> lbList, List<TourneyScoreByRound> tourneyScoreList) {
         for (LeaderBoard s : baseList) {
                 LeaderBoardDTO d = new LeaderBoardDTO();
+                d.setLeaderBoardID(s.getLeaderBoardID());
+                d.setWinnerFlag(s.getWinnerFlag());
                 d.setPlayer(new PlayerDTO(s.getPlayer()));
                 d.setRounds(t.getGolfRounds());
                 d.setTournamentID(t.getTournamentID());
@@ -412,10 +414,7 @@ public class LeaderBoardUtil {
             } else {
                 lb.setParStatus(parStatus);
             }
-            Logger.getAnonymousLogger().log(Level.OFF,
-                    "par status calculated: {0} - {1} {2}",
-                    new Object[]{parStatus, lb.getPlayer().getFirstName(), lb.getPlayer().getLastName()});
-            
+                       
         }
     }
 
@@ -430,8 +429,6 @@ public class LeaderBoardUtil {
         int pos = 1;
         for (LeaderBoardDTO board : list) {
             if (map.containsKey(board.getParStatus())) {
-                Logger.getLogger("me").log(Level.OFF, "this parStatus {0} is tied",
-                        board.getParStatus());
                 continue;
             }
             map.put(board.getParStatus(), pos);

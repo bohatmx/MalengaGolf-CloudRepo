@@ -7,6 +7,7 @@
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +19,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -60,9 +63,16 @@ import javax.validation.constraints.NotNull;
 
 
 public class TourneyScoreByRound implements Serializable {
+    @Column(name = "teeTime")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date teeTime;
+    
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "tee")
+    private int tee;
     @Column(name = "score1")
     private int score1;
-    
     @Column(name = "score2")
     private int score2;
     @Column(name = "score3")
@@ -174,6 +184,28 @@ public class TourneyScoreByRound implements Serializable {
     public void setClubCourse(ClubCourse clubCourse) {
         this.clubCourse = clubCourse;
     }
+    public LeaderBoard getLeaderBoard() {
+        return leaderBoard;
+    }
+    public void setLeaderBoard(LeaderBoard leaderBoard) {
+        this.leaderBoard = leaderBoard;
+    }
+
+    public Date getTeeTime() {
+        return teeTime;
+    }
+
+    public void setTeeTime(Date teeTime) {
+        this.teeTime = teeTime;
+    }
+
+    public int getTee() {
+        return tee;
+    }
+
+    public void setTee(int tee) {
+        this.tee = tee;
+    }
 
     public int getScore1() {
         return score1;
@@ -267,6 +299,7 @@ public class TourneyScoreByRound implements Serializable {
         return score12;
     }
 
+
     public void setScore12(int score12) {
         this.score12 = score12;
     }
@@ -290,7 +323,6 @@ public class TourneyScoreByRound implements Serializable {
     public int getScore15() {
         return score15;
     }
-
 
     public void setScore15(int score15) {
         this.score15 = score15;
@@ -334,14 +366,6 @@ public class TourneyScoreByRound implements Serializable {
 
     public void setTotalScore(int totalScore) {
         this.totalScore = totalScore;
-    }
-
-    public LeaderBoard getLeaderBoard() {
-        return leaderBoard;
-    }
-
-    public void setLeaderBoard(LeaderBoard leaderBoard) {
-        this.leaderBoard = leaderBoard;
     }
 
    

@@ -8,9 +8,12 @@ package com.boha.golfkids.util;
  *
  * @author aubreymalabie
  */
-
+import com.boha.golfkids.dto.RequestDTO;
+import com.boha.golfkids.servlet.PhotoServlet;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,52 +35,58 @@ public class FileUtility {
         }
         return file;
     }
-/*
-    public static void makeThumbnails(File imageFile, File dir) {
-        BufferedImage image = null;
-        Image small = null;
-        Image medium = null;
-        Image large = null;
-        try {
-            image = ImageIO.read(imageFile);
-            //Need small, med & large thumbnails
-            large = image.getScaledInstance(THUMB_WIDTH_LARGE, THUMB_HEIGHT_LARGE, Image.SCALE_SMOOTH);
-            medium = image.getScaledInstance(THUMB_WIDTH_MEDIUM, THUMB_HEIGHT_MEDIUM, Image.SCALE_SMOOTH);
-            small = image.getScaledInstance(THUMB_WIDTH_SMALL, THUMB_HEIGHT_SMALL, Image.SCALE_SMOOTH);
-            //image to file
-            File lgDir = new File(dir, "largeThumbs");
-            if (!lgDir.exists()) {
-                lgDir.mkdir();
-            }
-            File medDir = new File(dir, "mediumThumbs");
-            if (!medDir.exists()) {
-                medDir.mkdir();
-            }
-            File smDir = new File(dir, "smallThumbs");
-            if (!smDir.exists()) {
-                smDir.mkdir();
-            }
-            File lgThumb = new File(lgDir, imageFile.getName());
-            String ret = Thumbnail.createThumbnail(image,
-                    lgThumb, THUMB_WIDTH_LARGE);
-            logger.log(Level.INFO, "### Creating large thumbnail, ret: {0}", ret);
-            
-            File medThumb = new File(medDir, imageFile.getName());
-            String ret2 = Thumbnail.createThumbnail(image,
-                    medThumb, THUMB_WIDTH_MEDIUM);
-            logger.log(Level.INFO, "### Creating med thumbnail, ret2: {0}", ret2);
 
-            File smThumb = new File(smDir, imageFile.getName());
-            String ret3 = Thumbnail.createThumbnail(image,
-                    smThumb, THUMB_WIDTH_SMALL);
-            logger.log(Level.INFO, "### Creating small thumbnail, ret3: {0}", ret3);
-
-
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Unable to create thumbnails", e);
+    public static List<String> getImageFilesTournament(int golfGroupID, int tournamentID, int type) throws Exception {
+        logger.log(Level.OFF, "golfGroup: {0} tournament: {1} type: {2}", new Object[]{golfGroupID, tournamentID, 2});
+        List<String> list = new ArrayList<>();
+        File rootDir = GolfProperties.getImageDir();
+        File ggRoot = new File(rootDir, PhotoServlet.GOLF_GROUP_PREFIX + golfGroupID);
+        
+        File dir = null;
+        switch (type) {
+            case RequestDTO.PICTURES_FULL_SIZE:
+                dir = new File(ggRoot, PhotoServlet.TOURNAMENT_PREFIX + tournamentID);
+                if (!dir.exists()) {
+                    return list;
+                }
+                logger.log(Level.OFF, "full size dir: {0}", dir.getAbsolutePath());
+                break;
+            case RequestDTO.PICTURES_THUMBNAILS:
+                File tournDir = new File(ggRoot, PhotoServlet.TOURNAMENT_PREFIX + tournamentID);
+                dir = new File(tournDir, PhotoServlet.THUMB_PREFIX + tournamentID);
+                logger.log(Level.OFF, "thumb dir: {0}", dir.getAbsolutePath());
+                break;
         }
+        
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            for (File file : files) {
+                list.add(file.getName());
+            }
+        }
+        logger.log(Level.OFF, "Image files found: {0}", list.size());
+        return list;
     }
-    * */
-   
-    
+    public static List<String> getImageFilesGolfGroup(int golfGroupID, int type) throws Exception {
+        List<String> list = new ArrayList<>();
+        File rootDir = GolfProperties.getImageDir();
+        File dir = null;
+        switch (type) {
+            case RequestDTO.PICTURES_FULL_SIZE:
+                dir = new File(rootDir, PhotoServlet.GOLF_GROUP_PREFIX + golfGroupID);
+                break;
+            case RequestDTO.PICTURES_THUMBNAILS:
+                dir = new File(rootDir, PhotoServlet.THUMB_PREFIX + golfGroupID);
+                break;
+        }
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            for (File file : files) {
+                list.add(file.getName());
+            }
+        }
+        logger.log(Level.OFF, "Image files found: {0}", list.size());
+        return list;
+    }
+
 }

@@ -14,7 +14,8 @@ public class TourneyScoreByRoundDTO {
 
     private int tourneyScoreByRoundID;
     private ClubCourseDTO clubCourse;
-    private int golfRound;
+    private int golfRound, tee;
+    private long teeTime;
     private int score1;
     private int score2;
     private int score3;
@@ -43,6 +44,10 @@ public class TourneyScoreByRoundDTO {
         clubCourse = new ClubCourseDTO(a.getClubCourse());
         leaderBoardID = a.getLeaderBoard().getLeaderBoardID();
         tourneyScoreByRoundID = a.getTourneyScoreByRoundID();
+        tee = a.getTee();
+        if (a.getTeeTime() != null) {
+            teeTime = a.getTeeTime().getTime();
+        }
         tournamentID = a.getTournamentIDx();
         golfRound = a.getGolfRound();
         par = a.getPar();
@@ -82,6 +87,22 @@ public class TourneyScoreByRoundDTO {
 
     public int getTotalScore() {
         return totalScore;
+    }
+
+    public int getTee() {
+        return tee;
+    }
+
+    public void setTee(int tee) {
+        this.tee = tee;
+    }
+
+    public long getTeeTime() {
+        return teeTime;
+    }
+
+    public void setTeeTime(long teeTime) {
+        this.teeTime = teeTime;
     }
 
     public int getPar() {

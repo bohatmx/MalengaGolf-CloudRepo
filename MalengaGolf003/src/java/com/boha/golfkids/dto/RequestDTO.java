@@ -13,11 +13,12 @@ import java.util.List;
 public class RequestDTO {
 
     private String email, pin;
-    private int golfGroupID;
+    private int golfGroupID;    
     private int tournamentID, playerID, countryID, provinceID, clubCourseID;
     private GolfGroupDTO golfGroup;
     private TournamentDTO tournament;
     private PlayerDTO player;
+    private TourneyScoreByRoundDTO tourneyScoreByRound;
     private AdministratorDTO administrator;
     private List<PlayerDTO> playerList;
     private LeaderBoardDTO leaderBoard;
@@ -26,7 +27,6 @@ public class RequestDTO {
     private ScorerDTO scorer;
     private List<LeaderBoardDTO> players;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
-    private List<TeeTimeDTO> teeTimeList;
     private int requestType;
     private boolean zippedResponse;
     //
@@ -79,7 +79,16 @@ public class RequestDTO {
     public static final int GET_PERSONAL_SCORES = 47;
     public static final int PERSONAL_PLAYER_LOGIN = 48;
     public static final int UPDATE_WINNER_FLAG = 50;
-    private int winnerFlag, leaderBoardID;
+    
+    public static final int GET_GOLFGROUP_THUMBNAILS = 60;
+    public static final int GET_TOURNAMENT_THUMBNAILS = 61;
+    public static final int GET_GOLFGROUP_PICTURES = 62;
+    public static final int GET_TOURNAMENT_PICTURES = 63;
+    
+    public static final int PICTURES_FULL_SIZE = 1;
+    public static final int PICTURES_THUMBNAILS = 2;
+    
+    private int winnerFlag, leaderBoardID, type;
     
     private int personalPlayerID;
     private PersonalPlayerDTO personalPlayer;
@@ -99,6 +108,14 @@ public class RequestDTO {
 
     public void setPlayers(List<LeaderBoardDTO> players) {
         this.players = players;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public int getWinnerFlag() {
@@ -200,13 +217,6 @@ public class RequestDTO {
         this.tourneyScoreByRoundList = tourneyScoreByRoundList;
     }
 
-    public List<TeeTimeDTO> getTeeTimeList() {
-        return teeTimeList;
-    }
-
-    public void setTeeTimeList(List<TeeTimeDTO> teeTimeList) {
-        this.teeTimeList = teeTimeList;
-    }
 
     public List<PlayerDTO> getPlayerList() {
         return playerList;
@@ -216,6 +226,15 @@ public class RequestDTO {
         this.playerList = playerList;
     }
 
+    public TourneyScoreByRoundDTO getTourneyScoreByRound() {
+        return tourneyScoreByRound;
+    }
+
+    public void setTourneyScoreByRound(TourneyScoreByRoundDTO tourneyScoreByRound) {
+        this.tourneyScoreByRound = tourneyScoreByRound;
+    }
+
+   
     public String getEmail() {
         return email;
     }

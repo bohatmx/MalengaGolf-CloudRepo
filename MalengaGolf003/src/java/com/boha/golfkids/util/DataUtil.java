@@ -17,7 +17,6 @@ import com.boha.golfkids.data.Parent;
 import com.boha.golfkids.data.Player;
 import com.boha.golfkids.data.Province;
 import com.boha.golfkids.data.Scorer;
-import com.boha.golfkids.data.TeeTime;
 import com.boha.golfkids.data.Tournament;
 import com.boha.golfkids.data.TournamentCourse;
 import com.boha.golfkids.data.TourneyScoreByRound;
@@ -34,7 +33,6 @@ import com.boha.golfkids.dto.PlayerDTO;
 import com.boha.golfkids.dto.ProvinceDTO;
 import com.boha.golfkids.dto.ResponseDTO;
 import com.boha.golfkids.dto.ScorerDTO;
-import com.boha.golfkids.dto.TeeTimeDTO;
 import com.boha.golfkids.dto.TournamentCourseDTO;
 import com.boha.golfkids.dto.TournamentDTO;
 import com.boha.golfkids.dto.TourneyScoreByRoundDTO;
@@ -97,6 +95,7 @@ public class DataUtil {
                 tx.setClub(getClubByID(t.getClubID()));
             }
             tx.setClosedForScoringFlag(t.getClosedForScoringFlag());
+            tx.setClosedForRegistrationFlag(t.getClosedForRegistrationFlag());
             tx.setGolfRounds(t.getGolfRounds());
             em.merge(tx);
             logger.log(Level.INFO, "Tournament updated OK");
@@ -440,23 +439,6 @@ public class DataUtil {
         return cList;
     }
 
-    public List<TeeTimeDTO> getTeeTimes(int tournamentID) throws DataException {
-
-        List<TeeTimeDTO> cList = new ArrayList<>();
-        try {
-            Query q = em.createNamedQuery("TeeTime.findByTournament", TeeTime.class);
-            q.setParameter("id", tournamentID);
-            List<TeeTime> list = q.getResultList();
-            for (TeeTime g : list) {
-                cList.add(new TeeTimeDTO(g));
-            }
-        } catch (Exception e) {
-            throw new DataException(getErrorString(e));
-        }
-        logger.log(Level.OFF, "teetime list found: {0}", cList.size());
-        return cList;
-    }
-
     public List<CountryDTO> getCountries() throws DataException {
 
         List<CountryDTO> cList = new ArrayList<>();
@@ -555,9 +537,26 @@ public class DataUtil {
 
     public ResponseDTO updateWinnerFlag(int leaderBoardID, int winnerFlag) throws DataException {
         ResponseDTO r = new ResponseDTO();
-        logger.log(Level.OFF, "updating winner, leaderBoardID = " + leaderBoardID);
+        logger.log(Level.OFF, "updating winner, leaderBoardID = {0}", leaderBoardID);
         try {
             LeaderBoard b = getLeaderBoardByID(leaderBoardID);
+            Query q = em.createNamedQuery("LeaderBoard.findByWinnerFlag", LeaderBoard.class);
+            q.setParameter("tID", b.getTournament().getTournamentID());
+            List<LeaderBoard> list = q.getResultList();
+            for (LeaderBoard lb : list) {
+                lb.setWinnerFlag(0);
+                em.merge(lb);
+            }
+            for (LeaderBoard lb : list) {
+                if (lb.getLeaderBoardID() == leaderBoardID) {
+                    lb.setWinnerFlag(winnerFlag);
+                    em.merge(lb);
+                    logger.log(Level.INFO, "Winner updated in database: {0} {1} - {2}", 
+                            new Object[]{lb.getPlayer().getFirstName(), 
+                                lb.getPlayer().getLastName(), lb.getTournament().getTourneyName()});
+                }
+            }
+            
             b.setWinnerFlag(winnerFlag);
             em.merge(b);
             logger.log(Level.INFO, "Winner flag has been updated. Congratulations to {0} {1}",
@@ -573,73 +572,23 @@ public class DataUtil {
     private List<TourneyScoreByRoundDTO> addTournamentScoreByRound(
             LeaderBoard tps, List<TourneyScoreByRoundDTO> scoreByRoundList)
             throws DataException {
-        Tournament tn = tps.getTournament();
         List<TourneyScoreByRoundDTO> dto = new ArrayList<>();
         try {
             for (TourneyScoreByRoundDTO tsbr : scoreByRoundList) {
                 TourneyScoreByRound t = new TourneyScoreByRound();
                 t.setGolfRound(tsbr.getGolfRound());
-                t.setTournamentIDx(tn.getTournamentID());
+                t.setTournamentIDx(tsbr.getTournamentID());
                 t.setClubCourse(getClubCourseByID(tsbr.getClubCourse().getClubCourseID()));
                 t.setLeaderBoard(tps);
-                t.setPar(t.getPar());
-                t.setTournamentIDx(t.getTournamentIDx());
+                
+                if  (tps.getTournament().getHolesPerRound() == 9) {
+                    t.setPar(tps.getTournament().getPar());
+                } else {
+                    t.setPar(t.getClubCourse().getPar());
+                }
                 t.setHolesPerRound(tps.getTournament().getHolesPerRound());
                 //
-                if (tsbr.getScore1() > 0) {
-                    t.setScore1(tsbr.getScore1());
-                }
-                if (tsbr.getScore2() > 0) {
-                    t.setScore2(tsbr.getScore2());
-                }
-                if (tsbr.getScore3() > 0) {
-                    t.setScore3(tsbr.getScore3());
-                }
-                if (tsbr.getScore4() > 0) {
-                    t.setScore4(tsbr.getScore4());
-                }
-                if (tsbr.getScore5() > 0) {
-                    t.setScore5(tsbr.getScore5());
-                }
-                if (tsbr.getScore6() > 0) {
-                    t.setScore6(tsbr.getScore6());
-                }
-                if (tsbr.getScore7() > 0) {
-                    t.setScore7(tsbr.getScore7());
-                }
-                if (tsbr.getScore8() > 0) {
-                    t.setScore8(tsbr.getScore8());
-                }
-                if (tsbr.getScore9() > 0) {
-                    t.setScore9(tsbr.getScore9());
-                }
-                if (tsbr.getScore10() > 0) {
-                    t.setScore10(tsbr.getScore10());
-                }
-                if (tsbr.getScore11() > 0) {
-                    t.setScore11(tsbr.getScore11());
-                }
-                if (tsbr.getScore12() > 0) {
-                    t.setScore12(tsbr.getScore12());
-                }
-                if (tsbr.getScore13() > 0) {
-                    t.setScore13(tsbr.getScore13());
-                }
-                if (tsbr.getScore14() > 0) {
-                    t.setScore14(tsbr.getScore14());
-                }
-                if (tsbr.getScore15() > 0) {
-                    t.setScore15(tsbr.getScore15());
-                }
-                if (tsbr.getScore16() > 0) {
-                    t.setScore16(tsbr.getScore16());
-                }
-                if (tsbr.getScore17() > 0) {
-                    t.setScore17(tsbr.getScore17());
-                }
-                if (tsbr.getScore18() > 0) {
-                    t.setScore18(tsbr.getScore18());
-                }
+                
                 em.persist(t);
             }
             //
@@ -651,7 +600,7 @@ public class DataUtil {
             for (TourneyScoreByRound ts : list) {
                 dto.add(new TourneyScoreByRoundDTO(ts));
             }
-
+            logger.log(Level.OFF, "TourneyScoreByRound added, list: {0}", dto.size());
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to add scoreByRound record", e);
             throw new DataException("Unable to add scoreByRound records\n" + getErrorString(e));
@@ -660,6 +609,25 @@ public class DataUtil {
         return dto;
     }
 
+    public ResponseDTO updateTeeTime (TourneyScoreByRoundDTO score) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            TourneyScoreByRound tsbr = getTourneyScoreByRoundByID(score.getTourneyScoreByRoundID());
+            tsbr.setTee(score.getTee());
+            tsbr.setTeeTime(new Date(score.getTeeTime()));
+            em.merge(tsbr);
+            
+            r = getTournamentPlayers(score.getTournamentID());
+            logger.log(Level.INFO, "Tee Time updated: {0} on tee: {1}", 
+                    new Object[]{new Date(score.getTeeTime()), score.getTee()});
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unable to update TeeTime", e);
+            throw new DataException("Unable to update TeeTime\n" + getErrorString(e));
+
+        }
+        
+        return r;
+    }
     public ResponseDTO updateTournamentScoreByRound(LeaderBoardDTO leaderboard) throws DataException {
         ResponseDTO r = new ResponseDTO();
         LeaderBoard tps = getLeaderBoardByID(leaderboard.getLeaderBoardID());
@@ -1117,60 +1085,7 @@ public class DataUtil {
         return g;
     }
 
-    public ResponseDTO addTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
-        ResponseDTO resp = new ResponseDTO();
-        resp.setTeeTimeList(new ArrayList<TeeTimeDTO>());
-        for (TeeTimeDTO t : list) {
-            TeeTimeDTO d = addTeeTime(t);
-            resp.getTeeTimeList().add(d);
-        }
-
-        return resp;
-    }
-
-    public TeeTimeDTO addTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
-        TeeTime s = new TeeTime();
-        s.setGolfRound(d.getGolfRound());
-        s.setTeeTime(new Date(d.getTeeTime()));
-        s.setLeaderBoard(getLeaderBoardByID(d.getLeaderBoardID()));
-        try {
-            em.persist(s);
-            logger.log(Level.INFO, "\n### Added Tournament tee time");
-        } catch (PersistenceException e) {
-            throw new DuplicateException();
-        } catch (IllegalStateException e) {
-            logger.log(Level.SEVERE, "***ERROR*** Adding Tournament teetime", e);
-            throw new DataException(getErrorString(e));
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Failed to add Tournament teetime", e);
-            throw new DataException("Failed to add Tournament teetime\n" + getErrorString(e));
-        } finally {
-        }
-        return new TeeTimeDTO(s);
-    }
-
-    public void updateTeeTimes(List<TeeTimeDTO> list) throws DataException, DuplicateException {
-        for (TeeTimeDTO t : list) {
-            updateTeeTime(t);
-        }
-    }
-
-    public void updateTeeTime(TeeTimeDTO d) throws DataException, DuplicateException {
-
-        TeeTime s = em.find(TeeTime.class, d.getTeeTimeID());
-        s.setGolfRound(d.getGolfRound());
-        s.setTeeTime(new Date(d.getTeeTime()));
-        try {
-            em.merge(s);
-            logger.log(Level.INFO, "\n### updated Tournament player tee time");
-
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Failed to update teetime", e);
-            throw new DataException("Failed to update teetime\n" + getErrorString(e));
-        } finally {
-        }
-
-    }
+  
 
     public ResponseDTO removeTournamentPlayer(int tournamentID, int playerID) throws DataException {
 
@@ -1219,8 +1134,9 @@ public class DataUtil {
                 TourneyScoreByRoundDTO dto = new TourneyScoreByRoundDTO();
                 dto.setGolfRound(tc.getRound());
                 dto.setClubCourse(new ClubCourseDTO(tc.getClubCourse()));
-                dto.setHolesPerRound(s.getTournament().getHolesPerRound());
-                dto.setPar(s.getTournament().getPar());
+                dto.setHolesPerRound(s.getTournament().getHolesPerRound());               
+                dto.setPar(tc.getClubCourse().getPar());
+                dto.setTournamentID(leaderBoard.getTournament().getTournamentID());
                 dto.setLeaderBoardID(leaderBoard.getLeaderBoardID());
                 list.add(dto);
             }

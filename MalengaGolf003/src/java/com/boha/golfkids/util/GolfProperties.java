@@ -35,6 +35,15 @@ public class GolfProperties {
         return d;
     }
 
+    public static File getImageDir() {
+        getProperties();
+        File d = new File(props.getProperty("images"));
+        if (!d.exists()) {
+            d.mkdir();
+        }
+        return d;
+    }
+
     public static File getChartsDir() {
         getProperties();
         File d = new File(props.getProperty("charts"));

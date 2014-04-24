@@ -52,6 +52,10 @@ import javax.validation.constraints.Size;
 
 })
 public class Agegroup implements Serializable {
+    @Column(name = "gender")
+    private Integer gender;
+    @Column(name = "numberOfHolesPerRound")
+    private Integer numberOfHolesPerRound;
     @Basic(optional = false)
     @NotNull
     @Column(name = "ageFrom")
@@ -71,10 +75,6 @@ public class Agegroup implements Serializable {
     @Size(max = 50)
     @Column(name = "groupName")
     private String groupName;
-    @Column(name = "gender")
-    private int gender;
-    @Column(name = "numberOfHolesPerRound")
-    private int numberOfHolesPerRound;
    
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
@@ -103,21 +103,6 @@ public class Agegroup implements Serializable {
         this.groupName = groupName;
     }
 
-    public int getGender() {
-        return gender;
-    }
-
-    public void setGender(int gender) {
-        this.gender = gender;
-    }
-
-    public int getNumberOfHolesPerRound() {
-        return numberOfHolesPerRound;
-    }
-
-    public void setNumberOfHolesPerRound(int numberOfHolesPerRound) {
-        this.numberOfHolesPerRound = numberOfHolesPerRound;
-    }
 
    
 
@@ -156,6 +141,22 @@ public class Agegroup implements Serializable {
 
     public void setLeaderBoardList(List<LeaderBoard> leaderBoardList) {
         this.leaderBoardList = leaderBoardList;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Integer getNumberOfHolesPerRound() {
+        return numberOfHolesPerRound;
+    }
+
+    public void setNumberOfHolesPerRound(Integer numberOfHolesPerRound) {
+        this.numberOfHolesPerRound = numberOfHolesPerRound;
     }
     
 }

@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "GolfAdminServlet", urlPatterns = {"/admin"})
 public class GolfAdminServlet extends HttpServlet {
-    
+
     @EJB
     DataUtil dataUtil;
     @EJB
@@ -70,15 +70,16 @@ public class GolfAdminServlet extends HttpServlet {
             log.log(Level.WARNING, "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
                 switch (dto.getRequestType()) {
+                    case RequestDTO.UPDATE_TEE_TIMES:
+                        resp = dataUtil.updateTeeTime(dto.getTourneyScoreByRound());
+                        break;
                     case RequestDTO.CLOSE_TOURNAMENT:
                         resp = dataUtil.closeTournament(dto.getTournamentID(), leaderBoardUtil);
                         break;
                     case RequestDTO.UPDATE_WINNER_FLAG:
                         resp = dataUtil.updateWinnerFlag(dto.getLeaderBoardID(), dto.getWinnerFlag());
                         break;
-                    case RequestDTO.GET_TEE_TIMES:
-                        resp.setTeeTimeList(dataUtil.getTeeTimes(dto.getTournamentID()));
-                        break;
+                    
                     case RequestDTO.GET_GOLF_GROUP_DATA:
                         resp = dataUtil.getGolfGroupData(dto.getGolfGroupID(),
                                 dto.getCountryID());
@@ -99,15 +100,10 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.ADD_TOURNAMENT_PLAYERS:
                         resp = dataUtil.addTournamentPlayer(dto.getLeaderBoard());
                         break;
-                    case RequestDTO.ADD_TEE_TIMES:
-                        resp = dataUtil.addTeeTimes(dto.getTeeTimeList());
-                        break;
-                    case RequestDTO.UPDATE_TEE_TIMES:
-                        dataUtil.updateTeeTimes(dto.getTeeTimeList());
-                        break;
+                   
                     case RequestDTO.ADD_TOURNAMENT:
                         resp = dataUtil.addTournament(dto.getTournament());
-                        
+
                         break;
                     case RequestDTO.ADD_PLAYER:
                         resp = dataUtil.addPlayer(dto.getPlayer(), dto.getGolfGroupID());
@@ -115,7 +111,7 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.UPDATE_PLAYER:
                         dataUtil.updatePlayer(dto.getPlayer());
                         break;
-                    
+
                     case RequestDTO.ADD_PARENT:
                         resp = dataUtil.addParent(dto.getParent(), dto.getGolfGroupID());
                         break;
@@ -127,11 +123,11 @@ public class GolfAdminServlet extends HttpServlet {
                         break;
                     case RequestDTO.ADD_ADMINISTRATOR:
                         resp = dataUtil.addGolfGroupAdmin(dto.getAdministrator());
-                        
+
                         break;
                     case RequestDTO.ADD_GOLF_GROUP:
                         resp = dataUtil.addGolfGroup(dto.getGolfGroup(), dto.getAdministrator());
-                        
+
                         break;
                     case RequestDTO.UPDATE_GOLF_GROUP:
                         dataUtil.updateGolfGroup(dto.getGolfGroup());
@@ -142,7 +138,7 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.GET_CLUBS_IN_COUNTRY:
                         resp = dataUtil.getClubsByCountry(dto.getCountryID());
                         break;
-                    
+
                     case RequestDTO.UPDATE_PLAYER_PARENT:
                         //TODO - think!
                         break;
@@ -168,14 +164,14 @@ public class GolfAdminServlet extends HttpServlet {
                         List<CountryDTO> cntrList = dataUtil.getCountries();
                         resp.setCountries(cntrList);
                         break;
-                    
+
                     case RequestDTO.ADD_SCORER:
                         resp = dataUtil.addScorer(dto.getScorer(), dto.getGolfGroupID());
                         break;
                     case RequestDTO.UPDATE_SCORER:
                         dataUtil.updateScorer(dto.getScorer());
                         break;
-                    
+
                     case RequestDTO.GET_TOURNAMENT_PLAYERS:
                         resp = dataUtil.getTournamentPlayers(dto.getTournamentID());
                         break;
@@ -186,7 +182,7 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.UPDATE_TOURNAMENT:
                         resp = dataUtil.updateTournament(dto.getTournament());
                         break;
-                        case RequestDTO.GET_PLAYER_HISTORY:
+                    case RequestDTO.GET_PLAYER_HISTORY:
                         resp = leaderBoardUtil.getPlayerHistory(dto.getPlayerID());
                         break;
                     default:
@@ -194,20 +190,15 @@ public class GolfAdminServlet extends HttpServlet {
                         resp.setStatusCode(7);
                         break;
                 }
-                
-            } catch (DuplicateException e) {
-                resp.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
-                resp.setMessage("Record already exists in the database");
-                log.log(Level.WARNING, "Duplicate record attempted", e);
-                platformUtil.addErrorStore(8, "Duplicate record attempted", "GolfAdminServlet");
-                
+
+           
             } catch (DataException e) {
                 resp.setStatusCode(ResponseDTO.DATA_EXCEPTION);
                 resp.setMessage("Database failed. Please try again later");
                 log.log(Level.SEVERE, "Database failed", e);
                 platformUtil.addErrorStore(8, "Database related error\n"
                         + e.description, "GolfAdminServlet");
-                
+
             } catch (Exception e) {
                 resp.setStatusCode(ResponseDTO.GENERIC_EXCEPTION);
                 resp.setMessage("Server process failed. Please try again later");
@@ -238,28 +229,28 @@ public class GolfAdminServlet extends HttpServlet {
                     out.println(json);
                     out.close();
                 }
-                
+
                 long end = System.currentTimeMillis();
                 platformUtil.addTimeElapsedWarning(start, end, dto, "GolfAdminServlet");
                 log.log(Level.INFO, "---> GolfAdminServlet completed in {0} seconds", getElapsed(start, end));
             }
         }
     }
-    
+
     public static double getElapsed(long start, long end) {
         BigDecimal m = new BigDecimal(end - start).divide(new BigDecimal(1000));
         return m.doubleValue();
     }
-    
+
     private RequestDTO getRequest(Gson gson, HttpServletRequest req) {
-        
+
         String json = req.getParameter("JSON");
         RequestDTO cr = gson.fromJson(json, RequestDTO.class);
-        
+
         if (cr == null) {
             cr = new RequestDTO();
         }
-        
+
         return cr;
     }
     private static final Logger log = Logger.getLogger("GolfAdmin");

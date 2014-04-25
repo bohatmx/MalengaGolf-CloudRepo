@@ -41,6 +41,8 @@ import javax.validation.constraints.Size;
 
 })
 public class GolfGroup implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
+    private List<VideoClip> videoClipList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -227,6 +229,14 @@ public class GolfGroup implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.GolfGroup[ golfGroupID=" + golfGroupID + " ]";
+    }
+
+    public List<VideoClip> getVideoClipList() {
+        return videoClipList;
+    }
+
+    public void setVideoClipList(List<VideoClip> videoClipList) {
+        this.videoClipList = videoClipList;
     }
     
 }

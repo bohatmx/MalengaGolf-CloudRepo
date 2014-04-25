@@ -88,7 +88,11 @@ public class LeaderBoardUtil {
             //create all lb
             LeaderBoardCarrierDTO carrier = new LeaderBoardCarrierDTO();
             carrier.setAgeGroup(null);
-            carrier.setLeaderBoardList(getLeaderBoard(tournamentID, dataUtil).getLeaderBoardList());
+            List<LeaderBoardDTO> combinedList = getLeaderBoard(tournamentID, dataUtil).getLeaderBoardList();
+            //TODO - check if everybody's playing the same number of holes; might split into 9 or 18 hole groups???
+            calculateLeaderboard(combinedList);
+            setPositions(combinedList);
+            carrier.setLeaderBoardList(combinedList);
             r.getLeaderBoardCarriers().add(carrier);
             
         }catch (Exception e) {
@@ -422,6 +426,7 @@ public class LeaderBoardUtil {
 
         for (LeaderBoardDTO lb : list) {
             setParStatus(lb);
+            lb.setWinnerFlag(0);
         }
         Collections.sort(list);
         //set positions

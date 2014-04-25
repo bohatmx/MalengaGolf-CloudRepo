@@ -85,6 +85,9 @@ public class RequestDTO {
     public static final int GET_GOLFGROUP_PICTURES = 62;
     public static final int GET_TOURNAMENT_PICTURES = 63;
     
+    public static final int ADD_VIDEO_CLIP = 64;
+    public static final int GET_VIDEO_CLIPS_BY_GOLF_GROUP = 66;
+    
     public static final int PICTURES_FULL_SIZE = 1;
     public static final int PICTURES_THUMBNAILS = 2;
     
@@ -93,6 +96,17 @@ public class RequestDTO {
     private int personalPlayerID;
     private PersonalPlayerDTO personalPlayer;
     private PersonalScoreDTO personalScore;
+    private VideoClipDTO videoClip;
+
+    public VideoClipDTO getVideoClip() {
+        return videoClip;
+    }
+
+    public void setVideoClip(VideoClipDTO videoClip) {
+        this.videoClip = videoClip;
+    }
+    
+    
 
     public LeaderBoardDTO getLeaderBoard() {
         return leaderBoard;

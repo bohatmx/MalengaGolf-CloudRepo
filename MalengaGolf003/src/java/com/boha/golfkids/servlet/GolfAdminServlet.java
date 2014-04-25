@@ -79,7 +79,7 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.UPDATE_WINNER_FLAG:
                         resp = dataUtil.updateWinnerFlag(dto.getLeaderBoardID(), dto.getWinnerFlag());
                         break;
-                    
+
                     case RequestDTO.GET_GOLF_GROUP_DATA:
                         resp = dataUtil.getGolfGroupData(dto.getGolfGroupID(),
                                 dto.getCountryID());
@@ -100,7 +100,7 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.ADD_TOURNAMENT_PLAYERS:
                         resp = dataUtil.addTournamentPlayer(dto.getLeaderBoard());
                         break;
-                   
+
                     case RequestDTO.ADD_TOURNAMENT:
                         resp = dataUtil.addTournament(dto.getTournament());
 
@@ -185,13 +185,18 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.GET_PLAYER_HISTORY:
                         resp = leaderBoardUtil.getPlayerHistory(dto.getPlayerID());
                         break;
+                    case RequestDTO.ADD_VIDEO_CLIP:
+                        resp = dataUtil.addVideoClip(dto.getVideoClip());
+                        break;
+                    case RequestDTO.GET_VIDEO_CLIPS_BY_GOLF_GROUP:
+                        resp = dataUtil.getVideoClips(dto.getGolfGroupID());
+                        break;
                     default:
                         platformUtil.addErrorStore(7, "Request Type specified not on", "GolfAdminServlet");
                         resp.setStatusCode(7);
                         break;
                 }
 
-           
             } catch (DataException e) {
                 resp.setStatusCode(ResponseDTO.DATA_EXCEPTION);
                 resp.setMessage("Database failed. Please try again later");

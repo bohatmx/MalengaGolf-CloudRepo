@@ -48,6 +48,8 @@ import javax.validation.constraints.Size;
             query = "select a from Tournament a where a.club.clubID = :id")
 })
 public class Tournament implements Serializable {
+    @OneToMany(mappedBy = "tournament")
+    private List<VideoClip> videoClipList;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<TournamentCourse> tournamentCourseList;
@@ -68,7 +70,7 @@ public class Tournament implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "tournamentID")
-    private Integer tournamentID;
+    private int tournamentID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -112,11 +114,11 @@ public class Tournament implements Serializable {
     public Tournament() {
     }
 
-    public Tournament(Integer tournamentID) {
+    public Tournament(int tournamentID) {
         this.tournamentID = tournamentID;
     }
 
-    public Tournament(Integer tournamentID, String tourneyName, Date endDate, Date startDate, int golfRounds) {
+    public Tournament(int tournamentID, String tourneyName, Date endDate, Date startDate, int golfRounds) {
         this.tournamentID = tournamentID;
         this.tourneyName = tourneyName;
         this.endDate = endDate;
@@ -124,11 +126,11 @@ public class Tournament implements Serializable {
         this.golfRounds = golfRounds;
     }
 
-    public Integer getTournamentID() {
+    public int getTournamentID() {
         return tournamentID;
     }
 
-    public void setTournamentID(Integer tournamentID) {
+    public void setTournamentID(int tournamentID) {
         this.tournamentID = tournamentID;
     }
 
@@ -213,26 +215,6 @@ public class Tournament implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (tournamentID != null ? tournamentID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Tournament)) {
-            return false;
-        }
-        Tournament other = (Tournament) object;
-        if ((this.tournamentID == null && other.tournamentID != null) || (this.tournamentID != null && !this.tournamentID.equals(other.tournamentID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
         return "com.boha.golfkids.data.Tournament[ tournamentID=" + tournamentID + " ]";
     }
@@ -267,6 +249,14 @@ public class Tournament implements Serializable {
 
     public void setTournamentCourseList(List<TournamentCourse> tournamentCourseList) {
         this.tournamentCourseList = tournamentCourseList;
+    }
+
+    public List<VideoClip> getVideoClipList() {
+        return videoClipList;
+    }
+
+    public void setVideoClipList(List<VideoClip> videoClipList) {
+        this.videoClipList = videoClipList;
     }
     
 

@@ -37,6 +37,7 @@ public class ResponseDTO {
     private GolfGroupDTO golfGroup;
     private List<String> imageFileNames;
     private AdministratorDTO administrator;
+    private List<VideoClipDTO> videoClips;
     
     //
     public static final int LOGIN_EXCEPTION = 101;
@@ -166,6 +167,14 @@ public class ResponseDTO {
 
     public void setGolfGroups(List<GolfGroupDTO> golfGroups) {
         this.golfGroups = golfGroups;
+    }
+
+    public List<VideoClipDTO> getVideoClips() {
+        return videoClips;
+    }
+
+    public void setVideoClips(List<VideoClipDTO> videoClips) {
+        this.videoClips = videoClips;
     }
 
     public List<TourneyScoreByRoundDTO> getTourneyScoreByRoundList() {

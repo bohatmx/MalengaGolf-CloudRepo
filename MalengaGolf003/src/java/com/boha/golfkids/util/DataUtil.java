@@ -20,6 +20,7 @@ import com.boha.golfkids.data.Scorer;
 import com.boha.golfkids.data.Tournament;
 import com.boha.golfkids.data.TournamentCourse;
 import com.boha.golfkids.data.TourneyScoreByRound;
+import com.boha.golfkids.data.VideoClip;
 import com.boha.golfkids.dto.AdministratorDTO;
 import com.boha.golfkids.dto.AgeGroupDTO;
 import com.boha.golfkids.dto.ClubCourseDTO;
@@ -36,11 +37,10 @@ import com.boha.golfkids.dto.ScorerDTO;
 import com.boha.golfkids.dto.TournamentCourseDTO;
 import com.boha.golfkids.dto.TournamentDTO;
 import com.boha.golfkids.dto.TourneyScoreByRoundDTO;
+import com.boha.golfkids.dto.VideoClipDTO;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -67,6 +67,59 @@ public class DataUtil {
     @PersistenceContext
     EntityManager em;
 
+    public ResponseDTO addVideoClip(VideoClipDTO clip) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            VideoClip c = new VideoClip();
+            GolfGroup gg = getGroupByID(clip.getGolfGroupID());
+            c.setGolfGroup(gg);
+            if (clip.getTournamentID() > 0) {
+                    c.setTournament(getTournamentByID(clip.getTournamentID()));
+            }  
+            c.setYouTubeID(clip.getYouTubeID());
+            c.setComment(clip.getComment());
+            c.setLength(clip.getLength());
+            em.persist(c);
+            Query a = em.createNamedQuery("VideoClip.findAllInGroup", VideoClip.class);
+            a.setParameter("gID", clip.getGolfGroupID());
+            a.setParameter("tID", clip.getTournamentID());
+            List<VideoClip> list = a.getResultList();
+            List<VideoClipDTO> dList = new ArrayList<>();
+            for (VideoClip videoClip : list) {
+                dList.add(new VideoClipDTO(videoClip));
+            }
+            r.setVideoClips(dList);
+            
+            logger.log(Level.INFO, "Video clip added");
+        } catch (Exception e) {
+            logger.log(Level.INFO, "Failed to add videoClip");
+            throw new DataException("Failed to add videoClip\n"
+                    + getErrorString(e));
+        }
+
+        return r;
+    }
+    public ResponseDTO getVideoClips(int golfGroupID) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Query a = em.createNamedQuery("VideoClip.findAllInGroup", VideoClip.class);
+            a.setParameter("gID", golfGroupID);
+            a.setParameter("tID", 0);
+            List<VideoClip> list = a.getResultList();
+            List<VideoClipDTO> dList = new ArrayList<>();
+            for (VideoClip videoClip : list) {
+                dList.add(new VideoClipDTO(videoClip));
+            }
+            r.setVideoClips(dList);
+            
+        } catch (Exception e) {
+            logger.log(Level.INFO, "Failed to get videoClips");
+            throw new DataException("Failed to get videoClips\n"
+                    + getErrorString(e));
+        }
+
+        return r;
+    }
     public ResponseDTO closeTournament(int tournamentID, LeaderBoardUtil boardUtil) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {

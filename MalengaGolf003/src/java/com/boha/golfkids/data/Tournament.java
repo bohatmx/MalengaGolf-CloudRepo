@@ -93,6 +93,8 @@ public class Tournament implements Serializable {
     @NotNull
     @Column(name = "golfRounds")
     private int golfRounds;
+    @Column(name = "useAgeGroups")
+    private int useAgeGroups;
 
     @Column(name = "closedForScoringFlag")
     private int closedForScoringFlag;
@@ -152,6 +154,14 @@ public class Tournament implements Serializable {
 
     public Date getClosingDate() {
         return closingDate;
+    }
+
+    public int getUseAgeGroups() {
+        return useAgeGroups;
+    }
+
+    public void setUseAgeGroups(int useAgeGroups) {
+        this.useAgeGroups = useAgeGroups;
     }
 
     public void setClosingDate(Date closingDate) {

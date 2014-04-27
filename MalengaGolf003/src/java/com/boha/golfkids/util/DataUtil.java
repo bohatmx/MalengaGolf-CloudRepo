@@ -54,6 +54,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.joda.time.Years;
 
 /**
@@ -74,8 +75,8 @@ public class DataUtil {
             GolfGroup gg = getGroupByID(clip.getGolfGroupID());
             c.setGolfGroup(gg);
             if (clip.getTournamentID() > 0) {
-                    c.setTournament(getTournamentByID(clip.getTournamentID()));
-            }  
+                c.setTournament(getTournamentByID(clip.getTournamentID()));
+            }
             c.setYouTubeID(clip.getYouTubeID());
             c.setComment(clip.getComment());
             c.setLength(clip.getLength());
@@ -89,7 +90,7 @@ public class DataUtil {
                 dList.add(new VideoClipDTO(videoClip));
             }
             r.setVideoClips(dList);
-            
+
             logger.log(Level.INFO, "Video clip added");
         } catch (Exception e) {
             logger.log(Level.INFO, "Failed to add videoClip");
@@ -99,6 +100,7 @@ public class DataUtil {
 
         return r;
     }
+
     public ResponseDTO getVideoClips(int golfGroupID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -111,7 +113,7 @@ public class DataUtil {
                 dList.add(new VideoClipDTO(videoClip));
             }
             r.setVideoClips(dList);
-            
+
         } catch (Exception e) {
             logger.log(Level.INFO, "Failed to get videoClips");
             throw new DataException("Failed to get videoClips\n"
@@ -120,14 +122,14 @@ public class DataUtil {
 
         return r;
     }
+
     public ResponseDTO closeTournament(int tournamentID, LeaderBoardUtil boardUtil) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
             Tournament tx = getTournamentByID(tournamentID);
             tx.setClosedForScoringFlag(1);
             em.merge(tx);
-            boardUtil.createLeaderBoard(tournamentID, this);
-            logger.log(Level.INFO, "Tournament closed");
+            logger.log(Level.INFO, "Tournament closed - {0}", tx.getTourneyName());
         } catch (Exception e) {
             logger.log(Level.INFO, "Failed to close tournament");
             throw new DataException("Failed to close tournament\n"
@@ -222,14 +224,25 @@ public class DataUtil {
             List<Tournament> tourList = q.getResultList();
             r.setTournaments(getTournamentDTOList(tourList));
 
+            //get tournament courses
+            Query y = em.createNamedQuery("TournamentCourse.findByGolfGroup", TournamentCourse.class);
+            y.setParameter("id", golfGroupID);
+            List<TournamentCourse> tcList = y.getResultList();
+            logger.log(Level.OFF, "TournamentCourses found: " + tcList.size());
             Query qx = em.createNamedQuery("LeaderBoard.countByTourney");
             qx.setParameter("id", golfGroupID);
             List<Object[]> resultsx = qx.getResultList();
             for (TournamentDTO tn : r.getTournaments()) {
-                for (Object[] o : resultsx) {
-                    int id = ((Number) o[0]).intValue();
+                for (Object[] object : resultsx) {
+                    int id = ((Number) object[0]).intValue();
                     if (tn.getTournamentID() == id) {
-                        tn.setNumberOfRegisteredPlayers(((Number) o[1]).intValue());
+                        tn.setNumberOfRegisteredPlayers(((Number) object[1]).intValue());
+                    }
+                }
+                tn.setTournamentCourses(new ArrayList<TournamentCourseDTO>());
+                for (TournamentCourse tc : tcList) {
+                    if (tc.getTournament().getTournamentID() == tn.getTournamentID()) {
+                        tn.getTournamentCourses().add(new TournamentCourseDTO(tc));
                     }
                 }
             }
@@ -604,12 +617,12 @@ public class DataUtil {
                 if (lb.getLeaderBoardID() == leaderBoardID) {
                     lb.setWinnerFlag(winnerFlag);
                     em.merge(lb);
-                    logger.log(Level.INFO, "Winner updated in database: {0} {1} - {2}", 
-                            new Object[]{lb.getPlayer().getFirstName(), 
+                    logger.log(Level.INFO, "Winner updated in database: {0} {1} - {2}",
+                            new Object[]{lb.getPlayer().getFirstName(),
                                 lb.getPlayer().getLastName(), lb.getTournament().getTourneyName()});
                 }
             }
-            
+
             b.setWinnerFlag(winnerFlag);
             em.merge(b);
             logger.log(Level.INFO, "Winner flag has been updated. Congratulations to {0} {1}",
@@ -633,15 +646,15 @@ public class DataUtil {
                 t.setTournamentIDx(tsbr.getTournamentID());
                 t.setClubCourse(getClubCourseByID(tsbr.getClubCourse().getClubCourseID()));
                 t.setLeaderBoard(tps);
-                
-                if  (tps.getTournament().getHolesPerRound() == 9) {
+
+                if (tps.getTournament().getHolesPerRound() == 9) {
                     t.setPar(tps.getTournament().getPar());
                 } else {
                     t.setPar(t.getClubCourse().getPar());
                 }
                 t.setHolesPerRound(tps.getTournament().getHolesPerRound());
                 //
-                
+
                 em.persist(t);
             }
             //
@@ -662,31 +675,33 @@ public class DataUtil {
         return dto;
     }
 
-    public ResponseDTO updateTeeTime (TourneyScoreByRoundDTO score) throws DataException {
+    public ResponseDTO updateTeeTime(TourneyScoreByRoundDTO score) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
             TourneyScoreByRound tsbr = getTourneyScoreByRoundByID(score.getTourneyScoreByRoundID());
             tsbr.setTee(score.getTee());
             tsbr.setTeeTime(new Date(score.getTeeTime()));
             em.merge(tsbr);
-            
+
             r = getTournamentPlayers(score.getTournamentID());
-            logger.log(Level.INFO, "Tee Time updated: {0} on tee: {1}", 
+            logger.log(Level.INFO, "Tee Time updated: {0} on tee: {1}",
                     new Object[]{new Date(score.getTeeTime()), score.getTee()});
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to update TeeTime", e);
             throw new DataException("Unable to update TeeTime\n" + getErrorString(e));
 
         }
-        
+
         return r;
     }
+
     public ResponseDTO updateTournamentScoreByRound(LeaderBoardDTO leaderboard) throws DataException {
         ResponseDTO r = new ResponseDTO();
         LeaderBoard tps = getLeaderBoardByID(leaderboard.getLeaderBoardID());
         try {
             for (TourneyScoreByRoundDTO tsbr : leaderboard.getTourneyScoreByRoundList()) {
                 TourneyScoreByRound t = getTourneyScoreByRoundByID(tsbr.getTourneyScoreByRoundID());
+                t.setScoringComplete(tsbr.getScoringComplete());
                 if (tsbr.getScore1() > 0) {
                     t.setScore1(tsbr.getScore1());
                 }
@@ -1138,8 +1153,6 @@ public class DataUtil {
         return g;
     }
 
-  
-
     public ResponseDTO removeTournamentPlayer(int tournamentID, int playerID) throws DataException {
 
         ResponseDTO r = new ResponseDTO();
@@ -1187,14 +1200,16 @@ public class DataUtil {
                 TourneyScoreByRoundDTO dto = new TourneyScoreByRoundDTO();
                 dto.setGolfRound(tc.getRound());
                 dto.setClubCourse(new ClubCourseDTO(tc.getClubCourse()));
-                dto.setHolesPerRound(s.getTournament().getHolesPerRound());               
+                dto.setHolesPerRound(s.getTournament().getHolesPerRound());
                 dto.setPar(tc.getClubCourse().getPar());
                 dto.setTournamentID(leaderBoard.getTournament().getTournamentID());
                 dto.setLeaderBoardID(leaderBoard.getLeaderBoardID());
                 list.add(dto);
             }
             //
-            setAgeGroup(leaderBoard, s.getTournament().getStartDate().getTime());
+            if (s.getTournament().getUseAgeGroups() == 1) {
+                setAgeGroup(leaderBoard, s.getTournament().getStartDate().getTime());
+            }
             r.setLeaderBoard(new LeaderBoardDTO(leaderBoard));
             List<TourneyScoreByRoundDTO> tsbrList = addTournamentScoreByRound(leaderBoard, list);
             r.getLeaderBoard().setTourneyScoreByRoundList(tsbrList);
@@ -1233,6 +1248,7 @@ public class DataUtil {
         t.setTourneyName(dto.getTourneyName());
         t.setHolesPerRound(dto.getHolesPerRound());
         t.setPar(dto.getPar());
+        t.setUseAgeGroups(dto.getUseAgeGroups());
 
         try {
             em.persist(t);
@@ -1248,11 +1264,11 @@ public class DataUtil {
             if (cclist.size() == 1) {
                 ClubCourse cc = cclist.get(0);
                 for (int i = 0; i < dto.getGolfRounds(); i++) {
-                  TournamentCourse x = new TournamentCourse();
+                    TournamentCourse x = new TournamentCourse();
                     x.setTournament(t);
                     x.setRound(i + 1);
                     x.setClubCourse(cc);
-                    em.persist(x);   
+                    em.persist(x);
                 }
 
             } else {
@@ -1586,11 +1602,13 @@ public class DataUtil {
 
     private void setAgeGroup(LeaderBoard lb, long tournamentStartDate) throws DataException {
 
-        DateTime birthday = new DateTime(lb.getPlayer().getDateOfBirth());
-        DateTime start = new DateTime(tournamentStartDate);
+        LocalDateTime birthday = new LocalDateTime(lb.getPlayer().getDateOfBirth());
+        LocalDateTime start = new LocalDateTime(tournamentStartDate);
 
         Years years = Years.yearsBetween(birthday, start);
         int age = years.getYears();
+
+        //
         int id = lb.getTournament().getGolfGroup().getGolfGroupID();
         logger.log(Level.OFF, "age calculated, {0} - {1} {2} - golfGroupID: {3}",
                 new Object[]{age, lb.getPlayer().getFirstName(), lb.getPlayer().getLastName(), id});
@@ -1601,6 +1619,7 @@ public class DataUtil {
                 q.setParameter("gID", id);
                 Agegroup ageGroupBoys = (Agegroup) q.getSingleResult();
                 lb.setAgeGroup(ageGroupBoys);
+                lb.setAge(age);
             }
             if (lb.getPlayer().getGender() == 2) {
                 Query q = em.createNamedQuery("AgeGroup.findByAgeGirls", Agegroup.class);
@@ -1608,6 +1627,7 @@ public class DataUtil {
                 q.setParameter("gID", id);
                 Agegroup ageGroupGirls = (Agegroup) q.getSingleResult();
                 lb.setAgeGroup(ageGroupGirls);
+                lb.setAge(age);
             }
             em.merge(lb);
 

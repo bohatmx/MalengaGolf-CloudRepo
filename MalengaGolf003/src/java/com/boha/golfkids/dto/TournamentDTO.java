@@ -22,7 +22,8 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     private long startDate;
     private String tourneyName, clubName;
     private int clubID;
-    private int clubCourseID;
+    private int useAgeGroups;
+    private int clubCourseID, provinceID;
     private int golfGroupID, par = 72, holesPerRound;
     private List<LeaderBoardDTO> scores;
     private List<VolunteerDTO> volunteers;
@@ -31,6 +32,7 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     public TournamentDTO(Tournament a) {
         tournamentID = a.getTournamentID();
         closedForScoringFlag = a.getClosedForScoringFlag();
+        useAgeGroups = a.getUseAgeGroups();
         closedForRegistrationFlag = a.getClosedForRegistrationFlag();
         if (a.getClosingDate() != null) {
             closingDate = a.getClosingDate().getTime();
@@ -48,6 +50,7 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
         if (a.getClub() != null) {
             clubID = a.getClub().getClubID();
             clubName = a.getClub().getClubName();
+            provinceID = a.getClub().getProvince().getProvinceID();
 
         }
         if (a.getGolfGroup() != null) {
@@ -56,6 +59,23 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
 
     }
 
+    public int getUseAgeGroups() {
+        return useAgeGroups;
+    }
+
+    public int getProvinceID() {
+        return provinceID;
+    }
+
+    public void setProvinceID(int provinceID) {
+        this.provinceID = provinceID;
+    }
+
+    public void setUseAgeGroups(int useAgeGroups) {
+        this.useAgeGroups = useAgeGroups;
+    }
+
+    
     public int getHolesPerRound() {
         return holesPerRound;
     }

@@ -6,6 +6,9 @@ package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Player;
 import java.util.List;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Years;
 
 /**
  *
@@ -19,7 +22,7 @@ public class PlayerDTO {
     private long dateRegistered;
     private String email;
     private String firstName;
-    private int gender;
+    private int gender, age;
     private String lastName;
     private String middleName;
     private String pin;
@@ -45,9 +48,20 @@ public class PlayerDTO {
         if (a.getParent() != null) {
             parentID = a.getParent().getParentID();
         }
-
+        setPlayerAge(dateOfBirth);
     }
 
+    private void setPlayerAge(long date) {
+        LocalDateTime birthday = new LocalDateTime(date);
+        LocalDateTime start = new LocalDateTime();
+
+        Years years = Years.yearsBetween(birthday, start);
+        age = years.getYears();
+        //
+        
+        //System.out.println("Age calculated: " + age + " - " + firstName + " " + lastName
+        //+ " - " + birthday.getDayOfMonth() + "-" + birthday.getMonthOfYear() + "-" + birthday.getYear());
+    }
     public int getParentID() {
         return parentID;
     }

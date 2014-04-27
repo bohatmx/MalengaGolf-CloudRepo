@@ -18,7 +18,7 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
     private PlayerDTO player;
     private AgeGroupDTO ageGroup;
     private boolean tied;
-    private int rounds, lastHole, holesPerRound, currentRoundStatus;
+    private int rounds, lastHole, holesPerRound, currentRoundStatus, age;
     private long startDate;
     private String tournamentName, clubName;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
@@ -48,6 +48,7 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
 
     private void setBasics(LeaderBoard a) {
         leaderBoardID = a.getLeaderBoardID();
+        age = a.getAge();
         winnerFlag = a.getWinnerFlag();
         player = new PlayerDTO(a.getPlayer());
         position = a.getPosition();
@@ -75,6 +76,14 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
 
     public int getPosition() {
         return position;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public AgeGroupDTO getAgeGroup() {

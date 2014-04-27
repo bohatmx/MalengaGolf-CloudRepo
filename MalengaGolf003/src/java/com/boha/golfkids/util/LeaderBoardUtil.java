@@ -15,6 +15,7 @@ import com.boha.golfkids.dto.LeaderBoardCarrierDTO;
 import com.boha.golfkids.dto.LeaderBoardDTO;
 import com.boha.golfkids.dto.PlayerDTO;
 import com.boha.golfkids.dto.ResponseDTO;
+import com.boha.golfkids.dto.TournamentDTO;
 import com.boha.golfkids.dto.TourneyScoreByRoundDTO;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,10 +70,25 @@ public class LeaderBoardUtil {
                 lbList.add(d);
             }
     }
-    public ResponseDTO getSectionedLeaderBoards(int tournamentID, DataUtil dataUtil) throws DataException {
-        ResponseDTO r = new ResponseDTO();
+    
+    public ResponseDTO getTournamentLeaderBoard(int tournamentID, DataUtil dataUtil) 
+            throws DataException {
         try {
             Tournament t = dataUtil.getTournamentByID(tournamentID);
+            if (t.getUseAgeGroups() > 0) {
+                return getSectionedLeaderBoards(t);
+            } else {
+                return getLeaderBoard(t);
+            }
+        }catch (Exception e) {
+            log.log(Level.SEVERE, null, e);
+            throw new DataException("Failed to get LeaderBoard\n"
+                    + getErrorString(e));
+        }
+    }
+    private ResponseDTO getSectionedLeaderBoards(Tournament t) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {          
             Query q = em.createNamedQuery("AgeGroup.findByGolfGroup", Agegroup.class);
             q.setParameter("id", t.getGolfGroup().getGolfGroupID());
             List<Agegroup> ageList = q.getResultList();
@@ -88,7 +104,7 @@ public class LeaderBoardUtil {
             //create all lb
             LeaderBoardCarrierDTO carrier = new LeaderBoardCarrierDTO();
             carrier.setAgeGroup(null);
-            List<LeaderBoardDTO> combinedList = getLeaderBoard(tournamentID, dataUtil).getLeaderBoardList();
+            List<LeaderBoardDTO> combinedList = getLeaderBoard(t).getLeaderBoardList();
             //TODO - check if everybody's playing the same number of holes; might split into 9 or 18 hole groups???
             calculateLeaderboard(combinedList);
             setPositions(combinedList);
@@ -130,18 +146,17 @@ public class LeaderBoardUtil {
         
         return lbList;
     }
-    public ResponseDTO getLeaderBoard(int tournamentID, DataUtil dataUtil) throws DataException {
+    private ResponseDTO getLeaderBoard(Tournament t) throws DataException {
         ResponseDTO r = new ResponseDTO();
         List<LeaderBoardDTO> lbList = new ArrayList<>();
         try {
-            Tournament t = dataUtil.getTournamentByID(tournamentID);
             Query q = em.createNamedQuery("LeaderBoard.findByTournament",
                     LeaderBoard.class);
-            q.setParameter("id", tournamentID);
+            q.setParameter("id", t.getTournamentID());
             List<LeaderBoard> tpsList = q.getResultList();
             Query qq = em.createNamedQuery("TourneyScoreByRound.getByTourney",
                     TourneyScoreByRound.class);
-            qq.setParameter("id", tournamentID);
+            qq.setParameter("id", t.getTournamentID());
             List<TourneyScoreByRound> rList = qq.getResultList();
             setScores(t, tpsList, lbList, rList);
             //calculate current par status and position
@@ -156,47 +171,7 @@ public class LeaderBoardUtil {
         return r;
     }
 
-    public void createLeaderBoard(int tournamentID, DataUtil dataUtil) throws DataException {
-        try {
-            ResponseDTO r = getLeaderBoard(tournamentID, dataUtil);
-            Tournament tn = dataUtil.getTournamentByID(tournamentID);
-            Query q = em.createNamedQuery("Player.findByTourney", Player.class);
-            q.setParameter("id", tournamentID);
-            List<Player> playerList = q.getResultList();
-
-            for (LeaderBoardDTO lb : r.getLeaderBoardList()) {
-                LeaderBoard b = new LeaderBoard();
-                b.setTournament(tn);
-                b.setParStatus(lb.getParStatus());
-                b.setPosition(lb.getPosition());
-                b.setScoreRound1(lb.getScoreRound1());
-                b.setScoreRound2(lb.getScoreRound2());
-                b.setScoreRound3(lb.getScoreRound3());
-                b.setScoreRound4(lb.getScoreRound4());
-                b.setScoreRound5(lb.getScoreRound5());
-                b.setScoreRound6(lb.getScoreRound6());
-                if (lb.isTied()) {
-                    b.setTied(1);
-                } else {
-                    b.setTied(0);
-                }
-                b.setTotalScore(lb.getTotalScore());
-                for (Player player : playerList) {
-                    if (player.getPlayerID() == lb.getPlayer().getPlayerID()) {
-                        b.setPlayer(player);
-                        break;
-                    }
-                }
-                em.persist(b);
-                Logger.getLogger("LBUtil").log(Level.INFO, "### Leaderboard created");
-            }
-
-        } catch (Exception e) {
-            Logger.getLogger("LBUtil").log(Level.SEVERE, "Failed to get create Leaderboard");
-            throw new DataException("Failed to get create Leaderboard\n"
-                    + getErrorString(e));
-        }
-    }
+    
 
     public ResponseDTO getPlayerHistory(int playerID) throws DataException {
         ResponseDTO r = new ResponseDTO();

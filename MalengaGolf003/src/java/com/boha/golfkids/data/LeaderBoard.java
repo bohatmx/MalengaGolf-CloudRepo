@@ -89,6 +89,8 @@ public class LeaderBoard implements Serializable {
     private int scoreRound5;
     @Column(name = "scoreRound6")
     private int scoreRound6;
+    @Column(name = "age")
+    private int age;
     @JoinColumn(name = "ageGroupID", referencedColumnName = "ageGroupID")
     @ManyToOne
     private Agegroup ageGroup;
@@ -282,6 +284,14 @@ public class LeaderBoard implements Serializable {
 
     public void setScoreRound6(int scoreRound6) {
         this.scoreRound6 = scoreRound6;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
 }

@@ -66,7 +66,8 @@ public class TourneyScoreByRound implements Serializable {
     @Column(name = "teeTime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date teeTime;
-    
+    @Column(name = "scoringComplete")
+    private int scoringComplete;
     @Basic(optional = false)
     @NotNull
     @Column(name = "tee")
@@ -169,6 +170,14 @@ public class TourneyScoreByRound implements Serializable {
 
     public void setHolesPerRound(int holesPerRound) {
         this.holesPerRound = holesPerRound;
+    }
+
+    public int getScoringComplete() {
+        return scoringComplete;
+    }
+
+    public void setScoringComplete(int scoringComplete) {
+        this.scoringComplete = scoringComplete;
     }
 
     public int getPar() {

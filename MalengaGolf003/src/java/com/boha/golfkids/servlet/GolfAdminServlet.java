@@ -85,7 +85,7 @@ public class GolfAdminServlet extends HttpServlet {
                                 dto.getCountryID());
                         break;
                     case RequestDTO.GET_LEADERBOARD:
-                        resp = leaderBoardUtil.getSectionedLeaderBoards(dto.getTournamentID(), dataUtil);
+                        resp = leaderBoardUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
                         break;
                     case RequestDTO.GET_LEADERBOARD_BOYS:
                         break;

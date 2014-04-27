@@ -27,8 +27,13 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "tournamentCourse")
 @NamedQueries({
+    @NamedQuery(name = "TournamentCourse.findByGolfGroup", 
+            query = "SELECT t FROM TournamentCourse t "
+                    + "where t.tournament.golfGroup.golfGroupID = :id "
+                    + "order by t.tournament.tournamentID"),
     @NamedQuery(name = "TournamentCourse.findByTourney", 
-            query = "SELECT t FROM TournamentCourse t where t.tournament.tournamentID = :id")
+            query = "SELECT t FROM TournamentCourse t "
+                    + "where t.tournament.tournamentID = :id")
     })
 public class TournamentCourse implements Serializable {
     private static final long serialVersionUID = 1L;

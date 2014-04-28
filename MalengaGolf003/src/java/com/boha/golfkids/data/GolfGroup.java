@@ -22,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -41,6 +42,8 @@ import javax.validation.constraints.Size;
 
 })
 public class GolfGroup implements Serializable {
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "golfGroup")
+    private OrderOfMeritPoint orderOfMeritPoint;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
     private List<VideoClip> videoClipList;
     private static final long serialVersionUID = 1L;
@@ -237,6 +240,14 @@ public class GolfGroup implements Serializable {
 
     public void setVideoClipList(List<VideoClip> videoClipList) {
         this.videoClipList = videoClipList;
+    }
+
+    public OrderOfMeritPoint getOrderOfMeritPoint() {
+        return orderOfMeritPoint;
+    }
+
+    public void setOrderOfMeritPoint(OrderOfMeritPoint orderOfMeritPoint) {
+        this.orderOfMeritPoint = orderOfMeritPoint;
     }
     
 }

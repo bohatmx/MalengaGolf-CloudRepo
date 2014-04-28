@@ -31,9 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 public class HouseKeeper extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -61,9 +60,9 @@ public class HouseKeeper extends HttpServlet {
         Timer timer = new Timer();
         Calendar cal = GregorianCalendar.getInstance();
         for (int i = 0; i < 3; i++) {
-           cal.roll(Calendar.MINUTE, true); 
+            cal.roll(Calendar.MINUTE, true);
         }
-        
+
         Date date = cal.getTime();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -99,19 +98,21 @@ public class HouseKeeper extends HttpServlet {
             }
         }
         logger.log(Level.INFO, "### MalengaGolf HouseKeeping cleaned up {0} temporary files", count);
-        platformUtil.addErrorStore(133, "MGGolf temporary files cleaned up", "HouseKeeper");
+        try {
+            platformUtil.addErrorStore(133, "MGGolf temporary files cleaned up", "HouseKeeper");
+        } catch (Exception e) {
+
+        }
     }
     @EJB
     PlatformUtil platformUtil;
     private static final Logger logger = Logger.getLogger("HouseKeeper");
     private final static int ONE_HOUR = 1000 * 60 * 60;
     private final static int FOUR_HOUR = 1000 * 60 * 60 * 4;
-    
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -125,8 +126,7 @@ public class HouseKeeper extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

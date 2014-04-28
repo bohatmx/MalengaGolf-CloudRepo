@@ -17,12 +17,14 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
     private int leaderBoardID, position, parStatus, tournamentID;
     private PlayerDTO player;
     private AgeGroupDTO ageGroup;
-    private boolean tied;
+    private boolean tied, scoringComplete;
     private int rounds, lastHole, holesPerRound, currentRoundStatus, age;
     private long startDate;
     private String tournamentName, clubName;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private int winnerFlag;
+    private int withDrawn;
+    private int orderOfMeritPoints;
     private int scoreRound1,
             scoreRound2,
             scoreRound3,
@@ -49,6 +51,8 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
     private void setBasics(LeaderBoard a) {
         leaderBoardID = a.getLeaderBoardID();
         age = a.getAge();
+        
+        withDrawn = a.getWithDrawn();
         winnerFlag = a.getWinnerFlag();
         player = new PlayerDTO(a.getPlayer());
         position = a.getPosition();
@@ -58,12 +62,18 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         tournamentID = t.getTournamentID();
         holesPerRound = t.getHolesPerRound();
         clubName = t.getClub().getClubName();
+        orderOfMeritPoints = a.getOrderOfMeritPoints();
+       
         if (a.getAgeGroup() != null) {
             ageGroup = new AgeGroupDTO(a.getAgeGroup());
         }
         if (a.getTied() > 0) {
             tied = true;
         }
+        if (a.getScoringComplete() > 0) {
+            scoringComplete = true;
+        }
+        
         scoreRound1 = a.getScoreRound1();
         scoreRound2 = a.getScoreRound2();
         scoreRound3 = a.getScoreRound3();
@@ -82,8 +92,33 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         return age;
     }
 
+    public int getOrderOfMeritPoints() {
+        return orderOfMeritPoints;
+    }
+
+    public void setOrderOfMeritPoints(int orderOfMeritPoints) {
+        this.orderOfMeritPoints = orderOfMeritPoints;
+    }
+
+    public boolean isScoringComplete() {
+        return scoringComplete;
+    }
+
+    public void setScoringComplete(boolean scoringComplete) {
+        this.scoringComplete = scoringComplete;
+    }
+
+
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public int getWithDrawn() {
+        return withDrawn;
+    }
+
+    public void setWithDrawn(int withDrawn) {
+        this.withDrawn = withDrawn;
     }
 
     public AgeGroupDTO getAgeGroup() {

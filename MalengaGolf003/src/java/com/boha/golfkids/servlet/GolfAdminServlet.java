@@ -74,10 +74,17 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.updateTeeTime(dto.getTourneyScoreByRound());
                         break;
                     case RequestDTO.CLOSE_TOURNAMENT:
-                        resp = dataUtil.closeTournament(dto.getTournamentID(), leaderBoardUtil);
+                        resp = dataUtil.closeTournament(dto.getTournamentID());
                         break;
+                    case RequestDTO.CLOSE_LEADERBORD:
+                        resp = leaderBoardUtil.closeLeaderBoard(dto.getLeaderBoardList(), dto.getTournamentID());
+                        break;
+
                     case RequestDTO.UPDATE_WINNER_FLAG:
                         resp = dataUtil.updateWinnerFlag(dto.getLeaderBoardID(), dto.getWinnerFlag());
+                        break;
+                    case RequestDTO.WITHDRAW_PLAYER:
+                        resp = dataUtil.withdrawPlayer(dto.getTournamentID(), dto.getLeaderBoardID());
                         break;
 
                     case RequestDTO.GET_GOLF_GROUP_DATA:

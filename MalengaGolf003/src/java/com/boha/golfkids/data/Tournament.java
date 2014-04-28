@@ -48,6 +48,8 @@ import javax.validation.constraints.Size;
             query = "select a from Tournament a where a.club.clubID = :id")
 })
 public class Tournament implements Serializable {
+    @Column(name = "useAgeGroups")
+    private Integer useAgeGroups;
     @OneToMany(mappedBy = "tournament")
     private List<VideoClip> videoClipList;
     
@@ -93,8 +95,6 @@ public class Tournament implements Serializable {
     @NotNull
     @Column(name = "golfRounds")
     private int golfRounds;
-    @Column(name = "useAgeGroups")
-    private int useAgeGroups;
 
     @Column(name = "closedForScoringFlag")
     private int closedForScoringFlag;
@@ -156,13 +156,6 @@ public class Tournament implements Serializable {
         return closingDate;
     }
 
-    public int getUseAgeGroups() {
-        return useAgeGroups;
-    }
-
-    public void setUseAgeGroups(int useAgeGroups) {
-        this.useAgeGroups = useAgeGroups;
-    }
 
     public void setClosingDate(Date closingDate) {
         this.closingDate = closingDate;
@@ -267,6 +260,14 @@ public class Tournament implements Serializable {
 
     public void setVideoClipList(List<VideoClip> videoClipList) {
         this.videoClipList = videoClipList;
+    }
+
+    public Integer getUseAgeGroups() {
+        return useAgeGroups;
+    }
+
+    public void setUseAgeGroups(Integer useAgeGroups) {
+        this.useAgeGroups = useAgeGroups;
     }
     
 

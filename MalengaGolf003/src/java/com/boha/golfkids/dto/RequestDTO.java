@@ -88,6 +88,9 @@ public class RequestDTO {
     public static final int ADD_VIDEO_CLIP = 64;
     public static final int GET_VIDEO_CLIPS_BY_GOLF_GROUP = 66;
     
+    public static final int CLOSE_LEADERBORD = 67;
+    public static final int WITHDRAW_PLAYER = 69;
+    
     public static final int PICTURES_FULL_SIZE = 1;
     public static final int PICTURES_THUMBNAILS = 2;
     
@@ -98,6 +101,17 @@ public class RequestDTO {
     private PersonalScoreDTO personalScore;
     private VideoClipDTO videoClip;
 
+    private List<LeaderBoardDTO> leaderBoardList;
+
+    public List<LeaderBoardDTO> getLeaderBoardList() {
+        return leaderBoardList;
+    }
+
+    public void setLeaderBoardList(List<LeaderBoardDTO> leaderBoardList) {
+        this.leaderBoardList = leaderBoardList;
+    }
+    
+    
     public VideoClipDTO getVideoClip() {
         return videoClip;
     }

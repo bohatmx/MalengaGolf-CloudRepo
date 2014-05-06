@@ -49,7 +49,7 @@ import javax.validation.constraints.Size;
 })
 public class Tournament implements Serializable {
     @Column(name = "useAgeGroups")
-    private Integer useAgeGroups;
+    private int useAgeGroups;
     @OneToMany(mappedBy = "tournament")
     private List<VideoClip> videoClipList;
     
@@ -95,6 +95,8 @@ public class Tournament implements Serializable {
     @NotNull
     @Column(name = "golfRounds")
     private int golfRounds;
+    @Column(name = "exampleFlag")
+    private int exampleFlag;
 
     @Column(name = "closedForScoringFlag")
     private int closedForScoringFlag;
@@ -262,11 +264,19 @@ public class Tournament implements Serializable {
         this.videoClipList = videoClipList;
     }
 
-    public Integer getUseAgeGroups() {
+    public int getExampleFlag() {
+        return exampleFlag;
+    }
+
+    public void setExampleFlag(int exampleFlag) {
+        this.exampleFlag = exampleFlag;
+    }
+
+    public int getUseAgeGroups() {
         return useAgeGroups;
     }
 
-    public void setUseAgeGroups(Integer useAgeGroups) {
+    public void setUseAgeGroups(int useAgeGroups) {
         this.useAgeGroups = useAgeGroups;
     }
     

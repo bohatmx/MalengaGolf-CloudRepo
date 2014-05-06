@@ -50,6 +50,11 @@ public class OrderOfMeritPoint implements Serializable {
     @NotNull
     @Column(name = "tiedFirst")
     private int tiedFirst;
+    
+    @NotNull
+    @Column(name = "runnerUp")
+    private int runnerUp;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "top5")
@@ -156,6 +161,14 @@ public class OrderOfMeritPoint implements Serializable {
 
     public int getTop50() {
         return top50;
+    }
+
+    public int getRunnerUp() {
+        return runnerUp;
+    }
+
+    public void setRunnerUp(int runnerUp) {
+        this.runnerUp = runnerUp;
     }
 
     public void setTop50(int top50) {

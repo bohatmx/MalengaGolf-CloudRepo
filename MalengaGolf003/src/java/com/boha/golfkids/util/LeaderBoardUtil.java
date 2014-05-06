@@ -267,7 +267,10 @@ public class LeaderBoardUtil {
             processPosition1Permanently(meritPoint, dto);
             return;
         }
-        
+        if (dto.getPosition() == 2) {
+            dto.setOrderOfMeritPoints(meritPoint.getRunnerUp());
+            return;
+        }
         if (dto.getPosition() < 4) {
             dto.setOrderOfMeritPoints(meritPoint.getTop3());
             return;
@@ -321,6 +324,10 @@ public class LeaderBoardUtil {
        
         if (dto.getPosition() == 1) {
             processPosition1(meritPoint, dto);
+            return;
+        }
+        if (dto.getPosition() == 2) {
+            dto.setOrderOfMeritPoints(meritPoint.getRunnerUp());
             return;
         }
         
@@ -431,6 +438,7 @@ public class LeaderBoardUtil {
         if (e.toString() != null) {
             sb.append(e.toString()).append("\n\n");
         }
+        
         StackTraceElement[] s = e.getStackTrace();
         if (s.length > 0) {
             StackTraceElement ss = s[0];
@@ -440,8 +448,8 @@ public class LeaderBoardUtil {
             sb.append("Class: ").append(cls).append("\n");
             sb.append("Method: ").append(method).append("\n");
             sb.append("Line Number: ").append(line).append("\n");
-        }
-
+        } 
+        //
         return sb.toString();
     }
 

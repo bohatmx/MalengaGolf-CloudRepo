@@ -53,9 +53,9 @@ import javax.validation.constraints.Size;
 })
 public class Agegroup implements Serializable {
     @Column(name = "gender")
-    private Integer gender;
+    private int gender;
     @Column(name = "numberOfHolesPerRound")
-    private Integer numberOfHolesPerRound;
+    private int numberOfHolesPerRound;
     @Basic(optional = false)
     @NotNull
     @Column(name = "ageFrom")
@@ -143,19 +143,19 @@ public class Agegroup implements Serializable {
         this.leaderBoardList = leaderBoardList;
     }
 
-    public Integer getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 
-    public Integer getNumberOfHolesPerRound() {
+    public int getNumberOfHolesPerRound() {
         return numberOfHolesPerRound;
     }
 
-    public void setNumberOfHolesPerRound(Integer numberOfHolesPerRound) {
+    public void setNumberOfHolesPerRound(int numberOfHolesPerRound) {
         this.numberOfHolesPerRound = numberOfHolesPerRound;
     }
     

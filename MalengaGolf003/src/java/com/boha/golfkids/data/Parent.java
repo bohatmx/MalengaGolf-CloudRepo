@@ -48,7 +48,7 @@ public class Parent implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "parentID")
-    private Integer parentID;
+    private int parentID;
     @Size(max = 45)
     @Column(name = "firstName")
     private String firstName;
@@ -65,10 +65,12 @@ public class Parent implements Serializable {
     @Column(name = "cellphone")
     private String cellphone;
     @Column(name = "parentType")
-    private Integer parentType;
+    private int parentType;
     @Size(max = 20)
     @Column(name = "pin")
     private String pin;
+    @Column(name = "exampleFlag")
+    private int exampleFlag;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent", fetch = FetchType.EAGER)
     private List<GolfGroupParent> golfGroupParentList;
     @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
@@ -77,15 +79,15 @@ public class Parent implements Serializable {
     public Parent() {
     }
 
-    public Parent(Integer parentID) {
+    public Parent(int parentID) {
         this.parentID = parentID;
     }
 
-    public Integer getParentID() {
+    public int getParentID() {
         return parentID;
     }
 
-    public void setParentID(Integer parentID) {
+    public void setParentID(int parentID) {
         this.parentID = parentID;
     }
 
@@ -129,11 +131,11 @@ public class Parent implements Serializable {
         this.cellphone = cellphone;
     }
 
-    public Integer getParentType() {
+    public int getParentType() {
         return parentType;
     }
 
-    public void setParentType(Integer parentType) {
+    public void setParentType(int parentType) {
         this.parentType = parentType;
     }
 
@@ -161,24 +163,12 @@ public class Parent implements Serializable {
         this.playerList = playerList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (parentID != null ? parentID.hashCode() : 0);
-        return hash;
+    public int getExampleFlag() {
+        return exampleFlag;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Parent)) {
-            return false;
-        }
-        Parent other = (Parent) object;
-        if ((this.parentID == null && other.parentID != null) || (this.parentID != null && !this.parentID.equals(other.parentID))) {
-            return false;
-        }
-        return true;
+    public void setExampleFlag(int exampleFlag) {
+        this.exampleFlag = exampleFlag;
     }
 
     @Override

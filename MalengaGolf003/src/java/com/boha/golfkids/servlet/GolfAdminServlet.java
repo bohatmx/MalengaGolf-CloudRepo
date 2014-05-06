@@ -14,6 +14,7 @@ import com.boha.golfkids.util.DuplicateException;
 import com.boha.golfkids.util.GZipUtility;
 import com.boha.golfkids.util.LeaderBoardUtil;
 import com.boha.golfkids.util.PlatformUtil;
+import com.boha.golfkids.util.WorkerBee;
 import com.google.gson.Gson;
 import com.oreilly.servlet.ServletUtils;
 import java.io.File;
@@ -91,6 +92,12 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.getGolfGroupData(dto.getGolfGroupID(),
                                 dto.getCountryID());
                         break;
+                        case RequestDTO.GET_CLUBS_NEARBY:
+                            WorkerBee bee = new WorkerBee();
+                            resp.setClubs(bee.getClubsWithinRadius(
+                                    dto.getLatitude(), dto.getLongitude(), 
+                                    dto.getRadius(), dto.getRadiusType()));
+                        break;
                     case RequestDTO.GET_LEADERBOARD:
                         resp = leaderBoardUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
                         break;
@@ -133,8 +140,8 @@ public class GolfAdminServlet extends HttpServlet {
 
                         break;
                     case RequestDTO.ADD_GOLF_GROUP:
-                        resp = dataUtil.addGolfGroup(dto.getGolfGroup(), dto.getAdministrator());
-
+                        resp = dataUtil.addGolfGroup(dto.getGolfGroup(), 
+                                dto.getAdministrator(), platformUtil);
                         break;
                     case RequestDTO.UPDATE_GOLF_GROUP:
                         dataUtil.updateGolfGroup(dto.getGolfGroup());

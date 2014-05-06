@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
@@ -26,6 +25,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Years;
 
 /**
  *
@@ -34,25 +35,26 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "player")
 @NamedQueries({
-    @NamedQuery(name = "Player.login", 
+    @NamedQuery(name = "Player.login",
             query = "SELECT a FROM Player a "
-                    + "where a.email = :email and a.pin = :pin"),
-    
-    @NamedQuery(name = "Player.findByEmail", 
+            + "where a.email = :email and a.pin = :pin"),
+
+    @NamedQuery(name = "Player.findByEmail",
             query = "SELECT a FROM Player a "
-                    + "where a.email = :email"),
-    
-    @NamedQuery(name = "Player.findByTourney", 
+            + "where a.email = :email"),
+
+    @NamedQuery(name = "Player.findByTourney",
             query = "SELECT distinct a FROM Player a, LeaderBoard b "
-                    + "where a.playerID = b.player.playerID "
-                    + "and b.tournament.tournamentID = :id"),
-    
-    @NamedQuery(name = "Player.findByGolfGroup", 
+            + "where a.playerID = b.player.playerID "
+            + "and b.tournament.tournamentID = :id"),
+
+    @NamedQuery(name = "Player.findByGolfGroup",
             query = "SELECT p FROM Player p, GolfGroupPlayer b "
-                    + "where p.playerID = b.player.playerID "
-                    + "and b.golfGroup.golfGroupID = :id "
-                    + "order by p.lastName, p.firstName")})
-public class Player implements Serializable {
+            + "where p.playerID = b.player.playerID "
+            + "and b.golfGroup.golfGroupID = :id "
+            + "order by p.lastName, p.firstName")})
+public class Player implements Serializable, Comparable<Player> {
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "player", fetch = FetchType.LAZY)
     private List<LeaderBoard> leaderBoardList;
     private static final long serialVersionUID = 1L;
@@ -60,7 +62,7 @@ public class Player implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "playerID")
-    private Integer playerID;
+    private int playerID;
     @Size(max = 45)
     @Column(name = "firstName")
     private String firstName;
@@ -74,12 +76,14 @@ public class Player implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
     @Column(name = "gender")
-    private Integer gender;
+    private int gender;
+    @Column(name = "exampleFlag")
+    private int exampleFlag;
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
     @Column(name = "yearJoined")
-    private Integer yearJoined;
+    private int yearJoined;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 95)
     @Column(name = "email")
@@ -93,22 +97,22 @@ public class Player implements Serializable {
     @JoinColumn(name = "parentID", referencedColumnName = "parentID")
     @ManyToOne(fetch = FetchType.EAGER)
     private Parent parent;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "player", fetch = FetchType.EAGER)
     private List<GolfGroupPlayer> golfGroupPlayerList;
 
     public Player() {
     }
 
-    public Player(Integer playerID) {
+    public Player(int playerID) {
         this.playerID = playerID;
     }
 
-    public Integer getPlayerID() {
+    public int getPlayerID() {
         return playerID;
     }
 
-    public void setPlayerID(Integer playerID) {
+    public void setPlayerID(int playerID) {
         this.playerID = playerID;
     }
 
@@ -144,11 +148,11 @@ public class Player implements Serializable {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Integer getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 
@@ -160,11 +164,11 @@ public class Player implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getYearJoined() {
+    public int getYearJoined() {
         return yearJoined;
     }
 
-    public void setYearJoined(Integer yearJoined) {
+    public void setYearJoined(int yearJoined) {
         this.yearJoined = yearJoined;
     }
 
@@ -208,24 +212,12 @@ public class Player implements Serializable {
         this.golfGroupPlayerList = golfGroupPlayerList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (playerID != null ? playerID.hashCode() : 0);
-        return hash;
+    public int getExampleFlag() {
+        return exampleFlag;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Player)) {
-            return false;
-        }
-        Player other = (Player) object;
-        if ((this.playerID == null && other.playerID != null) || (this.playerID != null && !this.playerID.equals(other.playerID))) {
-            return false;
-        }
-        return true;
+    public void setExampleFlag(int exampleFlag) {
+        this.exampleFlag = exampleFlag;
     }
 
     @Override
@@ -240,5 +232,13 @@ public class Player implements Serializable {
     public void setLeaderBoardList(List<LeaderBoard> leaderBoardList) {
         this.leaderBoardList = leaderBoardList;
     }
-    
+
+    @Override
+    public int compareTo(Player o) {
+        String n = lastName + firstName;
+        String n1 = o.getLastName() + o.getFirstName();
+        
+        return n.compareTo(n1);
+    }
+
 }

@@ -13,6 +13,9 @@ import java.util.List;
  */
 public class TournamentDTO implements Comparable<TournamentDTO> {
 
+    public TournamentDTO() {
+    }
+
     private int tournamentID;
     private long closingDate;
     private long endDate;
@@ -22,6 +25,7 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     private long startDate;
     private String tourneyName, clubName;
     private int clubID;
+    private int exampleFlag;
     private int useAgeGroups;
     private int clubCourseID, provinceID;
     private int golfGroupID, par = 72, holesPerRound;
@@ -32,6 +36,7 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     public TournamentDTO(Tournament a) {
         tournamentID = a.getTournamentID();
         closedForScoringFlag = a.getClosedForScoringFlag();
+        exampleFlag = a.getExampleFlag();
         useAgeGroups = a.getUseAgeGroups();
         closedForRegistrationFlag = a.getClosedForRegistrationFlag();
         if (a.getClosingDate() != null) {
@@ -61,6 +66,14 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
 
     public int getUseAgeGroups() {
         return useAgeGroups;
+    }
+
+    public int getExampleFlag() {
+        return exampleFlag;
+    }
+
+    public void setExampleFlag(int exampleFlag) {
+        this.exampleFlag = exampleFlag;
     }
 
     public int getProvinceID() {

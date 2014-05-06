@@ -17,6 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -35,11 +37,30 @@ import javax.validation.constraints.Size;
             query = "SELECT c FROM Club c "
             + "where c.province.country.countryID = :id "
             + "order by c.clubName"),
+
+    @NamedQuery(name = "Club.findByNameInProvince",
+            query = "select c from Club c where c.clubName = :clubName "
+            + "and c.province.provinceID = :id "),
+
     @NamedQuery(name = "Club.findByProvince",
             query = "select c from Club c "
-            + "where c.province.provinceID = :id order by c.clubName")
+            + "where c.province.provinceID = :id order by c.clubName"),})
+@NamedNativeQueries({
+    @NamedNativeQuery(name = "Club.findWithinRadiusKM",
+            query = "select a, ( 6371 * acos( cos( radians(:lat) ) * cos( radians( latitude) ) "
+            + "* cos( radians( longitude ) - radians(:lng) ) + sin( radians(:lat) ) "
+            + "* sin( radians( latitude ) ) ) ) "
+            + "AS distance FROM club HAVING distance < :radius")
 })
+/*
+ //TODO -32.690986
+//      26.291829
+/*
+     for miles, use 3959
+ */
 public class Club implements Serializable {
+
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "club")
     private List<ClubCourse> clubCourseList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "club")
@@ -77,7 +98,7 @@ public class Club implements Serializable {
     private String address;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "club", fetch = FetchType.EAGER)
     private List<Tournament> tournamentList;
-    
+
     @JoinColumn(name = "provinceID", referencedColumnName = "provinceID")
     @ManyToOne(fetch = FetchType.EAGER)
     private Province province;
@@ -121,7 +142,6 @@ public class Club implements Serializable {
         this.telephone = telephone;
     }
 
-
     public String getAddress() {
         return address;
     }
@@ -146,7 +166,6 @@ public class Club implements Serializable {
         this.province = province;
     }
 
-  
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Club[ clubID=" + clubID + " ]";

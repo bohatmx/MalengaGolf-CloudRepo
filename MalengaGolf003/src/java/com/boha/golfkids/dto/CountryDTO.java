@@ -5,25 +5,36 @@
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Country;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author Aubrey Malabie
  */
-public class CountryDTO {
+public class CountryDTO  implements Serializable {
 
     private int countryID;
-    private String countryName;
+    private String countryName, countryCode;
     private double latitude;
     private double longitude;
     private List<ProvinceDTO> provinces;
 
     public CountryDTO(Country a) {
         countryID = a.getCountryID();
+        System.out.println("Country ID is " + countryID);
         countryName = a.getCountryName();
+        countryCode = a.getCountryCode();
         
        
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public int getCountryID() {

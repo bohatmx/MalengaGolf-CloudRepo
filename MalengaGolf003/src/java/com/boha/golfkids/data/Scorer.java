@@ -72,6 +72,8 @@ public class Scorer implements Serializable {
     @Size(min = 1, max = 50)
     @Column(name = "cellphone")
     private String cellphone;
+    @Column(name = "exampleFlag")
+    private int exampleFlag;
     
     @Basic(optional = false)
     @NotNull
@@ -119,6 +121,14 @@ public class Scorer implements Serializable {
 
     public void setPin(String pin) {
         this.pin = pin;
+    }
+
+    public int getExampleFlag() {
+        return exampleFlag;
+    }
+
+    public void setExampleFlag(int exampleFlag) {
+        this.exampleFlag = exampleFlag;
     }
 
     public String getFirstName() {

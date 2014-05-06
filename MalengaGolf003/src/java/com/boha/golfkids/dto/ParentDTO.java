@@ -21,6 +21,7 @@ public class ParentDTO {
     private String middleName;
     private int parentType;
     private String pin;
+    private int exampleFlag;
     private List<PlayerDTO> players;
 
     public ParentDTO(Parent a) {
@@ -32,6 +33,7 @@ public class ParentDTO {
         middleName = a.getMiddleName();
         parentType = a.getParentType();
         pin = a.getPin();
+        exampleFlag = a.getExampleFlag();
     }
 
     public int getParentID() {
@@ -44,6 +46,14 @@ public class ParentDTO {
 
     public String getCellphone() {
         return cellphone;
+    }
+
+    public int getExampleFlag() {
+        return exampleFlag;
+    }
+
+    public void setExampleFlag(int exampleFlag) {
+        this.exampleFlag = exampleFlag;
     }
 
     public void setCellphone(String cellphone) {

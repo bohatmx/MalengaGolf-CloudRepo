@@ -29,6 +29,9 @@ public class RequestDTO {
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private int requestType;
     private boolean zippedResponse;
+    private double latitude, longitude;
+    private int radius, radiusType;
+    
     //
     public static final int ADMIN_LOGIN = 1;
     public static final int ADD_GOLF_GROUP = 2;
@@ -91,8 +94,12 @@ public class RequestDTO {
     public static final int CLOSE_LEADERBORD = 67;
     public static final int WITHDRAW_PLAYER = 69;
     
+    public static final int GET_CLUBS_NEARBY = 119;
+    
     public static final int PICTURES_FULL_SIZE = 1;
     public static final int PICTURES_THUMBNAILS = 2;
+    
+    
     
     private int winnerFlag, leaderBoardID, type;
     
@@ -350,4 +357,37 @@ public class RequestDTO {
     public void setRequestType(int requestType) {
         this.requestType = requestType;
     }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public int getRadiusType() {
+        return radiusType;
+    }
+
+    public void setRadiusType(int radiusType) {
+        this.radiusType = radiusType;
+    }
+    
 }

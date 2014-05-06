@@ -6,7 +6,6 @@ package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Player;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Years;
 
@@ -26,6 +25,7 @@ public class PlayerDTO {
     private String lastName;
     private String middleName;
     private String pin;
+    private int exampleFlag;
     private int yearJoined;
     private int parentID;
     private int numberOfTournaments;
@@ -34,6 +34,7 @@ public class PlayerDTO {
     public PlayerDTO(Player a) {
         playerID = a.getPlayerID();
         cellphone = a.getCellphone();
+        exampleFlag = a.getExampleFlag();
         if (a.getDateOfBirth() != null) {
             dateOfBirth = a.getDateOfBirth().getTime();
         }
@@ -54,14 +55,9 @@ public class PlayerDTO {
     private void setPlayerAge(long date) {
         LocalDateTime birthday = new LocalDateTime(date);
         LocalDateTime start = new LocalDateTime();
-
         Years years = Years.yearsBetween(birthday, start);
         age = years.getYears();
-        //
-        
-        //System.out.println("Age calculated: " + age + " - " + firstName + " " + lastName
-        //+ " - " + birthday.getDayOfMonth() + "-" + birthday.getMonthOfYear() + "-" + birthday.getYear());
-    }
+     }
     public int getParentID() {
         return parentID;
     }
@@ -109,6 +105,7 @@ public class PlayerDTO {
 
     public void setDateOfBirth(long dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+        getAge();
     }
 
     public long getDateRegistered() {
@@ -174,4 +171,21 @@ public class PlayerDTO {
     public void setYearJoined(int yearJoined) {
         this.yearJoined = yearJoined;
     }
+
+    public int getAge() {
+        LocalDateTime birthday = new LocalDateTime(dateOfBirth);
+        LocalDateTime start = new LocalDateTime();
+        Years years = Years.yearsBetween(birthday, start);
+        age = years.getYears();
+        return age;
+    }
+
+    public int getExampleFlag() {
+        return exampleFlag;
+    }
+
+    public void setExampleFlag(int exampleFlag) {
+        this.exampleFlag = exampleFlag;
+    }
+    
 }

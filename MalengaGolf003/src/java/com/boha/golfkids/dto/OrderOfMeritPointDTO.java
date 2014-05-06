@@ -22,11 +22,12 @@ public class OrderOfMeritPointDTO {
     private int top40;
     private int top50, top100;
     private int golfGroupID;
-    private int tiedFirst;
+    private int tiedFirst, runnerUp;
     
     public OrderOfMeritPointDTO(OrderOfMeritPoint a) {
         orderOfMeritPointID = a.getOrderOfMeritPointID();
         tiedFirst = a.getTiedFirst();
+        runnerUp = a.getRunnerUp();
         win = a.getWin();
         top3= a.getTop3();
         top5 = a.getTop5();
@@ -49,6 +50,14 @@ public class OrderOfMeritPointDTO {
 
     public int getWin() {
         return win;
+    }
+
+    public int getRunnerUp() {
+        return runnerUp;
+    }
+
+    public void setRunnerUp(int runnerUp) {
+        this.runnerUp = runnerUp;
     }
 
     public void setWin(int win) {

@@ -30,21 +30,25 @@ import javax.validation.constraints.Size;
 @Table(name = "country")
 @NamedQueries({
     @NamedQuery(name = "Country.findAll", 
-            query = "SELECT c FROM Country c order by c.countryName")})
+            query = "SELECT c FROM Country c order by c.countryName"),
+    @NamedQuery(name = "Country.findByName", 
+            query = "SELECT c FROM Country c where c.countryName = :countryName")
+
+})
 public class Country implements Serializable {
     @OneToMany(mappedBy = "country")
     private List<PersonalPlayer> personalPlayerList;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "latitude")
-    private Double latitude;
+    private double latitude;
     @Column(name = "longitude")
-    private Double longitude;
+    private double longitude;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "countryID")
-    private Integer countryID;
+    private int countryID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -60,20 +64,20 @@ public class Country implements Serializable {
     public Country() {
     }
 
-    public Country(Integer countryID) {
+    public Country(int countryID) {
         this.countryID = countryID;
     }
 
-    public Country(Integer countryID, String countryName) {
+    public Country(int countryID, String countryName) {
         this.countryID = countryID;
         this.countryName = countryName;
     }
 
-    public Integer getCountryID() {
+    public int getCountryID() {
         return countryID;
     }
 
-    public void setCountryID(Integer countryID) {
+    public void setCountryID(int countryID) {
         this.countryID = countryID;
     }
 
@@ -110,44 +114,26 @@ public class Country implements Serializable {
         this.countryCode = countryCode;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (countryID != null ? countryID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Country)) {
-            return false;
-        }
-        Country other = (Country) object;
-        if ((this.countryID == null && other.countryID != null) || (this.countryID != null && !this.countryID.equals(other.countryID))) {
-            return false;
-        }
-        return true;
-    }
+   
 
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Country[ countryID=" + countryID + " ]";
     }
 
-    public Double getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public Double getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

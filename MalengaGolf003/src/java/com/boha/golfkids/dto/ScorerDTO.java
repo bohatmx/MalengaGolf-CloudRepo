@@ -19,12 +19,14 @@ public class ScorerDTO {
     private String email;
     private String cellphone;
     private String pin;
+    private int exampleFlag;
     private long dateRegistered;
     private int golfGroupID;
     public ScorerDTO(Scorer a) {
         scorerID = a.getScorerID();
         firstName = a.getFirstName();
         lastName = a.getLastName();
+        exampleFlag = a.getExampleFlag();
         pin = a.getPin();
         email = a.getEmail();
         cellphone = a.getCellphone();
@@ -42,6 +44,14 @@ public class ScorerDTO {
 
     public String getFirstName() {
         return firstName;
+    }
+
+    public int getExampleFlag() {
+        return exampleFlag;
+    }
+
+    public void setExampleFlag(int exampleFlag) {
+        this.exampleFlag = exampleFlag;
     }
 
     public void setFirstName(String firstName) {

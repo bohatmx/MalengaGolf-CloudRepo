@@ -5,38 +5,66 @@
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Club;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Club
+ *
  * @author Aubrey Malabie
  */
-public class ClubDTO {
+public class ClubDTO implements Serializable {
 
     private int clubID, par;
     private String address;
-    private String clubName, provinceName;
+    private String clubName;
     private String email;
     private double latitude;
     private double longitude;
-    private String telephone;
+    private String telephone, provinceName;
     private int provinceID;
+    private double distance;
     private List<ClubCourseDTO> clubCourses;
 
+    public ClubDTO() {
+    }
+
     public ClubDTO(Club a) {
-        address = a.getAddress();
+        if (a.getAddress() != null) {
+            address = a.getAddress();
+        }
         par = a.getPar();
         clubName = a.getClubName();
-        email = a.getEmail();
-        telephone = a.getTelephone();
+        if (a.getEmail() != null) {
+            email = a.getEmail();
+        }
+        if (a.getEmail() != null) {
+            telephone = a.getTelephone();
+        }
         latitude = a.getLatitude();
         longitude = a.getLongitude();
         clubID = a.getClubID();
+        
         if (a.getProvince() != null) {
             provinceID = a.getProvince().getProvinceID();
             provinceName = a.getProvince().getProvinceName();
         }
-      
+
+    }
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     public List<ClubCourseDTO> getClubCourses() {
@@ -46,7 +74,6 @@ public class ClubDTO {
     public void setClubCourses(List<ClubCourseDTO> clubCourses) {
         this.clubCourses = clubCourses;
     }
-
 
     public int getClubID() {
         return clubID;
@@ -66,14 +93,6 @@ public class ClubDTO {
 
     public String getAddress() {
         return address;
-    }
-
-    public String getProvinceName() {
-        return provinceName;
-    }
-
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName;
     }
 
     public int getProvinceID() {
@@ -128,5 +147,4 @@ public class ClubDTO {
         this.telephone = telephone;
     }
 
- 
 }

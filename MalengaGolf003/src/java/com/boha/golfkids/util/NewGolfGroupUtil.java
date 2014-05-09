@@ -46,7 +46,7 @@ import org.joda.time.Years;
 public class NewGolfGroupUtil {
 
     public static final int GENDER_BOYS = 1, GENDER_GIRLS = 2;
-    public static final int PECANWOOD = 1808, PROVINCE = 168;
+    public static final int PECANWOOD = 314, PROVINCE = 16;
     static final Logger log = Logger.getLogger("NewGolfGroupUtil");
 
     public static void generate(GolfGroup gg, DataUtil dataUtil, PlatformUtil platformUtil) throws DataException {

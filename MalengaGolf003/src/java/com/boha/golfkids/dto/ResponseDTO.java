@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ResponseDTO {
 
-    private int statusCode;
+    private int statusCode, totalPages, totalClubs;
     private String message;
     private LeaderBoardDTO leaderBoard;
     private PersonalPlayerDTO personalPlayer;
@@ -51,6 +51,22 @@ public class ResponseDTO {
 
     public void setLeaderBoardCarriers(List<LeaderBoardCarrierDTO> leaderBoardCarriers) {
         this.leaderBoardCarriers = leaderBoardCarriers;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public int getTotalClubs() {
+        return totalClubs;
+    }
+
+    public void setTotalClubs(int totalClubs) {
+        this.totalClubs = totalClubs;
     }
 
     

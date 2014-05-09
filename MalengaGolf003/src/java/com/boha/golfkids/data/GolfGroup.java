@@ -42,6 +42,7 @@ import javax.validation.constraints.Size;
 
 })
 public class GolfGroup implements Serializable {
+    
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "golfGroup")
     private OrderOfMeritPoint orderOfMeritPoint;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
@@ -249,5 +250,7 @@ public class GolfGroup implements Serializable {
     public void setOrderOfMeritPoint(OrderOfMeritPoint orderOfMeritPoint) {
         this.orderOfMeritPoint = orderOfMeritPoint;
     }
+
+  
     
 }

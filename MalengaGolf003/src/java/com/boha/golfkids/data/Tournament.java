@@ -38,6 +38,10 @@ import javax.validation.constraints.Size;
             query = "SELECT t FROM Tournament t "
             + "where t.golfGroup.golfGroupID = :id "
             + "order by t.startDate desc"),
+    
+    @NamedQuery(name = "Tournament.delete",
+            query = "DELETE FROM Tournament t where t.tournamentID = :id"),
+    
     @NamedQuery(name = "Tournament.findByPlayer",
             query = "SELECT distinct t FROM Tournament t, LeaderBoard b "
                     + "where t.tournamentID = b.tournament.tournamentID "
@@ -49,13 +53,12 @@ import javax.validation.constraints.Size;
 })
 public class Tournament implements Serializable {
     @Column(name = "useAgeGroups")
-    private int useAgeGroups;
+    private Integer useAgeGroups;
     @OneToMany(mappedBy = "tournament")
     private List<VideoClip> videoClipList;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<TournamentCourse> tournamentCourseList;
-    
     @Basic(optional = false)
     @NotNull
     @Column(name = "holesPerRound")
@@ -66,7 +69,6 @@ public class Tournament implements Serializable {
     private int par;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament", fetch = FetchType.LAZY)
     private List<LeaderBoard> leaderBoardList;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -272,11 +274,11 @@ public class Tournament implements Serializable {
         this.exampleFlag = exampleFlag;
     }
 
-    public int getUseAgeGroups() {
+    public Integer getUseAgeGroups() {
         return useAgeGroups;
     }
 
-    public void setUseAgeGroups(int useAgeGroups) {
+    public void setUseAgeGroups(Integer useAgeGroups) {
         this.useAgeGroups = useAgeGroups;
     }
     

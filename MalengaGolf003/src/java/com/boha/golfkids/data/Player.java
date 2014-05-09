@@ -25,8 +25,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
-import org.joda.time.LocalDateTime;
-import org.joda.time.Years;
 
 /**
  *
@@ -54,6 +52,10 @@ import org.joda.time.Years;
             + "and b.golfGroup.golfGroupID = :id "
             + "order by p.lastName, p.firstName")})
 public class Player implements Serializable, Comparable<Player> {
+    @Column(name = "gender")
+    private int gender;
+    @Column(name = "yearJoined")
+    private int yearJoined;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "player", fetch = FetchType.LAZY)
     private List<LeaderBoard> leaderBoardList;
@@ -75,15 +77,11 @@ public class Player implements Serializable, Comparable<Player> {
     @Column(name = "dateOfBirth")
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
-    @Column(name = "gender")
-    private int gender;
     @Column(name = "exampleFlag")
     private int exampleFlag;
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @Column(name = "yearJoined")
-    private int yearJoined;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 95)
     @Column(name = "email")
@@ -148,13 +146,6 @@ public class Player implements Serializable, Comparable<Player> {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public int getGender() {
-        return gender;
-    }
-
-    public void setGender(int gender) {
-        this.gender = gender;
-    }
 
     public Date getDateRegistered() {
         return dateRegistered;
@@ -164,13 +155,6 @@ public class Player implements Serializable, Comparable<Player> {
         this.dateRegistered = dateRegistered;
     }
 
-    public int getYearJoined() {
-        return yearJoined;
-    }
-
-    public void setYearJoined(int yearJoined) {
-        this.yearJoined = yearJoined;
-    }
 
     public String getEmail() {
         return email;
@@ -239,6 +223,22 @@ public class Player implements Serializable, Comparable<Player> {
         String n1 = o.getLastName() + o.getFirstName();
         
         return n.compareTo(n1);
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
+    }
+
+    public int getYearJoined() {
+        return yearJoined;
+    }
+
+    public void setYearJoined(int yearJoined) {
+        this.yearJoined = yearJoined;
     }
 
 }

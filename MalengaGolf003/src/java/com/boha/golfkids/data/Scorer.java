@@ -45,6 +45,7 @@ import javax.validation.constraints.Size;
             query = "SELECT s FROM Scorer s where s.golfGroup.golfGroupID = :id "
                     + "order by s.lastName, s.firstName")})
 public class Scorer implements Serializable {
+   
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -204,5 +205,7 @@ public class Scorer implements Serializable {
     public String toString() {
         return "com.boha.golfkids.data.Scorer[ scorerID=" + scorerID + " ]";
     }
+
+ 
     
 }

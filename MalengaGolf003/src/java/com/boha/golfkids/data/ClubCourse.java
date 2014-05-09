@@ -131,7 +131,6 @@ public class ClubCourse implements Serializable {
     public void setCourseName(String courseName) {
         this.courseName = courseName;
     }
-
     public int getHoles() {
         return holes;
     }
@@ -164,6 +163,12 @@ public class ClubCourse implements Serializable {
     }
     public void setTourneyScoreByRoundList(List<TourneyScoreByRound> tourneyScoreByRoundList) {
         this.tourneyScoreByRoundList = tourneyScoreByRoundList;
+    }
+    public List<TournamentCourse> getTournamentCourseList() {
+        return tournamentCourseList;
+    }
+    public void setTournamentCourseList(List<TournamentCourse> tournamentCourseList) {
+        this.tournamentCourseList = tournamentCourseList;
     }
 
     public int getParHole1() {
@@ -290,6 +295,7 @@ public class ClubCourse implements Serializable {
         return parHole16;
     }
 
+
     public void setParHole16(int parHole16) {
         this.parHole16 = parHole16;
     }
@@ -297,7 +303,6 @@ public class ClubCourse implements Serializable {
     public int getParHole17() {
         return parHole17;
     }
-
 
     public void setParHole17(int parHole17) {
         this.parHole17 = parHole17;
@@ -309,14 +314,6 @@ public class ClubCourse implements Serializable {
 
     public void setParHole18(int parHole18) {
         this.parHole18 = parHole18;
-    }
-
-    public List<TournamentCourse> getTournamentCourseList() {
-        return tournamentCourseList;
-    }
-
-    public void setTournamentCourseList(List<TournamentCourse> tournamentCourseList) {
-        this.tournamentCourseList = tournamentCourseList;
     }
     
 }

@@ -81,8 +81,9 @@ public class DataLoaderServlet extends HttpServlet {
                         resp = loader.loadClubs(dto.getProvinceID(), dto.getClubList());
                         break;
                     case LoaderRequestDTO.FIND_CLUBS_WITHIN_RADIUS:
-                        resp = dataUtil.findClubsWithinRadius(dto.getLatitude(), dto.getLongitude(), dto.getRadius(),
-                                WorkerBee.KILOMETRES);
+                        resp = dataUtil.findLoadedClubsWithinRadius(dto.getLatitude(), 
+                                dto.getLongitude(), dto.getRadius(),
+                                WorkerBee.KILOMETRES, dto.getPage());
                         break;
                     case LoaderRequestDTO.UPDATE_CITY_COORDINATES:
                         resp = loader.updateCityCoordinates(dto.getCityID(),

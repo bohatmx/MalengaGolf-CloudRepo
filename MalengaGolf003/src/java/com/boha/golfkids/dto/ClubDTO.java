@@ -48,8 +48,7 @@ public class ClubDTO implements Serializable {
         if (a.getProvince() != null) {
             provinceID = a.getProvince().getProvinceID();
             provinceName = a.getProvince().getProvinceName();
-        }
-
+        } 
     }
 
     public String getProvinceName() {

@@ -31,8 +31,13 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "agegroup")
 @NamedQueries({
+    @NamedQuery(name = "AgeGroup.deleteByGolfGroup", 
+            query = "delete FROM Agegroup a "
+                    + "where a.golfGroup.golfGroupID = :id"),
     @NamedQuery(name = "AgeGroup.findByGolfGroup", 
-            query = "SELECT a FROM Agegroup a where a.golfGroup.golfGroupID = :id order by a.groupName"),
+            query = "SELECT a FROM Agegroup a "
+                    + "where a.golfGroup.golfGroupID = :id "
+                    + "order by a.groupName"),
     
     @NamedQuery(name = "AgeGroup.findByAge", 
             query = "SELECT a FROM Agegroup a where a.golfGroup.golfGroupID = :gID "
@@ -82,7 +87,6 @@ public class Agegroup implements Serializable {
 
     public Agegroup() {
     }
-
     public Agegroup(int ageGroupID) {
         this.ageGroupID = ageGroupID;
     }

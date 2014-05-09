@@ -55,7 +55,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Years;
 
@@ -69,14 +68,41 @@ public class DataUtil {
 
     @PersistenceContext
     EntityManager em;
-    WorkerBee workerBee = new WorkerBee();
+    public WorkerBee workerBee = new WorkerBee();
 
-    public LoaderResponseDTO findClubsWithinRadius(
-            double latitude, double longitude, int radius, int type) throws DataException {
+    public EntityManager getEntityManager() {
+        if (em == null) {
+            logger.log(Level.OFF, "....fuck, em is NULL!!!");
+        }
+        return em;
+    }
+    public ResponseDTO findClubsWithinRadius(
+            double latitude, double longitude, int radius, int type, int page) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        r.setClubs(new ArrayList<ClubDTO>());
+        try {
+            if (page == 0) {
+                page = 1;
+            }
+            r = workerBee.getClubsWithinRadius(latitude, longitude, radius, type, page, em);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to findClubsWithinRadius");
+            throw new DataException("Failed to findClubsWithinRadius\n"
+                    + getErrorString(e));
+        }
+        return r;
+    }
+
+    public LoaderResponseDTO findLoadedClubsWithinRadius(
+            double latitude, double longitude, int radius, int type, int page) throws DataException {
         LoaderResponseDTO r = new LoaderResponseDTO();
         r.setClubList(new ArrayList<ClubDTO>());
         try {
-            r.setClubList(workerBee.getClubsWithinRadius(latitude, longitude, radius, type));
+            if (page == 0) {
+                page = 1;
+            }
+            ResponseDTO w = workerBee.getClubsWithinRadius(latitude, longitude, radius, type, page, em);
+            r.setClubList(w.getClubs());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to findClubsWithinRadius");
             throw new DataException("Failed to findClubsWithinRadius\n"
@@ -328,7 +354,7 @@ public class DataUtil {
             q.setParameter("id", countryID);
             List<Province> provList = q.getResultList();
             r.setProvinces(getProvinceDTOList(provList));
-           
+
             logger.log(Level.OFF, "GolfGroup data retrieved");
         } catch (Exception e) {
             logger.log(Level.INFO, "Failed to get GolfGroup");
@@ -462,30 +488,39 @@ public class DataUtil {
         }
         return r;
     }
-
-    public ResponseDTO getClubsByProvince(int provinceID) throws DataException {
+    public ResponseDTO getProvincesByCountry(int countryID) throws DataException {
         ResponseDTO r = new ResponseDTO();
-        List<ClubDTO> cList = new ArrayList<>();
+        try {
+            Query qx = em.createNamedQuery("Province.findByCountry", Province.class);
+            qx.setParameter("id", countryID);
+            List<Province> pList = qx.getResultList();
+            List<ProvinceDTO> dList = new ArrayList<>();
+            for (Province p : pList) {
+                dList.add(new ProvinceDTO(p));
+            }
+            r.setProvinces(dList);
+        } catch (Exception e) {
+            throw new DataException(getErrorString(e));
+        }
+        return r;
+    }
+
+    public ResponseDTO getClubsByProvince(int provinceID, int page) throws DataException {
+        ResponseDTO r = new ResponseDTO();
         try {
             Query q = em.createNamedQuery("Club.findByProvince", Club.class);
             q.setParameter("id", provinceID);
-            List<Club> list = q.getResultList();
-            Query z = em.createNamedQuery("ClubCourse.findByProvince", ClubCourse.class);
-            z.setParameter("id", provinceID);
-            List<ClubCourse> ccList = z.getResultList();
-            r.setClubs(new ArrayList<ClubDTO>());
-            for (Club club : list) {
-                ClubDTO cdto = new ClubDTO(club);
-                cdto.setClubCourses(new ArrayList<ClubCourseDTO>());
-                for (ClubCourse cc : ccList) {
-                    if (cc.getClub().getClubID() == club.getClubID()) {
-                        cdto.getClubCourses().add(new ClubCourseDTO(cc));
-                    }
-                }
-                r.getClubs().add(cdto);
+            List<Club> list = q.getResultList();           
+            if (page == 0) page = 1;
+            r.setClubs(workerBee.getClubs(list, page, null));
+            int x = list.size() % WorkerBee.ROWS_PER_PAGE;
+            if (x > 0) {
+                r.setTotalPages((list.size()/WorkerBee.ROWS_PER_PAGE) + 1);
+            } else {
+                r.setTotalPages((list.size()/WorkerBee.ROWS_PER_PAGE));
             }
-
-            r.setClubs(cList);
+            r.setTotalClubs(list.size());
+                    
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
@@ -556,6 +591,7 @@ public class DataUtil {
             for (Country g : list) {
                 cList.add(new CountryDTO(g));
             }
+           
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
@@ -1278,7 +1314,6 @@ public class DataUtil {
             List<TourneyScoreByRoundDTO> tsbrList = addTournamentScoreByRound(leaderBoard, list);
             r.getLeaderBoard().setTourneyScoreByRoundList(tsbrList);
 
-            
         } catch (PersistenceException e) {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("Duplicate detected. Record already exists");
@@ -1462,7 +1497,7 @@ public class DataUtil {
     public ResponseDTO addClub(ClubDTO d) throws DataException {
         ResponseDTO r = new ResponseDTO();
         Club club = new Club();
-        
+
         club.setAddress(d.getAddress());
         club.setClubName(d.getClubName());
         club.setEmail(d.getEmail());
@@ -1670,7 +1705,7 @@ public class DataUtil {
     private void addInitialOrderOfMerit(GolfGroup gg) throws DataException {
         try {
             OrderOfMeritPoint p = new OrderOfMeritPoint();
-            p.setWin(100);           
+            p.setWin(100);
             p.setTiedFirst(80);
             p.setRunnerUp(70);
             p.setTop3(60);
@@ -1748,23 +1783,23 @@ public class DataUtil {
             af1.setGender(2);
             af1.setGolfGroup(gg);
             em.persist(af1);
-            
+
             Agegroup af2 = new Agegroup();
             af2.setGroupName("Girls 8 - 10");
             af2.setAgeFrom(8);
             af2.setAgeTo(10);
             af2.setGender(2);
-            af2.setGolfGroup(gg);          
+            af2.setGolfGroup(gg);
             em.persist(af2);
-            
+
             Agegroup af3 = new Agegroup();
             af3.setGroupName("Girls 11 - 13");
             af3.setAgeFrom(11);
             af3.setAgeTo(13);
             af3.setGender(2);
-            af3.setGolfGroup(gg);           
+            af3.setGolfGroup(gg);
             em.persist(af3);
-            
+
             Agegroup af4 = new Agegroup();
             af4.setGroupName("Girls 14 - 16");
             af4.setAgeFrom(14);
@@ -1772,7 +1807,7 @@ public class DataUtil {
             af4.setGender(2);
             af4.setGolfGroup(gg);
             em.persist(af4);
-            
+
             Agegroup af5 = new Agegroup();
             af5.setGroupName("Girls 17 - 18");
             af5.setAgeFrom(17);
@@ -1780,7 +1815,7 @@ public class DataUtil {
             af5.setGender(2);
             af5.setGolfGroup(gg);
             em.persist(af5);
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add GolfGroup Age Groups", e);
             throw new DataException("Failed to add initial ageGroups\n" + getErrorString(e));
@@ -1823,5 +1858,21 @@ public class DataUtil {
             throw new DataException("Failed to get ageGroup\n" + getErrorString(e));
         }
     }
-    private final Logger logger = Logger.getLogger("DataUtil");
+
+    public ResponseDTO deleteTournament(int tournamentID) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("Tournament.delete");
+            q.setParameter("id", tournamentID);
+            int deleted = q.executeUpdate();
+            logger.log(Level.INFO, "Tournament deleted, status: {0}", deleted);
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to delete tournament", e);
+            throw new DataException("Failed to delete tournament\n" + getErrorString(e));
+        }
+
+        return r;
+    }
+    private static final Logger logger = Logger.getLogger("DataUtil");
 }

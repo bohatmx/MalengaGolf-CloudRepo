@@ -35,9 +35,18 @@ public class LoaderRequestDTO implements Serializable{
     List<CityDTO> cityList;
     List<ClubDTO> clubList;
     List<CountryDTO> countryList;
-    private int radius;
+    private int radius, page;
     private double latitude, longitude;
 
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    
     public int getRadius() {
         return radius;
     }

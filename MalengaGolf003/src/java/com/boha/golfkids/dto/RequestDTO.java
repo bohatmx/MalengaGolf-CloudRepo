@@ -30,7 +30,7 @@ public class RequestDTO {
     private int requestType;
     private boolean zippedResponse;
     private double latitude, longitude;
-    private int radius, radiusType;
+    private int radius, radiusType, page;
     
     //
     public static final int ADMIN_LOGIN = 1;
@@ -93,8 +93,12 @@ public class RequestDTO {
     
     public static final int CLOSE_LEADERBORD = 67;
     public static final int WITHDRAW_PLAYER = 69;
+    public static final int DELETE_TOURNAMENT = 70;
+    
+    public static final int GET_PROVINCES = 71;
     
     public static final int GET_CLUBS_NEARBY = 119;
+    public static final int GET_CLUBS_IN_STATE = 120;
     
     public static final int PICTURES_FULL_SIZE = 1;
     public static final int PICTURES_THUMBNAILS = 2;
@@ -116,6 +120,14 @@ public class RequestDTO {
 
     public void setLeaderBoardList(List<LeaderBoardDTO> leaderBoardList) {
         this.leaderBoardList = leaderBoardList;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
     
     

@@ -48,13 +48,13 @@ import javax.validation.constraints.Size;
 
 })
 public class Province implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "province")
-    private List<City> cityList;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "latitude")
-    private double latitude;
+    private Double latitude;
     @Column(name = "longitude")
-    private double longitude;
+    private Double longitude;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "province")
+    private List<City> cityList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,7 +69,7 @@ public class Province implements Serializable {
     @OneToMany(mappedBy = "province", fetch = FetchType.EAGER)
     private List<Club> clubList;
     @JoinColumn(name = "countryID", referencedColumnName = "countryID")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Country country;
 
     public Province() {
@@ -126,21 +126,6 @@ public class Province implements Serializable {
         return "com.boha.golfkids.data.Province[ provinceID=" + provinceID + " ]";
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
 
     public List<City> getCityList() {
         return cityList;
@@ -148,6 +133,22 @@ public class Province implements Serializable {
 
     public void setCityList(List<City> cityList) {
         this.cityList = cityList;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
     
 }

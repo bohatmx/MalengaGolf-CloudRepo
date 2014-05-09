@@ -43,6 +43,8 @@ import javax.validation.constraints.Size;
                     + "and a.golfGroup.golfGroupID = :id "
                     + "order by p.lastName, p.firstName")})
 public class Parent implements Serializable {
+    @Column(name = "parentType")
+    private int parentType;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,8 +66,6 @@ public class Parent implements Serializable {
     @Size(max = 25)
     @Column(name = "cellphone")
     private String cellphone;
-    @Column(name = "parentType")
-    private int parentType;
     @Size(max = 20)
     @Column(name = "pin")
     private String pin;
@@ -131,13 +131,6 @@ public class Parent implements Serializable {
         this.cellphone = cellphone;
     }
 
-    public int getParentType() {
-        return parentType;
-    }
-
-    public void setParentType(int parentType) {
-        this.parentType = parentType;
-    }
 
     public String getPin() {
         return pin;
@@ -174,6 +167,14 @@ public class Parent implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Parent[ parentID=" + parentID + " ]";
+    }
+
+    public int getParentType() {
+        return parentType;
+    }
+
+    public void setParentType(int parentType) {
+        this.parentType = parentType;
     }
     
 }

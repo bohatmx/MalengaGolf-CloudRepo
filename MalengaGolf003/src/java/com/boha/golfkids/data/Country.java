@@ -36,13 +36,16 @@ import javax.validation.constraints.Size;
 
 })
 public class Country implements Serializable {
-    @OneToMany(mappedBy = "country")
-    private List<PersonalPlayer> personalPlayerList;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "latitude")
-    private double latitude;
+    private Double latitude;
     @Column(name = "longitude")
-    private double longitude;
+    private Double longitude;
+    @Size(max = 100)
+    @Column(name = "webKey")
+    private String webKey;
+    @OneToMany(mappedBy = "country")
+    private List<PersonalPlayer> personalPlayerList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -121,21 +124,6 @@ public class Country implements Serializable {
         return "com.boha.golfkids.data.Country[ countryID=" + countryID + " ]";
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
 
     public List<PersonalPlayer> getPersonalPlayerList() {
         return personalPlayerList;
@@ -143,6 +131,30 @@ public class Country implements Serializable {
 
     public void setPersonalPlayerList(List<PersonalPlayer> personalPlayerList) {
         this.personalPlayerList = personalPlayerList;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getWebKey() {
+        return webKey;
+    }
+
+    public void setWebKey(String webKey) {
+        this.webKey = webKey;
     }
     
 }

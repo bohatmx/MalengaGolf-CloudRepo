@@ -67,6 +67,10 @@ import javax.validation.constraints.NotNull;
             query = "SELECT l FROM LeaderBoard l "
             + "where l.tournament.tournamentID = :tID "
             + "and l.player.playerID = :pID "),
+    
+    @NamedQuery(name = "LeaderBoard.deleteByGolfGroup",
+            query = "delete FROM LeaderBoard l "
+            + "WHERE l.tournament.golfGroup.golfGroupID = :id "),
 
     @NamedQuery(name = "LeaderBoard.findByGolfGroup",
             query = "SELECT l FROM LeaderBoard l "
@@ -77,8 +81,6 @@ public class LeaderBoard implements Serializable {
 
     @Column(name = "winnerFlag")
     private int winnerFlag;
-    @Column(name = "orderOfMeritPoints")
-    private int orderOfMeritPoints;
     @Column(name = "tied")
     private int tied;
     @Column(name = "scoreRound2")
@@ -93,10 +95,12 @@ public class LeaderBoard implements Serializable {
     private int scoreRound6;
     @Column(name = "age")
     private int age;
+    @Column(name = "scoringComplete")
+    private int scoringComplete;
     @Column(name = "withDrawn")
     private int withDrawn;
-     @Column(name = "scoringComplete")
-    private int scoringComplete;
+    @Column(name = "orderOfMeritPoints")
+    private int orderOfMeritPoints;
    
     @JoinColumn(name = "ageGroupID", referencedColumnName = "ageGroupID")
     @ManyToOne
@@ -168,21 +172,6 @@ public class LeaderBoard implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public int getScoringComplete() {
-        return scoringComplete;
-    }
-
-    public void setScoringComplete(int scoringComplete) {
-        this.scoringComplete = scoringComplete;
-    }
-
-    public int getWithDrawn() {
-        return withDrawn;
-    }
-
-    public void setWithDrawn(int withDrawn) {
-        this.withDrawn = withDrawn;
-    }
 
     public Player getPlayer() {
         return player;
@@ -253,13 +242,6 @@ public class LeaderBoard implements Serializable {
         this.ageGroup = ageGroup;
     }
 
-    public int getWinnerFlag() {
-        return winnerFlag;
-    }
-
-    public void setWinnerFlag(int winnerFlag) {
-        this.winnerFlag = winnerFlag;
-    }
 
     public int getOrderOfMeritPoints() {
         return orderOfMeritPoints;
@@ -267,6 +249,14 @@ public class LeaderBoard implements Serializable {
 
     public void setOrderOfMeritPoints(int orderOfMeritPoints) {
         this.orderOfMeritPoints = orderOfMeritPoints;
+    }
+
+    public int getWinnerFlag() {
+        return winnerFlag;
+    }
+
+    public void setWinnerFlag(int winnerFlag) {
+        this.winnerFlag = winnerFlag;
     }
 
     public int getTied() {
@@ -323,6 +313,22 @@ public class LeaderBoard implements Serializable {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public int getScoringComplete() {
+        return scoringComplete;
+    }
+
+    public void setScoringComplete(int scoringComplete) {
+        this.scoringComplete = scoringComplete;
+    }
+
+    public int getWithDrawn() {
+        return withDrawn;
+    }
+
+    public void setWithDrawn(int withDrawn) {
+        this.withDrawn = withDrawn;
     }
 
     

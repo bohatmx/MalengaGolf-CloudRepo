@@ -45,6 +45,8 @@ import javax.validation.constraints.Size;
             + "or v.golfGroup.golfGroupID = :gID "
             + "order by v.videoDate desc"),})
 public class VideoClip implements Serializable {
+    @Column(name = "length")
+    private Integer length;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -63,8 +65,6 @@ public class VideoClip implements Serializable {
     @Size(min = 1, max = 65535)
     @Column(name = "comment")
     private String comment;
-    @Column(name = "length")
-    private int length;
     @Size(max = 100)
     @Column(name = "youTubeID")
     private String youTubeID;
@@ -112,13 +112,6 @@ public class VideoClip implements Serializable {
         this.comment = comment;
     }
 
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
 
     public String getYouTubeID() {
         return youTubeID;
@@ -147,6 +140,14 @@ public class VideoClip implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.VideoClip[ videoClipID=" + videoClipID + " ]";
+    }
+
+    public Integer getLength() {
+        return length;
+    }
+
+    public void setLength(Integer length) {
+        this.length = length;
     }
 
 }

@@ -10,7 +10,6 @@ import com.boha.golfkids.dto.RequestDTO;
 import com.boha.golfkids.dto.ResponseDTO;
 import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;
-import com.boha.golfkids.util.DuplicateException;
 import com.boha.golfkids.util.GZipUtility;
 import com.boha.golfkids.util.LeaderBoardUtil;
 import com.boha.golfkids.util.PlatformUtil;
@@ -74,6 +73,9 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.UPDATE_TEE_TIMES:
                         resp = dataUtil.updateTeeTime(dto.getTourneyScoreByRound());
                         break;
+                    case RequestDTO.DELETE_TOURNAMENT:
+                        resp = dataUtil.deleteTournament(dto.getTournamentID());
+                        break;
                     case RequestDTO.CLOSE_TOURNAMENT:
                         resp = dataUtil.closeTournament(dto.getTournamentID());
                         break;
@@ -92,11 +94,14 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.getGolfGroupData(dto.getGolfGroupID(),
                                 dto.getCountryID());
                         break;
-                        case RequestDTO.GET_CLUBS_NEARBY:
-                            WorkerBee bee = new WorkerBee();
-                            resp.setClubs(bee.getClubsWithinRadius(
-                                    dto.getLatitude(), dto.getLongitude(), 
-                                    dto.getRadius(), dto.getRadiusType()));
+                    case RequestDTO.GET_CLUBS_IN_PROVINCE:
+                        resp = dataUtil.getClubsByProvince(dto.getProvinceID(), dto.getPage());
+                        break;
+                    case RequestDTO.GET_CLUBS_NEARBY:
+                        resp = dataUtil.workerBee.getClubsWithinRadius(
+                                dto.getLatitude(), dto.getLongitude(),
+                                dto.getRadius(), dto.getRadiusType(), dto.getPage(), dataUtil.getEntityManager());
+                        
                         break;
                     case RequestDTO.GET_LEADERBOARD:
                         resp = leaderBoardUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
@@ -140,7 +145,7 @@ public class GolfAdminServlet extends HttpServlet {
 
                         break;
                     case RequestDTO.ADD_GOLF_GROUP:
-                        resp = dataUtil.addGolfGroup(dto.getGolfGroup(), 
+                        resp = dataUtil.addGolfGroup(dto.getGolfGroup(),
                                 dto.getAdministrator(), platformUtil);
                         break;
                     case RequestDTO.UPDATE_GOLF_GROUP:
@@ -151,6 +156,10 @@ public class GolfAdminServlet extends HttpServlet {
                         break;
                     case RequestDTO.GET_CLUBS_IN_COUNTRY:
                         resp = dataUtil.getClubsByCountry(dto.getCountryID());
+                        break;
+
+                        case RequestDTO.GET_PROVINCES:
+                        resp = dataUtil.getProvincesByCountry(dto.getCountryID());
                         break;
 
                     case RequestDTO.UPDATE_PLAYER_PARENT:

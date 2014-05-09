@@ -5,7 +5,9 @@
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Country;
+import com.boha.golfkids.data.Province;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,9 +24,14 @@ public class CountryDTO  implements Serializable {
 
     public CountryDTO(Country a) {
         countryID = a.getCountryID();
-        System.out.println("Country ID is " + countryID);
         countryName = a.getCountryName();
         countryCode = a.getCountryCode();
+        if (a.getProvinceList() != null) {
+            provinces = new ArrayList<>();
+            for (Province p : a.getProvinceList()) {
+                provinces.add(new ProvinceDTO(p));
+            }
+        }
         
        
     }

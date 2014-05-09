@@ -31,7 +31,11 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "golfGroupParent")
 @NamedQueries({
-    @NamedQuery(name = "GolfGroupParent.findAll", query = "SELECT g FROM GolfGroupParent g")})
+    @NamedQuery(name = "GolfGroupParent.deleteByGolfGroup", 
+            query = "delete FROM GolfGroupParent g "
+                    + "where g.golfGroup.golfGroupID = :id")
+
+})
 public class GolfGroupParent implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

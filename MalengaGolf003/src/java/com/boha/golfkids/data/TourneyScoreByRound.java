@@ -63,15 +63,6 @@ import javax.validation.constraints.NotNull;
 
 
 public class TourneyScoreByRound implements Serializable {
-    @Column(name = "teeTime")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date teeTime;
-    @Column(name = "scoringComplete")
-    private int scoringComplete;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "tee")
-    private int tee;
     @Column(name = "score1")
     private int score1;
     @Column(name = "score2")
@@ -112,6 +103,15 @@ public class TourneyScoreByRound implements Serializable {
     private int golfRound;
     @Column(name = "totalScore")
     private int totalScore;
+    @Column(name = "teeTime")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date teeTime;
+    @Column(name = "scoringComplete")
+    private int scoringComplete;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "tee")
+    private int tee;
     @JoinColumn(name = "leaderBoardID", referencedColumnName = "leaderBoardID")
     @ManyToOne(optional = false)
     private LeaderBoard leaderBoard;

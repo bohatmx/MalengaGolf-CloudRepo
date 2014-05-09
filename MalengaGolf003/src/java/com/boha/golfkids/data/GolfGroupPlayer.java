@@ -32,7 +32,12 @@ import javax.validation.constraints.NotNull;
 @Table(name = "golfGroupPlayer")
 @NamedQueries({
     @NamedQuery(name = "GolfGroupPlayer.findByGolfGroup", 
-            query = "SELECT g FROM GolfGroupPlayer g where g.golfGroup.golfGroupID = :id")})
+            query = "SELECT g FROM GolfGroupPlayer g "
+                    + "where g.golfGroup.golfGroupID = :id"),
+@NamedQuery(name = "GolfGroupPlayer.deleteByGolfGroup", 
+            query = "delete FROM GolfGroupPlayer g "
+                    + "where g.golfGroup.golfGroupID = :id")
+})
 public class GolfGroupPlayer implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

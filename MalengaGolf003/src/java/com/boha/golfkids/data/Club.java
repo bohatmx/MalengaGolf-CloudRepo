@@ -100,9 +100,11 @@ public class Club implements Serializable {
     private List<Tournament> tournamentList;
 
     @JoinColumn(name = "provinceID", referencedColumnName = "provinceID")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Province province;
 
+ 
+    private double distance;
     public Club() {
     }
 
@@ -116,6 +118,14 @@ public class Club implements Serializable {
 
     public void setClubID(int clubID) {
         this.clubID = clubID;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     public String getClubName() {

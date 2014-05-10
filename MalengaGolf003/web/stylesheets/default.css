@@ -1,0 +1,482 @@
+/* Copyright (c) 2010 CoffeeCup, All rights reserved - http://www.coffeecup.com/
+----------------------------------------------------------------------------------------------------*/
+
+/* Reset v1.0 | 20080212 - http://meyerweb.com/eric/tools/css/reset/
+----------------------------------------------------------------------------------------------------*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+
+body {
+	line-height: 1;
+}
+
+ol, ul {
+	list-style: none;
+}
+
+blockquote, q {
+	quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+
+/* remember to define focus styles! */
+:focus {
+	outline: 0;
+}
+
+/* remember to highlight inserts somehow! */
+ins {
+	text-decoration: none;
+}
+
+del {
+	text-decoration: line-through;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* Reset for HTML 5 Elements
+----------------------------------------------------------------------------------------------------*/
+
+/* tells browsers that don't read html 5 tags to render like divs */
+header, footer, aside, nav, article, section {
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+
+/* clears containers with floated elements, no need for extra markup! */
+.clear:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+/* Type
+----------------------------------------------------------------------------------------------------*/
+
+html {
+	font-size: 16px;
+}
+
+body {
+	color: #333;
+	font: 75%/1.5em Lucida Sans, Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	color: #555;
+	font: 1.9em/1em Lucida Sans, Arial, sans-serif;
+}
+
+h1 {
+
+}
+
+h2 {
+	color: #990000;
+}
+
+h3 {
+	color: #990000;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+h4 {
+	font-size: 1.35em;
+}
+
+h5 {
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+h6 {
+	font-size: 1em;
+	font-weight: bold;
+}
+
+p {
+	color: #666;
+	font-family: Lucida Sans, Arial, sans-serif;
+	font-size: 1em;
+	line-height: 1.5em;
+	text-align: left;
+}
+
+ul {
+	list-style: disc;
+	color: #555;
+	font-size: 1.0em;
+	font-weight: normal;
+	line-height: 1.3em;
+}
+
+ol, ol.lowerRoman, ol.upperAlpha {
+	list-style: decimal;
+	color: #555;
+	font-size: 1.0em;
+	font-weight: normal;
+	line-height: 1.3em;
+}
+
+ol.lowerRoman {
+	list-style: lower-roman;
+}
+
+ol.upperAlpha {
+	list-style: upper-alpha;
+}
+
+strong, b, .b {
+	color: #555 !important;
+	font-weight: bold;
+}
+
+a {
+	color: #990000;
+	text-decoration: none;
+}
+
+/*a:link {
+	color: #990000;
+	outline: none;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #990000;
+	outline: none;
+	text-decoration: none;
+}*/
+
+a:hover {
+	color: #333;
+	text-decoration: underline;
+}
+
+a:active {
+	color: #990000;
+	outline: none;
+	text-decoration: none;
+}
+
+a:focus {
+	outline: 1px dotted;
+}
+
+.more {
+	text-decoration: underline !important;
+}
+
+/* Spacing
+----------------------------------------------------------------------------------------------------*/
+
+
+
+h1, h2, h3, h4, h5, h6 {
+	padding-bottom: 3px !important;
+}
+
+hr {
+	border: 0 #ccc solid;
+	border-top-width: 1px;
+	clear: both;
+	height: 0;
+}
+
+p {
+	margin-right: 10px;
+	padding: 5px 0;
+}
+
+blockquote {
+	margin-right: 10px;
+	padding: 5px 0 20px 0;
+}
+
+ul, ol {
+	margin-left: 25px;
+	padding-left: 0;
+}
+
+li {
+	margin-bottom: 15px;
+	margin-left: 15px;
+}
+
+p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset {
+	margin-bottom: 10px;
+}
+
+/* Layout
+----------------------------------------------------------------------------------------------------*/
+
+html {
+	background: url(../images/body_bkgd.png) repeat-x;
+	padding: 0px 0px 40px 0px;
+	text-align: center;
+}
+
+body {
+	background:  none;
+	margin-bottom: 20px;
+	width: 960px;
+	margin: 0 auto;
+	
+	position: relative;
+	border: none;
+}
+
+#logoTxt {
+	background: url(../images/logo_img.png) top right no-repeat;
+	position: absolute;
+	top: 35px;
+	left: 70px;
+	width: 168px;
+	height: 66px;
+	border: none;
+}
+
+#logoTxt h1, #logoTxt h2 {
+	color: #fff;
+	font-size: 3em;
+	line-height: 1.5em;
+	text-align: center;
+}
+
+#logoTxt h2 {
+	color: #fff;
+}
+
+#logoTxt h1 span, #logoTxt h2 span {
+	display: block;
+	position: absolute;
+	top: 2px;
+	right: 0;
+	width: 124px;
+	z-index: 9;
+	border: none;
+}
+
+#logoTxt h2 span {
+	top: 0 !important;
+	z-index: 10 !important;
+}
+
+header {
+	/*height: 170px;*/
+	width: 100%;
+	border: none;
+}
+
+header h1 {
+	color: #333;
+	font-size: 1.6em;
+	margin-top: 20px;
+	text-align: left;
+	border: none;
+}
+
+header h1 span {
+	color: #ED9580;
+	display: block;
+	float: left;
+	padding-right: 5px;
+	width: 300px;
+	border: none;
+}
+
+#headTxt {
+	color: #000 !important;
+	font-size: 4em;
+	line-height: 0.3em;
+	text-transform: capitalize;
+	width: auto !important;
+}
+
+nav ul {
+	clear: left;
+	list-style: none;
+	width: 610px;
+	height: 40px;
+	margin-left: 0;
+	padding-top: 50px;
+	text-align: left;
+	border: none;
+}
+
+nav ul li {
+	display: inline;
+	margin: 0 2px 0 0;
+	border: none;
+}
+
+nav ul li a {
+		color: #E7DBBA;
+	font-size: 1em;
+	font-weight: normal;
+	letter-spacing: 0.1em;
+	padding: 8px 30px 8px 0px;
+	text-transform: uppercase;
+	border: none;
+}
+
+nav ul li a:hover {
+	
+	color: #fff;
+	text-decoration: none;
+}
+
+#mainLeft, #mainLeft2 {
+	float: left;
+	padding-top: 40px;
+	position: relative;
+	width: 325px;
+	text-align: left;
+}
+
+#mainLeft img {
+	border: none;
+	position: absolute;
+    top: 200px;
+	z-index: 5;
+}
+
+#mainLeft h1 {
+	color: #666;
+  	font-size: 2em;
+	line-height: 1.5em;
+ 	text-align: center;
+ 
+}
+
+#mainLeft h2 {
+	color: #444;
+	font-size: 0.8em;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+#mainLeft h1 span, #mainLeft h2 span {
+	display: block;
+	position: absolute;
+	top: 255px;
+	right: 0;
+	width: 330px;
+	z-index: 60;
+	border: none;
+}
+
+#mainLeft h2 span {
+	top: 320px !important;
+}
+
+/*#mainLeft2 {
+	margin: 20px 0 0 50px;
+	width: 520px !important;
+}*/
+
+#mainRight, #mainRight2 {
+	float: right;
+	margin-top: 50px;
+	width: 610px;
+	text-align: left;
+}
+
+/*#mainRight h2 {
+	margin-bottom: 40px;
+	border: none;
+}
+
+#mainRight2 {
+	width: 300px !important;
+}*/
+
+.columns {
+	margin: 20px 0;
+	padding-right: 10px;
+	border: none;
+}
+
+.colLeft {
+	float: left;
+	width: 290px;
+	border: none;
+}
+
+.colRight {
+	float: right;
+	width: 290px;
+	border: none;
+}
+
+#signature {
+	margin-bottom: 5px;
+	text-align: right;
+}
+
+footer {
+	clear: both;
+	background: url(../images/foot_bkgd.png) repeat-x;
+	padding-top: 10px;
+	border: none;
+}
+
+footer p {
+	float: left;
+	font-size: 0.8em;
+	border: none;
+}
+
+footer ul {
+	float: right;
+	list-style: none;
+	width: 330px;
+	margin-left: 0;
+	padding-top: 3px;
+	text-align: right;
+	border: none;
+}
+
+footer ul li {
+	display: inline;
+	margin: 0 5px;
+	border: none;
+}
+
+footer ul li a {
+	font-size: 0.9em;
+}
+
+footer ul li a:hover {
+	color: #000;
+}

@@ -1169,7 +1169,39 @@ public class DataUtil {
             throw new DataException(getErrorString(e));
         }
     }
+public void updateClubCourse(ClubCourseDTO dto) throws DataException {
 
+        ClubCourse g = getClubCourseByID(dto.getClubCourseID());
+        g.setHoles(dto.getHoles());
+        g.setPar(dto.getPar());
+        g.setParHole1(dto.getParHole1());
+        g.setParHole2(dto.getParHole2());
+        g.setParHole3(dto.getParHole3());
+        g.setParHole4(dto.getParHole4());
+        g.setParHole5(dto.getParHole5());
+        g.setParHole6(dto.getParHole6());
+        g.setParHole7(dto.getParHole7());
+        g.setParHole8(dto.getParHole8());
+        g.setParHole9(dto.getParHole9());
+        g.setParHole10(dto.getParHole10());
+        g.setParHole11(dto.getParHole11());
+        g.setParHole12(dto.getParHole12());
+        g.setParHole13(dto.getParHole13());
+        g.setParHole14(dto.getParHole14());
+        g.setParHole15(dto.getParHole15());
+        g.setParHole16(dto.getParHole16());
+        g.setParHole17(dto.getParHole17());
+        g.setParHole18(dto.getParHole18());
+
+        try {
+            em.merge(g);
+            logger.log(Level.INFO, "\n### Updated clubCourse: {0}", 
+                    new Object[]{g.getCourseName()});
+        } catch (Exception e) {
+            logger.log(Level.INFO, "Unable to update club", e);
+            throw new DataException(getErrorString(e));
+        }
+    }
     public void updateClub(ClubDTO dto) throws DataException {
 
         Club g = getClubByID(dto.getClubID());
@@ -1497,7 +1529,6 @@ public class DataUtil {
     public ResponseDTO addClub(ClubDTO d) throws DataException {
         ResponseDTO r = new ResponseDTO();
         Club club = new Club();
-
         club.setAddress(d.getAddress());
         club.setClubName(d.getClubName());
         club.setEmail(d.getEmail());
@@ -1510,15 +1541,45 @@ public class DataUtil {
 
         try {
             em.persist(club);
-            Query q = em.createNamedQuery("Club.findByProvince", Club.class);
+            Query q = em.createNamedQuery("Club.findByNameInProvince", Club.class);
             q.setParameter("id", d.getProvinceID());
-            List<Club> list = q.getResultList();
-            List<ClubDTO> dList = new ArrayList<>();
-            for (Club c : list) {
-                dList.add(new ClubDTO(c));
-            }
-            r.setClubs(dList);
-            logger.log(Level.INFO, "\n### Added Club {0}", club.getClubName() + " - " + club.getProvince().getProvinceName());
+            q.setParameter("clubName", club.getClubName());
+            Club c = (Club)q.getSingleResult();
+            ClubCourse cc = new ClubCourse();
+            cc.setCourseName(c.getClubName());
+            cc.setClub(c);
+            cc.setHoles(18);
+            cc.setPar(72);
+            cc.setParHole1(4);
+            cc.setParHole2(4);
+            cc.setParHole3(4);
+            cc.setParHole4(4);
+            cc.setParHole5(4);
+            cc.setParHole6(4);
+            cc.setParHole7(4);
+            cc.setParHole8(4);
+            cc.setParHole9(4);
+            cc.setParHole10(4);
+            cc.setParHole11(4);
+            cc.setParHole12(4);
+            cc.setParHole13(4);
+            cc.setParHole14(4);
+            cc.setParHole15(4);
+            cc.setParHole16(4);
+            cc.setParHole17(4);
+            cc.setParHole18(4);
+            em.persist(cc);
+            logger.log(Level.OFF, "Just persisted clubCourse id: {0}", cc.getClubCourseID());
+            q = em.createNamedQuery("ClubCourse.findByClub", ClubCourse.class);
+            q.setParameter("id", c.getClubID());
+            List<ClubCourse> ccList = q.getResultList();
+            ClubDTO cDTO = new ClubDTO(c);
+            cDTO.setClubCourses(new ArrayList<ClubCourseDTO>());
+            cDTO.getClubCourses().add(new ClubCourseDTO(ccList.get(0)));
+            r.setClubs(new ArrayList<ClubDTO>());
+            r.getClubs().add(cDTO);
+            
+            logger.log(Level.INFO, "\n### Added Club and assoc. course {0}", c.getClubName() + " - " + c.getProvince().getProvinceName());
         } catch (PersistenceException e) {
             logger.log(Level.SEVERE, "***ERROR*** Duplicate Club", e);
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);

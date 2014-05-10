@@ -111,11 +111,20 @@ public class RequestDTO {
     private PersonalPlayerDTO personalPlayer;
     private PersonalScoreDTO personalScore;
     private VideoClipDTO videoClip;
+    private ClubCourseDTO clubCourse;
 
     private List<LeaderBoardDTO> leaderBoardList;
 
     public List<LeaderBoardDTO> getLeaderBoardList() {
         return leaderBoardList;
+    }
+
+    public ClubCourseDTO getClubCourse() {
+        return clubCourse;
+    }
+
+    public void setClubCourse(ClubCourseDTO clubCourse) {
+        this.clubCourse = clubCourse;
     }
 
     public void setLeaderBoardList(List<LeaderBoardDTO> leaderBoardList) {

@@ -169,6 +169,6 @@ public class WorkerBee {
         return cList;
     }
 
-    public static final int ROWS_PER_PAGE = 40;
+    public static final int ROWS_PER_PAGE = 100;
 
 }

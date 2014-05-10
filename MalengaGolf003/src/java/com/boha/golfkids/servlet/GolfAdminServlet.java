@@ -101,7 +101,7 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.workerBee.getClubsWithinRadius(
                                 dto.getLatitude(), dto.getLongitude(),
                                 dto.getRadius(), dto.getRadiusType(), dto.getPage(), dataUtil.getEntityManager());
-                        
+
                         break;
                     case RequestDTO.GET_LEADERBOARD:
                         resp = leaderBoardUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
@@ -158,7 +158,7 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.getClubsByCountry(dto.getCountryID());
                         break;
 
-                        case RequestDTO.GET_PROVINCES:
+                    case RequestDTO.GET_PROVINCES:
                         resp = dataUtil.getProvincesByCountry(dto.getCountryID());
                         break;
 
@@ -170,6 +170,9 @@ public class GolfAdminServlet extends HttpServlet {
                         break;
                     case RequestDTO.UPDATE_CLUB:
                         dataUtil.updateClub(dto.getClub());
+                        break;
+                    case RequestDTO.UPDATE_CLUB_COURSE:
+                        dataUtil.updateClubCourse(dto.getClubCourse());
                         break;
                     case RequestDTO.GET_AGE_GROUPS:
                         List<AgeGroupDTO> ageList = dataUtil.getAgeGroups(dto.getGolfGroupID());

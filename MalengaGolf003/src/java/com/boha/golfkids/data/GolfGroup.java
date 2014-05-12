@@ -42,7 +42,8 @@ import javax.validation.constraints.Size;
 
 })
 public class GolfGroup implements Serializable {
-    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
+    private List<GcmDevice> gcmDeviceList;   
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "golfGroup")
     private OrderOfMeritPoint orderOfMeritPoint;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
@@ -52,13 +53,12 @@ public class GolfGroup implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "golfGroupID")
-    private Integer golfGroupID;
+    private int golfGroupID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "golfGroupName")
     private String golfGroupName;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -93,22 +93,22 @@ public class GolfGroup implements Serializable {
     public GolfGroup() {
     }
 
-    public GolfGroup(Integer golfGroupID) {
+    public GolfGroup(int golfGroupID) {
         this.golfGroupID = golfGroupID;
     }
 
-    public GolfGroup(Integer golfGroupID, String golfGroupName, String email, Date dateRegistered) {
+    public GolfGroup(int golfGroupID, String golfGroupName, String email, Date dateRegistered) {
         this.golfGroupID = golfGroupID;
         this.golfGroupName = golfGroupName;
         this.email = email;
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getGolfGroupID() {
+    public int getGolfGroupID() {
         return golfGroupID;
     }
 
-    public void setGolfGroupID(Integer golfGroupID) {
+    public void setGolfGroupID(int golfGroupID) {
         this.golfGroupID = golfGroupID;
     }
 
@@ -210,26 +210,7 @@ public class GolfGroup implements Serializable {
         this.administratorList = administratorList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (golfGroupID != null ? golfGroupID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof GolfGroup)) {
-            return false;
-        }
-        GolfGroup other = (GolfGroup) object;
-        if ((this.golfGroupID == null && other.golfGroupID != null) || (this.golfGroupID != null && !this.golfGroupID.equals(other.golfGroupID))) {
-            return false;
-        }
-        return true;
-    }
-
+   
     @Override
     public String toString() {
         return "com.boha.golfkids.data.GolfGroup[ golfGroupID=" + golfGroupID + " ]";
@@ -249,6 +230,14 @@ public class GolfGroup implements Serializable {
 
     public void setOrderOfMeritPoint(OrderOfMeritPoint orderOfMeritPoint) {
         this.orderOfMeritPoint = orderOfMeritPoint;
+    }
+
+    public List<GcmDevice> getGcmDeviceList() {
+        return gcmDeviceList;
+    }
+
+    public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
+        this.gcmDeviceList = gcmDeviceList;
     }
 
   

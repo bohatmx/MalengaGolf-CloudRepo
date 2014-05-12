@@ -56,6 +56,8 @@ public class Player implements Serializable, Comparable<Player> {
     private int gender;
     @Column(name = "yearJoined")
     private int yearJoined;
+    @OneToMany(mappedBy = "player")
+    private List<GcmDevice> gcmDeviceList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "player", fetch = FetchType.LAZY)
     private List<LeaderBoard> leaderBoardList;
@@ -82,7 +84,6 @@ public class Player implements Serializable, Comparable<Player> {
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 95)
     @Column(name = "email")
     private String email;
@@ -239,6 +240,14 @@ public class Player implements Serializable, Comparable<Player> {
 
     public void setYearJoined(int yearJoined) {
         this.yearJoined = yearJoined;
+    }
+
+    public List<GcmDevice> getGcmDeviceList() {
+        return gcmDeviceList;
+    }
+
+    public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
+        this.gcmDeviceList = gcmDeviceList;
     }
 
 }

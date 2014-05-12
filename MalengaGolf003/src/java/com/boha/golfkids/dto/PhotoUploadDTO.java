@@ -13,9 +13,40 @@ import java.util.List;
  */
 public class PhotoUploadDTO {
 
-    private int golfGroupID, tournamentID;
+    public static final String PLAYER_PREFIX = "player";
+    public static final String PARENT_PREFIX = "parent";
+    public static final String SCORER_PREFIX = "scorer";
+    public static final String THUMB_PREFIX = "thumbnails";
+
+    public static final int PICTURES_FULL_SIZE = 1;
+    public static final int PICTURES_THUMBNAILS = 2;
+
+    private int golfGroupID, tournamentID, type, playerID, parentID, scorerID;
     private List<String> tags;
-    private int type;
+
+    public int getPlayerID() {
+        return playerID;
+    }
+
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
+    }
+
+    public int getParentID() {
+        return parentID;
+    }
+
+    public void setParentID(int parentID) {
+        this.parentID = parentID;
+    }
+
+    public int getScorerID() {
+        return scorerID;
+    }
+
+    public void setScorerID(int scorerID) {
+        this.scorerID = scorerID;
+    }
 
     public int getGolfGroupID() {
         return golfGroupID;
@@ -48,7 +79,6 @@ public class PhotoUploadDTO {
     public void setType(int type) {
         this.type = type;
     }
-    public static final int PICTURES_FULL_SIZE = 1;
-    public static final int PICTURES_THUMBNAILS = 2;
+   
 
 }

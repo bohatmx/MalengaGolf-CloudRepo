@@ -46,12 +46,15 @@ import javax.validation.constraints.Size;
 
 })
 public class Administrator implements Serializable {
+    @OneToMany(mappedBy = "administrator")
+    private List<GcmDevice> gcmDeviceList;
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "administratorID")
-    private Integer administratorID;
+    private int administratorID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "superUserFlag")
@@ -59,7 +62,6 @@ public class Administrator implements Serializable {
     @Size(max = 45)
     @Column(name = "cellphone")
     private String cellphone;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 100)
     @Column(name = "email")
     private String email;
@@ -80,20 +82,20 @@ public class Administrator implements Serializable {
     public Administrator() {
     }
 
-    public Administrator(Integer administratorID) {
+    public Administrator(int administratorID) {
         this.administratorID = administratorID;
     }
 
-    public Administrator(Integer administratorID, int superUserFlag) {
+    public Administrator(int administratorID, int superUserFlag) {
         this.administratorID = administratorID;
         this.superUserFlag = superUserFlag;
     }
 
-    public Integer getAdministratorID() {
+    public int getAdministratorID() {
         return administratorID;
     }
 
-    public void setAdministratorID(Integer administratorID) {
+    public void setAdministratorID(int administratorID) {
         this.administratorID = administratorID;
     }
 
@@ -145,26 +147,6 @@ public class Administrator implements Serializable {
         this.lastName = lastName;
     }
 
-   
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (administratorID != null ? administratorID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Administrator)) {
-            return false;
-        }
-        Administrator other = (Administrator) object;
-        if ((this.administratorID == null && other.administratorID != null) || (this.administratorID != null && !this.administratorID.equals(other.administratorID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {
@@ -177,6 +159,14 @@ public class Administrator implements Serializable {
 
     public void setGolfGroup(GolfGroup golfGroup) {
         this.golfGroup = golfGroup;
+    }
+
+    public List<GcmDevice> getGcmDeviceList() {
+        return gcmDeviceList;
+    }
+
+    public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
+        this.gcmDeviceList = gcmDeviceList;
     }
     
 }

@@ -44,36 +44,36 @@ public class GolfGroupPlayer implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "golfGroupPlayerID")
-    private Integer golfGroupPlayerID;
+    private int golfGroupPlayerID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private GolfGroup golfGroup;
     @JoinColumn(name = "playerID", referencedColumnName = "playerID")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Player player;
 
     public GolfGroupPlayer() {
     }
 
-    public GolfGroupPlayer(Integer golfGroupPlayerID) {
+    public GolfGroupPlayer(int golfGroupPlayerID) {
         this.golfGroupPlayerID = golfGroupPlayerID;
     }
 
-    public GolfGroupPlayer(Integer golfGroupPlayerID, Date dateRegistered) {
+    public GolfGroupPlayer(int golfGroupPlayerID, Date dateRegistered) {
         this.golfGroupPlayerID = golfGroupPlayerID;
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getGolfGroupPlayerID() {
+    public int getGolfGroupPlayerID() {
         return golfGroupPlayerID;
     }
 
-    public void setGolfGroupPlayerID(Integer golfGroupPlayerID) {
+    public void setGolfGroupPlayerID(int golfGroupPlayerID) {
         this.golfGroupPlayerID = golfGroupPlayerID;
     }
 
@@ -102,25 +102,6 @@ public class GolfGroupPlayer implements Serializable {
     }
 
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (golfGroupPlayerID != null ? golfGroupPlayerID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof GolfGroupPlayer)) {
-            return false;
-        }
-        GolfGroupPlayer other = (GolfGroupPlayer) object;
-        if ((this.golfGroupPlayerID == null && other.golfGroupPlayerID != null) || (this.golfGroupPlayerID != null && !this.golfGroupPlayerID.equals(other.golfGroupPlayerID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {

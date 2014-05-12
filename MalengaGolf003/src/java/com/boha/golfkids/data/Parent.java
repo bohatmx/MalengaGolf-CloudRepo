@@ -45,6 +45,8 @@ import javax.validation.constraints.Size;
 public class Parent implements Serializable {
     @Column(name = "parentType")
     private int parentType;
+    @OneToMany(mappedBy = "parent")
+    private List<GcmDevice> gcmDeviceList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -175,6 +177,14 @@ public class Parent implements Serializable {
 
     public void setParentType(int parentType) {
         this.parentType = parentType;
+    }
+
+    public List<GcmDevice> getGcmDeviceList() {
+        return gcmDeviceList;
+    }
+
+    public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
+        this.gcmDeviceList = gcmDeviceList;
     }
     
 }

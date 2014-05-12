@@ -13,7 +13,7 @@ import java.util.List;
 public class ResponseDTO {
 
     private int statusCode, totalPages, totalClubs;
-    private String message;
+    private String message, gcmRegistrationID;
     private LeaderBoardDTO leaderBoard;
     private PersonalPlayerDTO personalPlayer;
     private List<LeaderBoardCarrierDTO> leaderBoardCarriers;
@@ -55,6 +55,14 @@ public class ResponseDTO {
 
     public int getTotalPages() {
         return totalPages;
+    }
+
+    public String getGcmRegistrationID() {
+        return gcmRegistrationID;
+    }
+
+    public void setGcmRegistrationID(String gcmRegistrationID) {
+        this.gcmRegistrationID = gcmRegistrationID;
     }
 
     public void setTotalPages(int totalPages) {

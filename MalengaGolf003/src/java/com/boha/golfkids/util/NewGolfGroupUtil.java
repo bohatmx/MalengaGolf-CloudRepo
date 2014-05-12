@@ -487,7 +487,7 @@ public class NewGolfGroupUtil {
         if (gender == GENDER_BOYS) {
             genderCount = rand.nextInt(8);
             if (genderCount < 5) {
-                genderCount = 8;
+                genderCount = 6;
             }
         } else {
             genderCount = rand.nextInt(6);
@@ -701,7 +701,7 @@ public class NewGolfGroupUtil {
     };
 
     private static void getPictureFiles(GolfGroup gg, List<Player> pList) {
-        log.log(Level.INFO, "Image file processing starting ...");
+        log.log(Level.INFO, "########## Image file processing starting ...");
         Collections.sort(pList);
         File dir = GolfProperties.getImageDir(); //golf_images
         File ggDir = new File(dir, "golfgroup" + gg.getGolfGroupID());
@@ -719,6 +719,8 @@ public class NewGolfGroupUtil {
 
         File[] boysFiles = boysDir.listFiles();
         File[] girlsFiles = girlsDir.listFiles();
+        log.log(Level.INFO, "#picture dirs; {0} girls: {1}", 
+                new Object[]{boysDir.getAbsolutePath(), girlsDir.getAbsolutePath()});
 
         List<Player> females = new ArrayList<>();
         List<Player> males = new ArrayList<>();
@@ -735,7 +737,7 @@ public class NewGolfGroupUtil {
             if (index < females.size()) {
                 Player p = pList.get(index);
                 if (p.getGender() == GENDER_BOYS) continue;
-                File newFile = new File(playerDir, "" + p.getPlayerID() + ".jpg");
+                File newFile = new File(playerDir, "t" + p.getPlayerID() + ".jpg");
                 String name = p.getFirstName() + " " + p.getLastName();
                 try {
                     copyFile(file, newFile, name);
@@ -750,7 +752,7 @@ public class NewGolfGroupUtil {
             if (index < males.size()) {
                 Player p = pList.get(index);
                 if (p.getGender() == GENDER_GIRLS) continue;
-                File newFile = new File(playerDir, "" + p.getPlayerID() + ".jpg");
+                File newFile = new File(playerDir, "t" + p.getPlayerID() + ".jpg");
                 String name = p.getFirstName() + " " + p.getLastName();
                 try {
                     copyFile(file, newFile, name);
@@ -772,6 +774,6 @@ public class NewGolfGroupUtil {
             StandardCopyOption.COPY_ATTRIBUTES
         };
         Files.copy(FROM, TO, options);
-        //log.log(Level.OFF, "Image file copied, created: {0}, file: {1}", new Object[]{name, toFile.getAbsolutePath()});
+        log.log(Level.OFF, "Image file copied, created: {0}, file: {1}", new Object[]{name, toFile.getAbsolutePath()});
     }
 }

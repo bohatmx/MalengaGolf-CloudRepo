@@ -59,6 +59,8 @@ public class GolfAdminServlet extends HttpServlet {
         Gson gson = new Gson();
         ResponseDTO resp = new ResponseDTO();
         RequestDTO dto = getRequest(gson, request);
+        log.log(Level.WARNING, "---> ipAddress: {0} name: {1} port: {2}", 
+                new Object[]{request.getLocalAddr(), request.getLocalName(), request.getLocalPort()});
         //
         if (dto == null) {
             response.setContentType("text/html;charset=UTF-8");

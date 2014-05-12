@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.sql.DataSource;
 
 public class WorkerBee {
 
@@ -41,40 +43,31 @@ public class WorkerBee {
     private ResultSet resultSet = null;
 
     public static final String DEV_URL = "jdbc:mysql://localhost:8889/kidsgolf?user=root&password=root";
-    public static final String PRODUCTION_URL = "jdbc:mysql://localhost:3306/kidsgolf?user=root&password=kktiger3$";
-    public static final String SQL_STATEMENT = "select clubID, a.clubName, a.latitude, a.longitude, a.provinceID, provinceName, ( ? * acos( cos( radians(?) ) * cos( radians( a.latitude) ) "
+    public static final String PRODUCTION_URL = "jdbc:mysql://bohamaker.com:3306/kidsgolf?user=root&password=kktiger3$";
+    public static final String SQL_STATEMENT = "select clubID, a.clubName, a.latitude, a.longitude, a.provinceID, provinceName, "
+            + "( ? * acos( cos( radians(?) ) * cos( radians( a.latitude) ) "
             + "* cos( radians( a.longitude ) - radians(?) ) + sin( radians(?) ) "
             + "* sin( radians( a.latitude ) ) ) ) "
             + "AS distance FROM club a, province b where a.provinceID = b.provinceID HAVING distance < ? order by distance";
     public static final int KILOMETRES = 1, MILES = 2, PARM_KM = 6371, PARM_MILES = 3959;
 
+    private InitialContext ctx;
+    private DataSource ds;
+    private Connection conn;
     private void initialize() throws Exception {
-        Class.forName("com.mysql.jdbc.Driver");
-        try {
-            connect = DriverManager
-                    .getConnection(PRODUCTION_URL);
-        } catch (SQLException ex) {
-            Logger.getLogger(WorkerBee.class.getName()).log(Level.WARNING,
-                    "Still hacking on it, Jack! Gimme the dev connection!");
-            try {
-                connect = DriverManager
-                        .getConnection(DEV_URL);
-            } catch (SQLException ex1) {
-                Logger.getLogger(WorkerBee.class.getName()).log(Level.SEVERE, "We have a database connection error", ex1);
-                throw new Exception();
-            }
-        }
-        System.out.println("###### Connection OK, preparing statement: " + connect.getSchema());
-        preparedStatement = connect
-                .prepareStatement(SQL_STATEMENT);
+        if (ctx == null) {
+             System.out.println("###### Preparing MySQL context and Connection ...");
+            ctx = new InitialContext();
+            ds = (DataSource) ctx.lookup("jdbc/kidsgolf");
+            conn = ds.getConnection();
+            preparedStatement = conn.prepareStatement(SQL_STATEMENT);
+        }        
     }
 
     public ResponseDTO getClubsWithinRadius(double latitude, double longitude,
             int radius, int type, int page, EntityManager em)
             throws Exception {
-        if (em == null) {
-            System.out.println("OOOPS! check em, is NULL, ........why?? ");
-        }
+        
         switch (type) {
             case KILOMETRES:
                 preparedStatement.setInt(1, PARM_KM);
@@ -108,12 +101,12 @@ public class WorkerBee {
             double lat = resultSet.getDouble("latitude");
             double lng = resultSet.getDouble("longitude");
             int provinceID = resultSet.getInt("provinceID");
-            System.out.println("clubName: " + id + " " + distance + " " + name + " - " + province + " pID: " + provinceID);
+            System.out.println("within radius, clubName: " + id + " - " + distance + " - " + name + " - " + province + " - lat: " + lat + " lng: " + lng);
             Club club = new Club();
             club.setClubID(id);
             Province p = new Province();
             p.setProvinceName(province);
-            p.setProvinceID(provinceID);          
+            p.setProvinceID(provinceID);
             club.setProvince(p);
             club.setClubName(name);
             club.setDistance(distance);
@@ -136,7 +129,9 @@ public class WorkerBee {
     }
 
     public List<ClubDTO> getClubs(List<Club> list, int page, EntityManager em) {
-        if (page == 0) page = 1;
+        if (page == 0) {
+            page = 1;
+        }
         int startIndex = (page - 1) * ROWS_PER_PAGE;
         System.out.println("startIndex: " + startIndex + " page: " + page);
         List<ClubDTO> cList = new ArrayList<>();
@@ -154,7 +149,7 @@ public class WorkerBee {
                         List<ClubCourse> ccList = x.getResultList();
                         club.setClubCourseList(ccList);
                     }
-                } 
+                }
                 ClubDTO dto = new ClubDTO(club);
                 dto.setDistance(club.getDistance());
                 dto.setClubCourses(new ArrayList<ClubCourseDTO>());

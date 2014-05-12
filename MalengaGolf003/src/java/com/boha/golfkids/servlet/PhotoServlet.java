@@ -12,15 +12,14 @@ import com.boha.golfkids.util.GolfProperties;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -58,7 +57,7 @@ public class PhotoServlet extends HttpServlet {
         long start = System.currentTimeMillis();
 
         ResponseDTO ur = new ResponseDTO();
-        String json;                      
+        String json;
         Gson gson = new Gson();
         try {
             boolean isMultipart = ServletFileUpload.isMultipartContent(request);
@@ -110,7 +109,6 @@ public class PhotoServlet extends HttpServlet {
     private ResponseDTO downloadPhotos(HttpServletRequest request) throws FileUploadException {
         logger.log(Level.INFO, "######### starting PHOTO DOWNLOAD process\n\n");
         ResponseDTO resp = new ResponseDTO();
-        FileOutputStream fos = null;
         InputStream stream = null;
         File rootDir;
         try {
@@ -127,11 +125,10 @@ public class PhotoServlet extends HttpServlet {
             return resp;
         }
 
-        int fileCnt = 0;
         PhotoUploadDTO dto = null;
         Gson gson = new Gson();
-        File golfGroupDir = null, tournamentDir = null,
-                golfGroupDirThumbs = null, tournamentDirThumbs = null;
+        File golfGroupDir = null, tournamentDir = null, playerDir = null,
+                parentDir = null, scorerDir = null;
         try {
             ServletFileUpload upload = new ServletFileUpload();
             FileItemIterator iter = upload.getItemIterator(request);
@@ -146,33 +143,18 @@ public class PhotoServlet extends HttpServlet {
                             logger.log(Level.INFO, "picture with associated json: {0}", json);
                             dto = gson.fromJson(json, PhotoUploadDTO.class);
                             if (dto != null) {
-                                golfGroupDir = new File(rootDir, GOLF_GROUP_PREFIX + dto.getGolfGroupID());
-                                if (!golfGroupDir.exists()) {
-                                    golfGroupDir.mkdir();
-                                    logger.log(Level.INFO, "golfgroup directory created - {0}",
-                                            golfGroupDir.getAbsolutePath());
+                                createGolfGroupDirectory(rootDir, golfGroupDir, dto.getGolfGroupID());
+                                if (dto.getPlayerID() > 0) {
+                                    createPlayerDirectory(golfGroupDir, playerDir);
                                 }
-                                golfGroupDirThumbs = new File(golfGroupDir, THUMB_PREFIX + dto.getGolfGroupID());
-                                if (!golfGroupDirThumbs.exists()) {
-                                    golfGroupDirThumbs.mkdir();
-                                    logger.log(Level.INFO, "golfgroup thumbs directory created - {0}",
-                                            golfGroupDirThumbs.getAbsolutePath());
+                                if (dto.getParentID() > 0) {
+                                    createParentDirectory(golfGroupDir, parentDir);
                                 }
-
+                                if (dto.getScorerID() > 0) {
+                                    createScorerDirectory(golfGroupDir, scorerDir);
+                                }
                                 if (dto.getTournamentID() > 0) {
-                                    logger.log(Level.INFO, "tournament photo to be downloaded");
-                                    tournamentDir = new File(golfGroupDir, TOURNAMENT_PREFIX + dto.getTournamentID());
-                                    if (!tournamentDir.exists()) {
-                                        tournamentDir.mkdir();
-                                        logger.log(Level.INFO, "tournament  directory created - {0}",
-                                                tournamentDir.getAbsolutePath());
-                                    }
-                                    tournamentDirThumbs = new File(tournamentDir, THUMB_PREFIX + dto.getTournamentID());
-                                    if (!tournamentDirThumbs.exists()) {
-                                        tournamentDirThumbs.mkdir();
-                                        logger.log(Level.INFO, "tournament thumbs directory created - {0}",
-                                                tournamentDirThumbs.getAbsolutePath());
-                                    }
+                                    createTournamentDirectory(golfGroupDir, tournamentDir, dto.getTournamentID());
                                 }
                             }
                         } else {
@@ -187,43 +169,59 @@ public class PhotoServlet extends HttpServlet {
                     }
                     DateTime dt = new DateTime();
                     String suffix = "" + dt.getMillis() + ".jpg";
-                    if (dto.getTournamentID() == 0) {
+                    if (dto.getTournamentID() == 0 && dto.getPlayerID() == 0 && dto.getParentID() == 0 && dto.getScorerID() == 0) {
                         switch (dto.getType()) {
                             case PhotoUploadDTO.PICTURES_FULL_SIZE:
-                                imageFile = new File(golfGroupDir, suffix);
+                                imageFile = new File(golfGroupDir, "f" + suffix);
                                 break;
                             case PhotoUploadDTO.PICTURES_THUMBNAILS:
-                                imageFile = new File(golfGroupDirThumbs, suffix);
+                                imageFile = new File(golfGroupDir, "t" + suffix);
                                 break;
-
                         }
-                    } else {
+                    }
+                    if (dto.getTournamentID()> 0) {
                         switch (dto.getType()) {
                             case PhotoUploadDTO.PICTURES_FULL_SIZE:
-                                imageFile = new File(tournamentDir, suffix);
+                                imageFile = new File(tournamentDir, "f" + suffix);
                                 break;
                             case PhotoUploadDTO.PICTURES_THUMBNAILS:
-                                imageFile = new File(tournamentDirThumbs, suffix);
+                                imageFile = new File(tournamentDir, "t" + suffix);
                                 break;
-
+                        }
+                    }
+                    if (dto.getPlayerID() > 0) {
+                        switch (dto.getType()) {
+                            case PhotoUploadDTO.PICTURES_FULL_SIZE:
+                                imageFile = new File(playerDir, "f" + dto.getPlayerID() + ".jpg");
+                                break;
+                            case PhotoUploadDTO.PICTURES_THUMBNAILS:
+                                imageFile = new File(playerDir, "t" + dto.getPlayerID() + ".jpg");
+                                break;
+                        }
+                    }
+                    if (dto.getParentID() > 0) {
+                        switch (dto.getType()) {
+                            case PhotoUploadDTO.PICTURES_FULL_SIZE:
+                                imageFile = new File(parentDir, "f" + dto.getParentID() + ".jpg");
+                                break;
+                            case PhotoUploadDTO.PICTURES_THUMBNAILS:
+                                imageFile = new File(parentDir, "t" + dto.getParentID() + ".jpg");
+                                break;
+                        }
+                    }
+                    if (dto.getScorerID() > 0) {
+                        switch (dto.getType()) {
+                            case PhotoUploadDTO.PICTURES_FULL_SIZE:
+                                imageFile = new File(scorerDir, "f" + dto.getScorerID() + ".jpg");
+                                break;
+                            case PhotoUploadDTO.PICTURES_THUMBNAILS:
+                                imageFile = new File(scorerDir, "t" + dto.getScorerID() + ".jpg");
+                                break;
                         }
                     }
 
-                    fos = new FileOutputStream(imageFile);
-                    int read;
-                    byte[] bytes = new byte[2048];
-                    while ((read = stream.read(bytes)) != -1) {
-                        fos.write(bytes, 0, read);
-                    }
-                    stream.close();
-                    fos.flush();
-                    fos.close();
-
-                    fileCnt++;
-                    resp.setMessage("Photos downloaded from mobile app " + fileCnt);
-
-                    logger.log(Level.INFO, "\n### File downloaded: {0} size: {1}",
-                            new Object[]{imageFile.getAbsolutePath(), imageFile.length()});
+                    writeFile(stream, imageFile);
+                    resp.setMessage("Photo downloaded from mobile app ");
 
                 }
             }
@@ -231,19 +229,79 @@ public class PhotoServlet extends HttpServlet {
         } catch (FileUploadException | IOException | JsonSyntaxException ex) {
             logger.log(Level.SEVERE, "Servlet failed on IOException, images NOT uploaded", ex);
             throw new FileUploadException();
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.flush();
-                    fos.close();
-                }
-            } catch (IOException ex) {
-                logger.log(Level.WARNING, "closing stream", ex);
-            }
-
         }
 
         return resp;
+    }
+
+    private void createTournamentDirectory(File golfGroupDir, File tournamentDir, int id) {
+        logger.log(Level.INFO, "tournament photo to be downloaded");
+        tournamentDir = new File(golfGroupDir, TOURNAMENT_PREFIX + id);
+        if (!tournamentDir.exists()) {
+            tournamentDir.mkdir();
+            logger.log(Level.INFO, "tournament  directory created - {0}",
+                    tournamentDir.getAbsolutePath());
+        }
+        
+    }
+
+    private void createScorerDirectory(File golfGroupDir, File scorerDir) {
+        logger.log(Level.INFO, "scorer photo to be downloaded");
+        scorerDir = new File(golfGroupDir, SCORER_DIR);
+        if (!scorerDir.exists()) {
+            scorerDir.mkdir();
+            logger.log(Level.INFO, "scorer  directory created - {0}",
+                    scorerDir.getAbsolutePath());
+
+        }
+    }
+
+    private void createParentDirectory(File golfGroupDir, File parentDir) {
+        logger.log(Level.INFO, "parent photo to be downloaded");
+        parentDir = new File(golfGroupDir, PARENT_DIR);
+        if (!parentDir.exists()) {
+            parentDir.mkdir();
+            logger.log(Level.INFO, "parent  directory created - {0}",
+                    parentDir.getAbsolutePath());
+
+        }
+    }
+
+    private void createPlayerDirectory(File golfGroupDir, File playerDir) {
+        logger.log(Level.INFO, "player photo to be downloaded");
+        playerDir = new File(golfGroupDir, PLAYER_DIR);
+        if (!playerDir.exists()) {
+            playerDir.mkdir();
+            logger.log(Level.INFO, "player  directory created - {0}",
+                    playerDir.getAbsolutePath());
+
+        }
+    }
+
+    private void createGolfGroupDirectory(File rootDir, File golfGroupDir, int id) {
+        golfGroupDir = new File(rootDir, GOLF_GROUP_PREFIX + id);
+        if (!golfGroupDir.exists()) {
+            golfGroupDir.mkdir();
+            logger.log(Level.INFO, "golfgroup directory created - {0}",
+                    golfGroupDir.getAbsolutePath());
+        }
+        
+    }
+
+    private void writeFile(InputStream stream, File imageFile) throws FileNotFoundException, IOException {
+
+        FileOutputStream fos = new FileOutputStream(imageFile);
+        int read;
+        byte[] bytes = new byte[2048];
+        while ((read = stream.read(bytes)) != -1) {
+            fos.write(bytes, 0, read);
+        }
+        stream.close();
+        fos.flush();
+        fos.close();
+
+        logger.log(Level.INFO, "\n### File downloaded: {0} size: {1}",
+                new Object[]{imageFile.getAbsolutePath(), imageFile.length()});
     }
 
     public static double getElapsed(long start, long end) {
@@ -254,6 +312,9 @@ public class PhotoServlet extends HttpServlet {
     public static final String GOLF_GROUP_PREFIX = "golfgroup";
     public static final String TOURNAMENT_PREFIX = "tournament";
     public static final String THUMB_PREFIX = "thumbnails";
+    public static final String PLAYER_DIR = "player";
+    public static final String PARENT_DIR = "parent";
+    public static final String SCORER_DIR = "scorer";
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

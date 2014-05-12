@@ -8,6 +8,7 @@ package com.boha.golfkids.data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +20,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -45,13 +47,16 @@ import javax.validation.constraints.Size;
             query = "SELECT s FROM Scorer s where s.golfGroup.golfGroupID = :id "
                     + "order by s.lastName, s.firstName")})
 public class Scorer implements Serializable {
+    
+    @OneToMany(mappedBy = "scorer")
+    private List<GcmDevice> gcmDeviceList;
    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "scorerID")
-    private Integer scorerID;
+    private int scorerID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -62,7 +67,6 @@ public class Scorer implements Serializable {
     @Size(min = 1, max = 100)
     @Column(name = "lastName")
     private String lastName;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
@@ -95,11 +99,11 @@ public class Scorer implements Serializable {
     public Scorer() {
     }
 
-    public Scorer(Integer scorerID) {
+    public Scorer(int scorerID) {
         this.scorerID = scorerID;
     }
 
-    public Scorer(Integer scorerID, String firstName, String lastName, String email, String cellphone, Date dateRegistered) {
+    public Scorer(int scorerID, String firstName, String lastName, String email, String cellphone, Date dateRegistered) {
         this.scorerID = scorerID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -108,11 +112,11 @@ public class Scorer implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getScorerID() {
+    public int getScorerID() {
         return scorerID;
     }
 
-    public void setScorerID(Integer scorerID) {
+    public void setScorerID(int scorerID) {
         this.scorerID = scorerID;
     }
 
@@ -180,30 +184,19 @@ public class Scorer implements Serializable {
         this.golfGroup = golfGroup;
     }
 
-   
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (scorerID != null ? scorerID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Scorer)) {
-            return false;
-        }
-        Scorer other = (Scorer) object;
-        if ((this.scorerID == null && other.scorerID != null) || (this.scorerID != null && !this.scorerID.equals(other.scorerID))) {
-            return false;
-        }
-        return true;
-    }
+ 
 
     @Override
     public String toString() {
         return "com.boha.golfkids.data.Scorer[ scorerID=" + scorerID + " ]";
+    }
+
+    public List<GcmDevice> getGcmDeviceList() {
+        return gcmDeviceList;
+    }
+
+    public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
+        this.gcmDeviceList = gcmDeviceList;
     }
 
  

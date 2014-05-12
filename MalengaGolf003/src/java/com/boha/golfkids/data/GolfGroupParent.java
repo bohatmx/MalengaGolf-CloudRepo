@@ -42,7 +42,7 @@ public class GolfGroupParent implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "golfGroupParentID")
-    private Integer golfGroupParentID;
+    private int golfGroupParentID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateRegistered")
@@ -58,20 +58,20 @@ public class GolfGroupParent implements Serializable {
     public GolfGroupParent() {
     }
 
-    public GolfGroupParent(Integer golfGroupParentID) {
+    public GolfGroupParent(int golfGroupParentID) {
         this.golfGroupParentID = golfGroupParentID;
     }
 
-    public GolfGroupParent(Integer golfGroupParentID, Date dateRegistered) {
+    public GolfGroupParent(int golfGroupParentID, Date dateRegistered) {
         this.golfGroupParentID = golfGroupParentID;
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getGolfGroupParentID() {
+    public int getGolfGroupParentID() {
         return golfGroupParentID;
     }
 
-    public void setGolfGroupParentID(Integer golfGroupParentID) {
+    public void setGolfGroupParentID(int golfGroupParentID) {
         this.golfGroupParentID = golfGroupParentID;
     }
 
@@ -99,27 +99,7 @@ public class GolfGroupParent implements Serializable {
         this.parent = parent;
     }
 
-    
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (golfGroupParentID != null ? golfGroupParentID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof GolfGroupParent)) {
-            return false;
-        }
-        GolfGroupParent other = (GolfGroupParent) object;
-        if ((this.golfGroupParentID == null && other.golfGroupParentID != null) || (this.golfGroupParentID != null && !this.golfGroupParentID.equals(other.golfGroupParentID))) {
-            return false;
-        }
-        return true;
-    }
+  
 
     @Override
     public String toString() {

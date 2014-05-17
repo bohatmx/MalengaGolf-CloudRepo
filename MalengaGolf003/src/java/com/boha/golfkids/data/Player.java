@@ -53,9 +53,9 @@ import javax.validation.constraints.Size;
             + "order by p.lastName, p.firstName")})
 public class Player implements Serializable, Comparable<Player> {
     @Column(name = "gender")
-    private int gender;
+    private Integer gender;
     @Column(name = "yearJoined")
-    private int yearJoined;
+    private Integer yearJoined;
     @OneToMany(mappedBy = "player")
     private List<GcmDevice> gcmDeviceList;
 
@@ -226,21 +226,6 @@ public class Player implements Serializable, Comparable<Player> {
         return n.compareTo(n1);
     }
 
-    public int getGender() {
-        return gender;
-    }
-
-    public void setGender(int gender) {
-        this.gender = gender;
-    }
-
-    public int getYearJoined() {
-        return yearJoined;
-    }
-
-    public void setYearJoined(int yearJoined) {
-        this.yearJoined = yearJoined;
-    }
 
     public List<GcmDevice> getGcmDeviceList() {
         return gcmDeviceList;
@@ -248,6 +233,22 @@ public class Player implements Serializable, Comparable<Player> {
 
     public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
         this.gcmDeviceList = gcmDeviceList;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Integer getYearJoined() {
+        return yearJoined;
+    }
+
+    public void setYearJoined(Integer yearJoined) {
+        this.yearJoined = yearJoined;
     }
 
 }

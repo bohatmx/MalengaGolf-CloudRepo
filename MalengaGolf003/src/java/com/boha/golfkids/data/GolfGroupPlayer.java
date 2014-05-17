@@ -54,7 +54,7 @@ public class GolfGroupPlayer implements Serializable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private GolfGroup golfGroup;
     @JoinColumn(name = "playerID", referencedColumnName = "playerID")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     private Player player;
 
     public GolfGroupPlayer() {

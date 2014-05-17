@@ -27,6 +27,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -34,7 +39,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import javax.transaction.UserTransaction;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Years;
@@ -250,7 +257,7 @@ public class NewGolfGroupUtil {
             Tournament tournament, DataUtil dataUtil, int holes) throws DataException {
         int cnt = 0;
         log.log(Level.OFF, "########## enabling live! leaderBoard");
-        
+
         //all scored, now remove some scores to make it live!
         int lastRound = 1, holeCnt = holes, pair = 0;
         if (tournament.getGolfRounds() > 1) {
@@ -395,169 +402,228 @@ public class NewGolfGroupUtil {
         }
     }
 
+    static Connection conn;
+    static PreparedStatement preparedStatement;
+
     private static List<Player> generatePlayers(GolfGroup gg, DataUtil dataUtil) throws DataException {
 
-//add boys
         List<Player> pList = new ArrayList<>();
-        pList.addAll(addPlayersByAgeGender(gg, 10, GENDER_BOYS, dataUtil));
-        pList.addAll(addPlayersByAgeGender(gg, 12, GENDER_BOYS, dataUtil));
-        pList.addAll(addPlayersByAgeGender(gg, 14, GENDER_BOYS, dataUtil));
-        pList.addAll(addPlayersByAgeGender(gg, 16, GENDER_BOYS, dataUtil));
-        pList.addAll(addPlayersByAgeGender(gg, 18, GENDER_BOYS, dataUtil));
-        //add girls
-        pList.addAll(addPlayersByAgeGender(gg, 10, GENDER_GIRLS, dataUtil));
-        pList.addAll(addPlayersByAgeGender(gg, 12, GENDER_GIRLS, dataUtil));
-        pList.addAll(addPlayersByAgeGender(gg, 14, GENDER_GIRLS, dataUtil));
-        pList.addAll(addPlayersByAgeGender(gg, 16, GENDER_GIRLS, dataUtil));
-        pList.addAll(addPlayersByAgeGender(gg, 18, GENDER_GIRLS, dataUtil));
+        try {
+            if (conn == null || conn.isClosed()) {
+                conn = dataUtil.em.unwrap(Connection.class);
+            }
+            if (preparedStatement == null || preparedStatement.isClosed()) {
+                preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            }
 
-        log.log(Level.OFF, "###### Players generated: {0}", pList.size());
-        //add scorers
-        Random rand = new Random(System.currentTimeMillis());
-        Scorer s1 = new Scorer();
-        s1.setGolfGroup(gg);
-        s1.setFirstName(firstNames[rand.nextInt(firstNames.length - 1)]);
-        s1.setLastName(lastNames[rand.nextInt(lastNames.length - 1)]);
-        s1.setEmail(s1.getFirstName().toLowerCase()
-                + "." + s1.getLastName().toLowerCase()
-                + "." + (rand.nextInt())
-                + "@gmail.com");
-        s1.setCellphone("999 999 9999");
-        s1.setPin("12345");
-        s1.setExampleFlag(1);
-        s1.setDateRegistered(new Date());
-        dataUtil.em.persist(s1);
-        //
-        Scorer s2 = new Scorer();
-        s2.setGolfGroup(gg);
-        s2.setFirstName(firstNames[rand.nextInt(firstNames.length - 1)]);
-        s2.setLastName(lastNames[rand.nextInt(lastNames.length - 1)]);
-        s2.setEmail(s2.getFirstName().toLowerCase()
-                + "." + s2.getLastName().toLowerCase()
-                + "." + (rand.nextInt())
-                + "@gmail.com");
-        s2.setCellphone("999 999 9999");
-        s2.setPin("12345");
-        s2.setExampleFlag(1);
-        s2.setDateRegistered(new Date());
-        dataUtil.em.persist(s2);
-        //
-        Scorer s3 = new Scorer();
-        s3.setGolfGroup(gg);
-        s3.setFirstName(girls[rand.nextInt(girls.length - 1)]);
-        s3.setLastName(lastNames[rand.nextInt(lastNames.length - 1)]);
-        s3.setEmail(s3.getFirstName().toLowerCase()
-                + "." + s3.getLastName().toLowerCase()
-                + "." + (rand.nextInt())
-                + "@gmail.com");
-        s3.setCellphone("999 999 9999");
-        s3.setPin("12345");
-        s3.setExampleFlag(1);
-        s3.setDateRegistered(new Date());
-        dataUtil.em.persist(s3);
-        //
-        Scorer s4 = new Scorer();
-        s4.setGolfGroup(gg);
-        s4.setFirstName(firstNames[rand.nextInt(firstNames.length - 1)]);
-        s4.setLastName(lastNames[rand.nextInt(lastNames.length - 1)]);
-        s4.setEmail(s4.getFirstName().toLowerCase()
-                + "." + s4.getLastName().toLowerCase()
-                + "." + (rand.nextInt())
-                + "@gmail.com");
-        s4.setCellphone("999 999 9999");
-        s4.setPin("12345");
-        s4.setDateRegistered(new Date());
-        s4.setExampleFlag(1);
-        dataUtil.em.persist(s4);
+//add boys
+            //pList.addAll(addPlayersByAgeGender(gg, 10, GENDER_BOYS, dataUtil));
+            pList.addAll(addPlayersByAgeGender(gg, 12, GENDER_BOYS, dataUtil));
+            //pList.addAll(addPlayersByAgeGender(gg, 14, GENDER_BOYS, dataUtil));
+            pList.addAll(addPlayersByAgeGender(gg, 16, GENDER_BOYS, dataUtil));
+            //pList.addAll(addPlayersByAgeGender(gg, 18, GENDER_BOYS, dataUtil));
+            //add girls
+            //pList.addAll(addPlayersByAgeGender(gg, 10, GENDER_GIRLS, dataUtil));
+            pList.addAll(addPlayersByAgeGender(gg, 12, GENDER_GIRLS, dataUtil));
+            // pList.addAll(addPlayersByAgeGender(gg, 14, GENDER_GIRLS, dataUtil));
+            pList.addAll(addPlayersByAgeGender(gg, 16, GENDER_GIRLS, dataUtil));
+            //pList.addAll(addPlayersByAgeGender(gg, 18, GENDER_GIRLS, dataUtil));
 
+            log.log(Level.OFF, "###### Players generated: {0}", pList.size());
+            //add scorers
+            Random rand = new Random(System.currentTimeMillis());
+            Scorer s1 = new Scorer();
+            s1.setGolfGroup(gg);
+            s1.setFirstName(firstNames[rand.nextInt(firstNames.length - 1)]);
+            s1.setLastName(lastNames[rand.nextInt(lastNames.length - 1)]);
+            s1.setEmail(s1.getFirstName().toLowerCase()
+                    + "." + s1.getLastName().toLowerCase()
+                    + "." + (rand.nextInt())
+                    + "@gmail.com");
+            s1.setCellphone("999 999 9999");
+            s1.setPin("12345");
+            s1.setExampleFlag(1);
+            s1.setDateRegistered(new Date());
+            dataUtil.em.persist(s1);
+            //
+            Scorer s2 = new Scorer();
+            s2.setGolfGroup(gg);
+            s2.setFirstName(firstNames[rand.nextInt(firstNames.length - 1)]);
+            s2.setLastName(lastNames[rand.nextInt(lastNames.length - 1)]);
+            s2.setEmail(s2.getFirstName().toLowerCase()
+                    + "." + s2.getLastName().toLowerCase()
+                    + "." + (rand.nextInt())
+                    + "@gmail.com");
+            s2.setCellphone("999 999 9999");
+            s2.setPin("12345");
+            s2.setExampleFlag(1);
+            s2.setDateRegistered(new Date());
+            dataUtil.em.persist(s2);
+            //
+            Scorer s3 = new Scorer();
+            s3.setGolfGroup(gg);
+            s3.setFirstName(girls[rand.nextInt(girls.length - 1)]);
+            s3.setLastName(lastNames[rand.nextInt(lastNames.length - 1)]);
+            s3.setEmail(s3.getFirstName().toLowerCase()
+                    + "." + s3.getLastName().toLowerCase()
+                    + "." + (rand.nextInt())
+                    + "@gmail.com");
+            s3.setCellphone("999 999 9999");
+            s3.setPin("12345");
+            s3.setExampleFlag(1);
+            s3.setDateRegistered(new Date());
+            dataUtil.em.persist(s3);
+            //
+            Scorer s4 = new Scorer();
+            s4.setGolfGroup(gg);
+            s4.setFirstName(firstNames[rand.nextInt(firstNames.length - 1)]);
+            s4.setLastName(lastNames[rand.nextInt(lastNames.length - 1)]);
+            s4.setEmail(s4.getFirstName().toLowerCase()
+                    + "." + s4.getLastName().toLowerCase()
+                    + "." + (rand.nextInt())
+                    + "@gmail.com");
+            s4.setCellphone("999 999 9999");
+            s4.setPin("12345");
+            s4.setDateRegistered(new Date());
+            s4.setExampleFlag(1);
+            dataUtil.em.persist(s4);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(NewGolfGroupUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return pList;
     }
+    static String sql = "INSERT INTO player (firstName, lastName, dateOfBirth, gender, email, pin, exampleFlag, yearJoined, dateRegistered) "
+            + "values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static List<Player> addPlayersByAgeGender(
             GolfGroup gg,
             int age, int gender,
             DataUtil dataUtil) throws DataException {
-        log.log(Level.OFF, "############## Adding example players age: {0} gender: {1} - {2}", new Object[]{age, gender, gg.getGolfGroupName()});
+        log.log(Level.WARNING, "############## Adding example players, age: {0} gender: {1} - {2}", new Object[]{age, gender, gg.getGolfGroupName()});
         List<Player> pList = new ArrayList<>();
 
         Random rand = new Random(System.currentTimeMillis());
         int fNameIndex;
-        int lNameIndex, parentIndex;
+        int lNameIndex;
         int genderCount;
         if (gender == GENDER_BOYS) {
-            genderCount = rand.nextInt(8);
-            if (genderCount < 5) {
-                genderCount = 6;
+            genderCount = rand.nextInt(16);
+            if (genderCount < 8) {
+                genderCount = 8;
             }
         } else {
-            genderCount = rand.nextInt(6);
-            if (genderCount < 4) {
-                genderCount = 6;
+            genderCount = rand.nextInt(16);
+            if (genderCount < 8) {
+                genderCount = 8;
             }
         }
+
         for (int i = 0; i < genderCount; i++) {
             Player p = new Player();
             if (gender == GENDER_BOYS) {
                 fNameIndex = rand.nextInt(firstNames.length - 1);
-                parentIndex = rand.nextInt(firstNames.length - 1);
                 p.setFirstName(firstNames[fNameIndex]);
             } else {
                 fNameIndex = rand.nextInt(girls.length - 1);
-                parentIndex = rand.nextInt(girls.length - 1);
                 p.setFirstName(girls[fNameIndex]);
             }
             lNameIndex = rand.nextInt(lastNames.length - 1);
+            //static String sql = "INSERT INTO player (firstName, lastName, dateOfBirth, gender, email, pin, exampleFlag, yearJoined, dateRegistered) "
+            //            + "values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
             p.setDateRegistered(new Date());
             p.setLastName(lastNames[lNameIndex]);
             p.setEmail(p.getFirstName().toLowerCase()
                     + "." + p.getLastName().toLowerCase()
                     + "." + (rand.nextInt())
-                    + "@gmail.com");
+                    + "@mg.com");
             p.setCellphone("999 999 9999");
             p.setGender(gender);
             p.setPin("12345");
             p.setYearJoined(2013);
             p.setDateOfBirth(getDateOfBirth(age));
             p.setExampleFlag(1);
-            dataUtil.em.persist(p);
 
-            Query q = dataUtil.em.createNamedQuery("Player.findByEmail", Player.class);
-            q.setParameter("email", p.getEmail());
-            Player player = (Player) q.getSingleResult();
+            try {
+                dataUtil.em.persist(p);
+                Query q = dataUtil.em.createQuery("select a from Player a where a.email = :email");
+                q.setParameter("email", p.getEmail());
+                Player player = (Player) q.getSingleResult();
+                if (player != null) {
+                    log.log(Level.INFO, "Player retrieved {0} {1} {2}", new Object[]{player.getPlayerID(), player.getFirstName(), player.getLastName()});
+                    GolfGroupPlayer ggp = new GolfGroupPlayer();
+                    ggp.setDateRegistered(new Date());
+                    ggp.setGolfGroup(gg);
+                    ggp.setPlayer(player);
+                    dataUtil.em.persist(ggp);
+                    pList.add(ggp.getPlayer());
+                } else {
+                    log.log(Level.INFO, "************ have to do it the hard way - WHY??....");
+                    preparedStatement.setString(1, p.getFirstName());
+                    preparedStatement.setString(2, p.getLastName());
+                    preparedStatement.setDate(3, new java.sql.Date(p.getDateOfBirth().getTime()));
+                    preparedStatement.setInt(4, gender);
+                    preparedStatement.setString(5, p.getEmail());
+                    preparedStatement.setString(6, "12345");
+                    preparedStatement.setInt(7, 1);
+                    preparedStatement.setInt(8, 2013);
+                    preparedStatement.setDate(9, new java.sql.Date(new Date().getTime()));
 
-            GolfGroupPlayer ggp = new GolfGroupPlayer();
-            ggp.setDateRegistered(new Date());
-            ggp.setGolfGroup(gg);
-            ggp.setPlayer(player);
-            dataUtil.em.persist(ggp);
-            pList.add(player);
-            Parent f = new Parent();
-            f.setExampleFlag(1);
-            f.setLastName(player.getLastName());
-            if (gender == GENDER_BOYS) {
-                f.setFirstName(firstNames[parentIndex]);
-            } else {
-                f.setFirstName(girls[parentIndex]);
+                    boolean isOK = preparedStatement.execute();
+                    player = new Player();
+                    if (isOK) {
+                        ResultSet rs = preparedStatement.getResultSet();
+                        int id = 0;
+                        if (rs.next()) {
+                            player.setPlayerID(rs.getInt(1));
+                            log.log(Level.INFO, "######### playerID returned: {0}", id);
+                        }
+                        //
+                        if (player.getPlayerID() > 0) {
+                            GolfGroupPlayer ggp = new GolfGroupPlayer();
+                            ggp.setDateRegistered(new Date());
+                            ggp.setGolfGroup(gg);
+                            ggp.setPlayer(dataUtil.em.find(Player.class, player.getPlayerID()));
+                            dataUtil.em.persist(ggp);
+                            pList.add(ggp.getPlayer());
+                        }
+                    } else {
+                        log.log(Level.OFF, "..return from execute {0}", isOK);
+                    }
+                }
+
+            } catch (SQLException e) {
+                log.log(Level.SEVERE, "Fucked!!!", e);
             }
-            f.setEmail(f.getFirstName().toLowerCase()
-                    + "." + f.getLastName().toLowerCase()
-                    + "." + (rand.nextInt())
-                    + "@gmail.com");
-            f.setCellphone("999 999 9999");
-            f.setPin("12345");
-            dataUtil.em.persist(f);
-           /* Query w = dataUtil.em.createNamedQuery("Parent.findByEmail", Parent.class);
-            w.setParameter("email", f.getEmail());
-            Parent parent = (Parent) w.getSingleResult();
-            GolfGroupParent d = new GolfGroupParent();
-            d.setDateRegistered(new Date());
-            d.setGolfGroup(gg);
-            d.setParent(parent);
-            dataUtil.em.persist(d); */
 
         }
+
         return pList;
     }
+    /* 
+     Parent f = new Parent();
+     f.setExampleFlag(1);
+     f.setLastName(player.getLastName());
+     if (gender == GENDER_BOYS) {
+     f.setFirstName(firstNames[parentIndex]);
+     } else {
+     f.setFirstName(girls[parentIndex]);
+     }
+     f.setEmail(f.getFirstName().toLowerCase()
+     + "." + f.getLastName().toLowerCase()
+     + "." + (rand.nextInt())
+     + "@gmail.com");
+     f.setCellphone("999 999 9999");
+     f.setPin("12345");
+     dataUtil.em.persist(f);
+     Query w = dataUtil.em.createNamedQuery("Parent.findByEmail", Parent.class);
+     w.setParameter("email", f.getEmail());
+     Parent parent = (Parent) w.getSingleResult();
+     GolfGroupParent d = new GolfGroupParent();
+     d.setDateRegistered(new Date());
+     d.setGolfGroup(gg);
+     d.setParent(parent);
+     dataUtil.em.persist(d); */
 
     private static List<LeaderBoard> addPlayersToTournament(List<Player> pList,
             Tournament t, int gender, DataUtil dataUtil) throws DataException {
@@ -670,9 +736,9 @@ public class NewGolfGroupUtil {
         "Black", "Charles", "Grainger", "Jones", "Brown", "Peterson", "Mickels",
         "Pollack", "Peyton", "Williams", "Zuckerberg", "Samuels", "Hernandez", "Johnson", "Gray",
         "Davidson", "Lombardi", "Smith", "Jackson", "Chauke", "Morris", "Peterson", "Paulson",
-        "Remington", "Priest", "Church", "Charles", "Burmingham", "Naidoo", "Bala", "Renoir", "Zulu",
+        "Remington", "Priest", "Church", "Charles", "Burmingham", "Naidoo", "Bala", "Renoir", "Switzer",
         "Dennison", "Johnson", "Jerram", "Adams", "Wilson", "Hepburn", "Giggs", "Stephens",
-        "Dafoe", "Daggett", "Dahlberg", "Dangerfield", "Danziger", "Daniels",
+        "Dafoe", "Daggett", "Dahlberg", "Dangerfield", "Danziger", "Daniels", "Smith", "Smythe",
         "Calandrino", "Cadwell", "Callaghan", "California", "Villegas", "Camilleri",
         "Hackney", "Hackman", "Hackett", "Haagensen", "Hackworth", "Hacker",
         "Hachmeister", "Hack", "Duff", "Haigwood", "Wood", "Woods", "Mickelson",
@@ -719,7 +785,7 @@ public class NewGolfGroupUtil {
 
         File[] boysFiles = boysDir.listFiles();
         File[] girlsFiles = girlsDir.listFiles();
-        log.log(Level.INFO, "#picture dirs; {0} girls: {1}", 
+        log.log(Level.INFO, "#picture dirs; {0} girls: {1}",
                 new Object[]{boysDir.getAbsolutePath(), girlsDir.getAbsolutePath()});
 
         List<Player> females = new ArrayList<>();
@@ -734,6 +800,9 @@ public class NewGolfGroupUtil {
 
         int index = 0;
         for (File file : girlsFiles) {
+            if (!file.getName().contains(".jpg")) {
+                continue;
+            }
             if (index < females.size()) {
                 Player p = females.get(index);
                 File newFile = new File(playerDir, "t" + p.getPlayerID() + ".jpg");
@@ -748,6 +817,9 @@ public class NewGolfGroupUtil {
         }
         index = 0;
         for (File file : boysFiles) {
+            if (!file.getName().contains(".jpg")) {
+                continue;
+            }
             if (index < males.size()) {
                 Player p = males.get(index);
                 File newFile = new File(playerDir, "t" + p.getPlayerID() + ".jpg");
@@ -766,7 +838,7 @@ public class NewGolfGroupUtil {
     private static void copyFile(File fromFile, File toFile, String name) throws IOException {
         Path FROM = Paths.get(fromFile.getAbsolutePath());
         Path TO = Paths.get(toFile.getAbsolutePath());
-        //overwrite existing file, if exists
+        //overwrite existing file, if exists...
         CopyOption[] options = new CopyOption[]{
             StandardCopyOption.REPLACE_EXISTING,
             StandardCopyOption.COPY_ATTRIBUTES

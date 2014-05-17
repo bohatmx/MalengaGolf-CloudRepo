@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.golfkids.servlet;
 
 import com.boha.golfkids.data.ErrorStoreAndroid;
@@ -56,7 +55,7 @@ public class CrashReportServlet extends HttpServlet {
         try {
             getErrorData(request);
         } catch (DataException ex) {
-            Logger.getLogger(CrashReportServlet.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
             platformUtil.addErrorStore(319, "Unable to add Android Error", "CrashReportServlet");
         }
     }
@@ -64,34 +63,32 @@ public class CrashReportServlet extends HttpServlet {
     DataUtil dataUtil;
     @EJB
     PlatformUtil platformUtil;
-private void getErrorData(HttpServletRequest request) throws DataException {
-    ErrorStoreAndroid e = new ErrorStoreAndroid();
-    e.setAndroidVersion(request.getParameter("ANDROID_VERSION"));
-    e.setBrand(request.getParameter("BRAND"));
-    e.setPackageName(request.getParameter("PACKAGE_NAME"));
-    e.setAppVersionName(request.getParameter("APP_VERSION_NAME"));
-    e.setAppVersionCode(request.getParameter("APP_VERSION_CODE"));
-    e.setPhoneModel(request.getParameter("PHONE_MODEL"));
-    e.setErrorDate(new Date());
-    e.setLogCat(request.getParameter("LOGCAT"));
-    e.setStackTrace(request.getParameter("STACK_TRACE"));
-    
-    String custom = request.getParameter("CUSTOM_DATA");
+
+    private void getErrorData(HttpServletRequest request) throws DataException {
+        ErrorStoreAndroid e = new ErrorStoreAndroid();
+        e.setAndroidVersion(request.getParameter("ANDROID_VERSION"));
+        e.setBrand(request.getParameter("BRAND"));
+        e.setPackageName(request.getParameter("PACKAGE_NAME"));
+        e.setAppVersionName(request.getParameter("APP_VERSION_NAME"));
+        e.setAppVersionCode(request.getParameter("APP_VERSION_CODE"));
+        e.setPhoneModel(request.getParameter("PHONE_MODEL"));
+        e.setErrorDate(new Date());
+        e.setLogCat(request.getParameter("LOGCAT"));
+        e.setStackTrace(request.getParameter("STACK_TRACE"));
+
+        String custom = request.getParameter("CUSTOM_DATA");
     //golfGroupID = 21
-    //golfGroupName = MLB Golfers
-    int x = custom.indexOf("=");
-    int y = custom.indexOf("\n");
-    String id = custom.substring(x+2, y);
-    System.out.println("---------------------------> id extracted: " + id);
-    GolfGroup gg = dataUtil.getGroupByID(Integer.parseInt(id));
-    e.setGolfGroup(gg);
-    
-    
-    dataUtil.addAndroidError(e);
-    
-    
-    
-}
+        //golfGroupName = MLB Golfers
+        int x = custom.indexOf("=");
+        int y = custom.indexOf("\n");
+        String id = custom.substring(x + 2, y);
+        System.out.println("---------------------------> id extracted: " + id);
+        GolfGroup gg = dataUtil.getGroupByID(Integer.parseInt(id));
+        e.setGolfGroup(gg);
+
+        dataUtil.addAndroidError(e);
+
+    }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -130,5 +127,5 @@ private void getErrorData(HttpServletRequest request) throws DataException {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-private static final Logger log = Logger.getLogger("CrashReportServlet");
+    private static final Logger log = Logger.getLogger("CrashReportServlet");
 }

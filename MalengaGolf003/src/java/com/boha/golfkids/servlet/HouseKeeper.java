@@ -59,7 +59,7 @@ public class HouseKeeper extends HttpServlet {
 
         Timer timer = new Timer();
         Calendar cal = GregorianCalendar.getInstance();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 5; i++) {
             cal.roll(Calendar.MINUTE, true);
         }
 
@@ -108,7 +108,7 @@ public class HouseKeeper extends HttpServlet {
     PlatformUtil platformUtil;
     private static final Logger logger = Logger.getLogger("HouseKeeper");
     private final static int ONE_HOUR = 1000 * 60 * 60;
-    private final static int FOUR_HOUR = 1000 * 60 * 60 * 4;
+    private final static int FOUR_HOUR = 1000 * 60 * 60 * 60 * 4;
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

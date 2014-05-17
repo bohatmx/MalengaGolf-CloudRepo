@@ -75,6 +75,9 @@ public class GolfAdminServlet extends HttpServlet {
             log.log(Level.WARNING, "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
                 switch (dto.getRequestType()) {
+                    case RequestDTO.GET_ERROR_REPORTS:
+                        resp = dataUtil.getAndroidErrors(0, 0);
+                        break;
                     case RequestDTO.SEND_GCM_REGISTRATION:
                         resp = CloudMessagingRegistrar.sendRegistration(dto.getGcmRegistrationID(), 
                                 platformUtil);
@@ -271,7 +274,7 @@ public class GolfAdminServlet extends HttpServlet {
                 }
 
                 long end = System.currentTimeMillis();
-                platformUtil.addTimeElapsedWarning(start, end, dto, "GolfAdminServlet");
+                //platformUtil.addTimeElapsedWarning(start, end, dto, "GolfAdminServlet");
                 log.log(Level.INFO, "---> GolfAdminServlet completed in {0} seconds", getElapsed(start, end));
             }
         }

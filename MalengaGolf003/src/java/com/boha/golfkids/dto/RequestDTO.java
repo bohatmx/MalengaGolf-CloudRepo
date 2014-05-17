@@ -97,6 +97,7 @@ public class RequestDTO {
     
     public static final int GET_PROVINCES = 71;
     public static final int SEND_GCM_REGISTRATION = 72;
+    public static final int GET_ERROR_REPORTS = 73;
     
     public static final int GET_CLUBS_NEARBY = 119;
     public static final int GET_CLUBS_IN_STATE = 120;

@@ -81,6 +81,7 @@ public class DataUtil {
     static final int ADMIN = 1, PLAYER = 2, SCORER = 3, PARENT = 4, VOLUNTEER = 5;
 
     private void addGcmDevice(GolfGroup gg, int type, int id, GcmDeviceDTO dev) throws DataException {
+        logger.log(Level.INFO, "...adding GCM device for {0}", gg.getGolfGroupName());
         try {
             GcmDevice g = new GcmDevice();
             g.setGolfGroup(gg);
@@ -109,7 +110,7 @@ public class DataUtil {
             em.persist(g);
             logger.log(Level.INFO, "GCM Device added: {0}", g.getModel());
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Failed to add device");
+            logger.log(Level.SEVERE, "################ Failed to add device");
             throw new DataException("Failed to add device\n"
                     + getErrorString(e));
         }
@@ -165,6 +166,7 @@ public class DataUtil {
                 dList.add(new ErrorStoreDTO(e));
             }
             r.setErrorStoreList(dList);
+            logger.log(Level.OFF, "Errors found {0}", r.getErrorStoreList().size());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to getServerErrors");
             throw new DataException("Failed to getServerErrors\n"
@@ -176,6 +178,12 @@ public class DataUtil {
     public ResponseDTO getAndroidErrors(
             long startDate, long endDate) throws DataException {
         ResponseDTO r = new ResponseDTO();
+        if (startDate == 0) {
+            DateTime ed = new DateTime();
+            DateTime sd = ed.minusMonths(3);
+            startDate = sd.getMillis();
+            endDate = ed.getMillis();
+        }
         try {
             Query q = em.createNamedQuery("ErrorStoreAndroid.findByPeriod", ErrorStoreAndroid.class);
             q.setParameter("from", new Date(startDate));
@@ -186,6 +194,8 @@ public class DataUtil {
                 dList.add(new ErrorStoreAndroidDTO(e));
             }
             r.setErrorStoreAndroidList(dList);
+            r.setErrorStoreList(getServerErrors(startDate, endDate).getErrorStoreList());
+            logger.log(Level.OFF, "Android Errors found {0}", r.getErrorStoreAndroidList().size());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to findClubsWithinRadius");
             throw new DataException("Failed to findClubsWithinRadius\n"
@@ -853,14 +863,12 @@ public class DataUtil {
                 }
                 t.setHolesPerRound(tps.getTournament().getHolesPerRound());
                 //
-
                 em.persist(t);
+                logger.log(Level.WARNING, "Tsbr added .......");
             }
             //
-            Query q = em.createNamedQuery("TourneyScoreByRound.getByTourneyPlayer",
-                    TourneyScoreByRound.class);
-            q.setParameter("pID", tps.getPlayer().getPlayerID());
-            q.setParameter("tID", tps.getTournament().getTournamentID());
+            Query q = em.createQuery("select a from TourneyScoreByRound a WHERE a.leaderBoard.leaderBoardID = :lID");
+            q.setParameter("lID", tps.getLeaderBoardID());
             List<TourneyScoreByRound> list = q.getResultList();
             for (TourneyScoreByRound ts : list) {
                 dto.add(new TourneyScoreByRoundDTO(ts));
@@ -1440,7 +1448,7 @@ public class DataUtil {
         s.setTournament(getTournamentByID(leaderBoardDTO.getTournamentID()));
         try {
             em.persist(s);
-            Query q = em.createNamedQuery("LeaderBoard.findByPlayerTourney", LeaderBoard.class);
+            Query q = em.createQuery("select a from LeaderBoard a where a.player.playerID = :pID and a.tournament.tournamentID = :tID");
             q.setParameter("pID", leaderBoardDTO.getPlayer().getPlayerID());
             q.setParameter("tID", leaderBoardDTO.getTournamentID());
             q.setMaxResults(1);
@@ -1884,7 +1892,11 @@ public class DataUtil {
             addInitialAgeGroups(gg);
             NewGolfGroupUtil.generate(gg, this, platformUtil);
             if (admin.getGcmDevice() != null) {
-                addGcmDevice(gg, ADMIN, r2.getAdministrator().getAdministratorID(), admin.getGcmDevice());
+                try {
+                    addGcmDevice(gg, ADMIN, r2.getAdministrator().getAdministratorID(), admin.getGcmDevice());
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "#### GCM device not added...", e);
+                }
             }
             logger.log(Level.INFO, "\n### Added GolfGroup {0}", g.getGolfGroupName());
 

@@ -44,7 +44,7 @@ import javax.validation.constraints.Size;
                     + "order by p.lastName, p.firstName")})
 public class Parent implements Serializable {
     @Column(name = "parentType")
-    private int parentType;
+    private Integer parentType;
     @OneToMany(mappedBy = "parent")
     private List<GcmDevice> gcmDeviceList;
     private static final long serialVersionUID = 1L;
@@ -171,13 +171,6 @@ public class Parent implements Serializable {
         return "com.boha.golfkids.data.Parent[ parentID=" + parentID + " ]";
     }
 
-    public int getParentType() {
-        return parentType;
-    }
-
-    public void setParentType(int parentType) {
-        this.parentType = parentType;
-    }
 
     public List<GcmDevice> getGcmDeviceList() {
         return gcmDeviceList;
@@ -185,6 +178,14 @@ public class Parent implements Serializable {
 
     public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
         this.gcmDeviceList = gcmDeviceList;
+    }
+
+    public Integer getParentType() {
+        return parentType;
+    }
+
+    public void setParentType(Integer parentType) {
+        this.parentType = parentType;
     }
     
 }

@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class RequestDTO {
 
-    private String email, pin;
+    private String email, pin, gcmRegistrationID;
     private int golfGroupID;    
     private int tournamentID, playerID, countryID, provinceID, clubCourseID;
     private GolfGroupDTO golfGroup;
@@ -96,6 +96,7 @@ public class RequestDTO {
     public static final int DELETE_TOURNAMENT = 70;
     
     public static final int GET_PROVINCES = 71;
+    public static final int SEND_GCM_REGISTRATION = 72;
     
     public static final int GET_CLUBS_NEARBY = 119;
     public static final int GET_CLUBS_IN_STATE = 120;
@@ -125,6 +126,14 @@ public class RequestDTO {
 
     public void setClubCourse(ClubCourseDTO clubCourse) {
         this.clubCourse = clubCourse;
+    }
+
+    public String getGcmRegistrationID() {
+        return gcmRegistrationID;
+    }
+
+    public void setGcmRegistrationID(String gcmRegistrationID) {
+        this.gcmRegistrationID = gcmRegistrationID;
     }
 
     public void setLeaderBoardList(List<LeaderBoardDTO> leaderBoardList) {

@@ -38,7 +38,8 @@ public class ResponseDTO {
     private List<String> imageFileNames;
     private AdministratorDTO administrator;
     private List<VideoClipDTO> videoClips;
-    
+    private List<ErrorStoreAndroidDTO> errorStoreAndroidList;
+    private List<ErrorStoreDTO> errorStoreList;
     //
     public static final int LOGIN_EXCEPTION = 101;
     public static final int DATA_EXCEPTION = 102;
@@ -52,6 +53,15 @@ public class ResponseDTO {
     public void setLeaderBoardCarriers(List<LeaderBoardCarrierDTO> leaderBoardCarriers) {
         this.leaderBoardCarriers = leaderBoardCarriers;
     }
+
+    public List<ErrorStoreDTO> getErrorStoreList() {
+        return errorStoreList;
+    }
+
+    public void setErrorStoreList(List<ErrorStoreDTO> errorStoreList) {
+        this.errorStoreList = errorStoreList;
+    }
+    
 
     public int getTotalPages() {
         return totalPages;
@@ -143,6 +153,14 @@ public class ResponseDTO {
 
     public void setGolfGroup(GolfGroupDTO golfGroup) {
         this.golfGroup = golfGroup;
+    }
+
+    public List<ErrorStoreAndroidDTO> getErrorStoreAndroidList() {
+        return errorStoreAndroidList;
+    }
+
+    public void setErrorStoreAndroidList(List<ErrorStoreAndroidDTO> errorStoreAndroidList) {
+        this.errorStoreAndroidList = errorStoreAndroidList;
     }
 
     public List<ScorerDTO> getScorers() {

@@ -22,6 +22,15 @@ public class ScorerDTO {
     private int exampleFlag;
     private long dateRegistered;
     private int golfGroupID;
+    private GcmDeviceDTO gcmDevice;
+
+    public GcmDeviceDTO getGcmDevice() {
+        return gcmDevice;
+    }
+
+    public void setGcmDevice(GcmDeviceDTO gcmDevice) {
+        this.gcmDevice = gcmDevice;
+    }
     public ScorerDTO(Scorer a) {
         scorerID = a.getScorerID();
         firstName = a.getFirstName();

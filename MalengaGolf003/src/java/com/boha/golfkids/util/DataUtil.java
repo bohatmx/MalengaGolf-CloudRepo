@@ -9,6 +9,9 @@ import com.boha.golfkids.data.Agegroup;
 import com.boha.golfkids.data.Club;
 import com.boha.golfkids.data.ClubCourse;
 import com.boha.golfkids.data.Country;
+import com.boha.golfkids.data.ErrorStore;
+import com.boha.golfkids.data.ErrorStoreAndroid;
+import com.boha.golfkids.data.GcmDevice;
 import com.boha.golfkids.data.GolfGroup;
 import com.boha.golfkids.data.GolfGroupParent;
 import com.boha.golfkids.data.GolfGroupPlayer;
@@ -27,6 +30,9 @@ import com.boha.golfkids.dto.AgeGroupDTO;
 import com.boha.golfkids.dto.ClubCourseDTO;
 import com.boha.golfkids.dto.ClubDTO;
 import com.boha.golfkids.dto.CountryDTO;
+import com.boha.golfkids.dto.ErrorStoreAndroidDTO;
+import com.boha.golfkids.dto.ErrorStoreDTO;
+import com.boha.golfkids.dto.GcmDeviceDTO;
 import com.boha.golfkids.dto.GolfGroupDTO;
 import com.boha.golfkids.dto.GolfGroupPlayerDTO;
 import com.boha.golfkids.dto.LeaderBoardDTO;
@@ -47,6 +53,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
@@ -55,6 +62,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.sql.DataSource;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Years;
 
@@ -68,23 +77,132 @@ public class DataUtil {
 
     @PersistenceContext
     EntityManager em;
-    public WorkerBee workerBee = new WorkerBee();
 
-    public EntityManager getEntityManager() {
-        if (em == null) {
-            logger.log(Level.OFF, "....fuck, em is NULL!!!");
+    static final int ADMIN = 1, PLAYER = 2, SCORER = 3, PARENT = 4, VOLUNTEER = 5;
+
+    private void addGcmDevice(GolfGroup gg, int type, int id, GcmDeviceDTO dev) throws DataException {
+        try {
+            GcmDevice g = new GcmDevice();
+            g.setGolfGroup(gg);
+            g.setDateRegistered(new Date());
+            g.setManufacturer(dev.getManufacturer());
+            g.setModel(dev.getModel());
+            g.setSerial(dev.getSerial());
+            switch (type) {
+                case ADMIN:
+                    g.setAdministrator(getAdministratorByID(id));
+                    break;
+                case PLAYER:
+                    g.setPlayer(getPlayerByID(id));
+                    break;
+                case SCORER:
+                    g.setScorer(getScorerByID(id));
+                    break;
+                case PARENT:
+                    g.setParent(getParentByID(id));
+                    break;
+                case VOLUNTEER:
+                    //TODO - sort volunteer relationship
+                    break;
+
+            }
+            em.persist(g);
+            logger.log(Level.INFO, "GCM Device added: {0}", g.getModel());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to add device");
+            throw new DataException("Failed to add device\n"
+                    + getErrorString(e));
         }
-        return em;
     }
+
+    public void addAndroidError(ErrorStoreAndroid err) throws DataException {
+        try {
+            em.persist(err);
+            logger.log(Level.INFO, "Android error added");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to add Android Error");
+            throw new DataException("Failed to add Android Error\n"
+                    + getErrorString(e));
+        }
+    }
+
+    public ResponseDTO getAndroidErrorsByGolfGroup(
+            int golfGroupID) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("ErrorStoreAndroid.findByGolfGroup", ErrorStoreAndroid.class);
+            q.setParameter("id", golfGroupID);
+            List<ErrorStoreAndroid> list = q.getResultList();
+            List<ErrorStoreAndroidDTO> dList = new ArrayList();
+            for (ErrorStoreAndroid e : list) {
+                dList.add(new ErrorStoreAndroidDTO(e));
+            }
+            r.setErrorStoreAndroidList(dList);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to getServerErrors");
+            throw new DataException("Failed to getServerErrors\n"
+                    + getErrorString(e));
+        }
+        return r;
+    }
+
+    public ResponseDTO getServerErrors(
+            long startDate, long endDate) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        if (startDate == 0) {
+            DateTime ed = new DateTime();
+            DateTime sd = ed.minusMonths(3);
+            startDate = sd.getMillis();
+            endDate = ed.getMillis();
+        }
+        try {
+            Query q = em.createNamedQuery("ErrorStore.findByPeriod", ErrorStore.class);
+            q.setParameter("startDate", new Date(startDate));
+            q.setParameter("endDate", new Date(endDate));
+            List<ErrorStore> list = q.getResultList();
+            List<ErrorStoreDTO> dList = new ArrayList();
+            for (ErrorStore e : list) {
+                dList.add(new ErrorStoreDTO(e));
+            }
+            r.setErrorStoreList(dList);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to getServerErrors");
+            throw new DataException("Failed to getServerErrors\n"
+                    + getErrorString(e));
+        }
+        return r;
+    }
+
+    public ResponseDTO getAndroidErrors(
+            long startDate, long endDate) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("ErrorStoreAndroid.findByPeriod", ErrorStoreAndroid.class);
+            q.setParameter("from", new Date(startDate));
+            q.setParameter("to", new Date(endDate));
+            List<ErrorStoreAndroid> list = q.getResultList();
+            List<ErrorStoreAndroidDTO> dList = new ArrayList();
+            for (ErrorStoreAndroid e : list) {
+                dList.add(new ErrorStoreAndroidDTO(e));
+            }
+            r.setErrorStoreAndroidList(dList);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to findClubsWithinRadius");
+            throw new DataException("Failed to findClubsWithinRadius\n"
+                    + getErrorString(e));
+        }
+        return r;
+    }
+
     public ResponseDTO findClubsWithinRadius(
-            double latitude, double longitude, int radius, int type, int page) throws DataException {
+            double latitude, double longitude, int radius, int type, int page, WorkerBee bee) throws DataException {
         ResponseDTO r = new ResponseDTO();
         r.setClubs(new ArrayList<ClubDTO>());
         try {
             if (page == 0) {
                 page = 1;
             }
-            r = workerBee.getClubsWithinRadius(latitude, longitude, radius, type, page, em);
+            r = bee.getClubsWithinRadius(latitude, longitude, radius, type, page);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to findClubsWithinRadius");
             throw new DataException("Failed to findClubsWithinRadius\n"
@@ -94,14 +212,14 @@ public class DataUtil {
     }
 
     public LoaderResponseDTO findLoadedClubsWithinRadius(
-            double latitude, double longitude, int radius, int type, int page) throws DataException {
+            double latitude, double longitude, int radius, int type, int page, WorkerBee bee) throws DataException {
         LoaderResponseDTO r = new LoaderResponseDTO();
         r.setClubList(new ArrayList<ClubDTO>());
         try {
             if (page == 0) {
                 page = 1;
             }
-            ResponseDTO w = workerBee.getClubsWithinRadius(latitude, longitude, radius, type, page, em);
+            ResponseDTO w = bee.getClubsWithinRadius(latitude, longitude, radius, type, page);
             r.setClubList(w.getClubs());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to findClubsWithinRadius");
@@ -488,6 +606,7 @@ public class DataUtil {
         }
         return r;
     }
+
     public ResponseDTO getProvincesByCountry(int countryID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -505,22 +624,24 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO getClubsByProvince(int provinceID, int page) throws DataException {
+    public ResponseDTO getClubsByProvince(int provinceID, int page, WorkerBee bee) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
             Query q = em.createNamedQuery("Club.findByProvince", Club.class);
             q.setParameter("id", provinceID);
-            List<Club> list = q.getResultList();           
-            if (page == 0) page = 1;
-            r.setClubs(workerBee.getClubs(list, page, null));
+            List<Club> list = q.getResultList();
+            if (page == 0) {
+                page = 1;
+            }
+            r.setClubs(bee.getClubs(list, page));
             int x = list.size() % WorkerBee.ROWS_PER_PAGE;
             if (x > 0) {
-                r.setTotalPages((list.size()/WorkerBee.ROWS_PER_PAGE) + 1);
+                r.setTotalPages((list.size() / WorkerBee.ROWS_PER_PAGE) + 1);
             } else {
-                r.setTotalPages((list.size()/WorkerBee.ROWS_PER_PAGE));
+                r.setTotalPages((list.size() / WorkerBee.ROWS_PER_PAGE));
             }
             r.setTotalClubs(list.size());
-                    
+
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
@@ -591,7 +712,7 @@ public class DataUtil {
             for (Country g : list) {
                 cList.add(new CountryDTO(g));
             }
-           
+
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
@@ -1169,7 +1290,8 @@ public class DataUtil {
             throw new DataException(getErrorString(e));
         }
     }
-public void updateClubCourse(ClubCourseDTO dto) throws DataException {
+
+    public void updateClubCourse(ClubCourseDTO dto) throws DataException {
 
         ClubCourse g = getClubCourseByID(dto.getClubCourseID());
         g.setHoles(dto.getHoles());
@@ -1195,13 +1317,14 @@ public void updateClubCourse(ClubCourseDTO dto) throws DataException {
 
         try {
             em.merge(g);
-            logger.log(Level.INFO, "\n### Updated clubCourse: {0}", 
+            logger.log(Level.INFO, "\n### Updated clubCourse: {0}",
                     new Object[]{g.getCourseName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update club", e);
             throw new DataException(getErrorString(e));
         }
     }
+
     public void updateClub(ClubDTO dto) throws DataException {
 
         Club g = getClubByID(dto.getClubID());
@@ -1455,6 +1578,9 @@ public void updateClubCourse(ClubCourseDTO dto) throws DataException {
             List<ParentDTO> dtoList = new ArrayList<>();
             dtoList.add(new ParentDTO(p));
             r.setParents(dtoList);
+            if (dto.getGcmDevice() != null) {
+                addGcmDevice(getGroupByID(golfGroupID), PARENT, p.getParentID(), dto.getGcmDevice());
+            }
             logger.log(Level.INFO, "\n### Added Parent {0}  {1}", new Object[]{p.getFirstName(), p.getLastName()});
 
         } catch (PersistenceException e) {
@@ -1544,7 +1670,7 @@ public void updateClubCourse(ClubCourseDTO dto) throws DataException {
             Query q = em.createNamedQuery("Club.findByNameInProvince", Club.class);
             q.setParameter("id", d.getProvinceID());
             q.setParameter("clubName", club.getClubName());
-            Club c = (Club)q.getSingleResult();
+            Club c = (Club) q.getSingleResult();
             ClubCourse cc = new ClubCourse();
             cc.setCourseName(c.getClubName());
             cc.setClub(c);
@@ -1578,7 +1704,7 @@ public void updateClubCourse(ClubCourseDTO dto) throws DataException {
             cDTO.getClubCourses().add(new ClubCourseDTO(ccList.get(0)));
             r.setClubs(new ArrayList<ClubDTO>());
             r.getClubs().add(cDTO);
-            
+
             logger.log(Level.INFO, "\n### Added Club and assoc. course {0}", c.getClubName() + " - " + c.getProvince().getProvinceName());
         } catch (PersistenceException e) {
             logger.log(Level.SEVERE, "***ERROR*** Duplicate Club", e);
@@ -1639,6 +1765,9 @@ public void updateClubCourse(ClubCourseDTO dto) throws DataException {
             r = addGolfGroupPlayer(player.getPlayerID(), golfGroupID);
             r.setPlayers(new ArrayList<PlayerDTO>());
             r.getPlayers().add(new PlayerDTO(p));
+            if (d.getGcmDevice() != null) {
+                addGcmDevice(getGroupByID(golfGroupID), PLAYER, player.getPlayerID(), d.getGcmDevice());
+            }
             logger.log(Level.INFO, "\n### Added Player {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
         } catch (PersistenceException e) {
             logger.log(Level.SEVERE, "Duplicate Player", e);
@@ -1671,6 +1800,9 @@ public void updateClubCourse(ClubCourseDTO dto) throws DataException {
             Scorer s = (Scorer) q.getSingleResult();
             r.setScorers(new ArrayList<ScorerDTO>());
             r.getScorers().add(new ScorerDTO(s));
+            if (d.getGcmDevice() != null) {
+                addGcmDevice(getGroupByID(golfGroupID), SCORER, s.getScorerID(), d.getGcmDevice());
+            }
             logger.log(Level.INFO, "\n### Added Scorer {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
         } catch (PersistenceException e) {
             logger.log(Level.SEVERE, "***ERROR*** Duplicate Scorer", e);
@@ -1751,6 +1883,9 @@ public void updateClubCourse(ClubCourseDTO dto) throws DataException {
             addInitialOrderOfMerit(gg);
             addInitialAgeGroups(gg);
             NewGolfGroupUtil.generate(gg, this, platformUtil);
+            if (admin.getGcmDevice() != null) {
+                addGcmDevice(gg, ADMIN, r2.getAdministrator().getAdministratorID(), admin.getGcmDevice());
+            }
             logger.log(Level.INFO, "\n### Added GolfGroup {0}", g.getGolfGroupName());
 
         } catch (PersistenceException e) {

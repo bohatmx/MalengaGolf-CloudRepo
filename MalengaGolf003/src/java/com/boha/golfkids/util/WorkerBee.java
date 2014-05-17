@@ -16,7 +16,6 @@ import com.boha.golfkids.dto.ClubCourseDTO;
 import com.boha.golfkids.dto.ClubDTO;
 import com.boha.golfkids.dto.ResponseDTO;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,50 +23,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.InitialContext;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.sql.DataSource;
 
+@Stateless
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class WorkerBee {
 
-    public WorkerBee() {
-        try {
-            initialize();
-        } catch (Exception ex) {
-            Logger.getLogger(WorkerBee.class.getName()).log(Level.SEVERE, "Cannot initialize", ex);
-        }
-    }
-    private Connection connect = null;
-    private PreparedStatement preparedStatement = null;
-    private ResultSet resultSet = null;
+    @PersistenceContext
+    EntityManager em;
 
-    public static final String DEV_URL = "jdbc:mysql://localhost:8889/kidsgolf?user=root&password=root";
-    public static final String PRODUCTION_URL = "jdbc:mysql://bohamaker.com:3306/kidsgolf?user=root&password=kktiger3$";
-    public static final String SQL_STATEMENT = "select clubID, a.clubName, a.latitude, a.longitude, a.provinceID, provinceName, "
+    private PreparedStatement preparedStatement;
+
+    private static final String SQL_STATEMENT = "select clubID, a.clubName, a.latitude, a.longitude, a.provinceID, provinceName, "
             + "( ? * acos( cos( radians(?) ) * cos( radians( a.latitude) ) "
             + "* cos( radians( a.longitude ) - radians(?) ) + sin( radians(?) ) "
             + "* sin( radians( a.latitude ) ) ) ) "
             + "AS distance FROM club a, province b where a.provinceID = b.provinceID HAVING distance < ? order by distance";
     public static final int KILOMETRES = 1, MILES = 2, PARM_KM = 6371, PARM_MILES = 3959;
 
-    private InitialContext ctx;
-    private DataSource ds;
     private Connection conn;
-    private void initialize() throws Exception {
-        if (ctx == null) {
-             System.out.println("###### Preparing MySQL context and Connection ...");
-            ctx = new InitialContext();
-            ds = (DataSource) ctx.lookup("jdbc/kidsgolf");
-            conn = ds.getConnection();
-            preparedStatement = conn.prepareStatement(SQL_STATEMENT);
-        }        
-    }
 
     public ResponseDTO getClubsWithinRadius(double latitude, double longitude,
-            int radius, int type, int page, EntityManager em)
+            int radius, int type, int page)
             throws Exception {
-        
+        if (conn == null || conn.isClosed()) {
+            conn = em.unwrap(Connection.class);
+            log.log(Level.INFO, "..........SQL Connection unwrapped from EntityManager");
+        }
+        if (preparedStatement == null || preparedStatement.isClosed()) {
+            preparedStatement = conn.prepareStatement(SQL_STATEMENT);
+            log.log(Level.INFO, "..........SQL Statement prepared from Connection");
+        }
         switch (type) {
             case KILOMETRES:
                 preparedStatement.setInt(1, PARM_KM);
@@ -79,18 +70,19 @@ public class WorkerBee {
                 preparedStatement.setInt(1, PARM_KM);
                 break;
         }
-
+        ResultSet resultSet;
         preparedStatement.setDouble(2, latitude);
         preparedStatement.setDouble(3, longitude);
         preparedStatement.setDouble(4, latitude);
         preparedStatement.setInt(5, radius);
         resultSet = preparedStatement.executeQuery();
 
-        return buildClubList(resultSet, page, em);
+        return buildClubList(resultSet, page);
 
     }
 
-    private ResponseDTO buildClubList(ResultSet resultSet, int page, EntityManager em) throws SQLException {
+    private ResponseDTO buildClubList(ResultSet resultSet, int page) throws SQLException {
+
         ResponseDTO resp = new ResponseDTO();
         List<Club> list = new ArrayList<>();
         while (resultSet.next()) {
@@ -122,13 +114,14 @@ public class WorkerBee {
         } else {
             resp.setTotalPages((list.size() / WorkerBee.ROWS_PER_PAGE));
         }
-        List<ClubDTO> cList = getClubs(list, page, em);
+        List<ClubDTO> cList = getClubs(list, page);
         resp.setClubs(cList);
         resp.setTotalClubs(list.size());
+        resultSet.close();
         return resp;
     }
 
-    public List<ClubDTO> getClubs(List<Club> list, int page, EntityManager em) {
+    public List<ClubDTO> getClubs(List<Club> list, int page) {
         if (page == 0) {
             page = 1;
         }
@@ -165,5 +158,5 @@ public class WorkerBee {
     }
 
     public static final int ROWS_PER_PAGE = 100;
-
+    static final Logger log = Logger.getLogger(WorkerBee.class.getName());
 }

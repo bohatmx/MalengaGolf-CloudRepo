@@ -8,6 +8,7 @@ import com.boha.golfkids.dto.AgeGroupDTO;
 import com.boha.golfkids.dto.CountryDTO;
 import com.boha.golfkids.dto.RequestDTO;
 import com.boha.golfkids.dto.ResponseDTO;
+import com.boha.golfkids.util.CloudMessagingRegistrar;
 import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;
 import com.boha.golfkids.util.GZipUtility;
@@ -43,6 +44,8 @@ public class GolfAdminServlet extends HttpServlet {
     LeaderBoardUtil leaderBoardUtil;
     @EJB
     PlatformUtil platformUtil;
+    @EJB
+    WorkerBee workerBee;
 
     /**
      *
@@ -72,6 +75,10 @@ public class GolfAdminServlet extends HttpServlet {
             log.log(Level.WARNING, "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
                 switch (dto.getRequestType()) {
+                    case RequestDTO.SEND_GCM_REGISTRATION:
+                        resp = CloudMessagingRegistrar.sendRegistration(dto.getGcmRegistrationID(), 
+                                platformUtil);
+                        break;
                     case RequestDTO.UPDATE_TEE_TIMES:
                         resp = dataUtil.updateTeeTime(dto.getTourneyScoreByRound());
                         break;
@@ -97,12 +104,12 @@ public class GolfAdminServlet extends HttpServlet {
                                 dto.getCountryID());
                         break;
                     case RequestDTO.GET_CLUBS_IN_PROVINCE:
-                        resp = dataUtil.getClubsByProvince(dto.getProvinceID(), dto.getPage());
+                        resp = dataUtil.getClubsByProvince(dto.getProvinceID(), dto.getPage(), workerBee);
                         break;
                     case RequestDTO.GET_CLUBS_NEARBY:
-                        resp = dataUtil.workerBee.getClubsWithinRadius(
+                        resp = workerBee.getClubsWithinRadius(
                                 dto.getLatitude(), dto.getLongitude(),
-                                dto.getRadius(), dto.getRadiusType(), dto.getPage(), dataUtil.getEntityManager());
+                                dto.getRadius(), dto.getRadiusType(), dto.getPage());
 
                         break;
                     case RequestDTO.GET_LEADERBOARD:

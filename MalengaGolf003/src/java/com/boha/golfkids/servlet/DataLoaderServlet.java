@@ -40,6 +40,8 @@ public class DataLoaderServlet extends HttpServlet {
     DataUtil dataUtil;
     @EJB
     PlatformUtil platformUtil;
+    @EJB
+    WorkerBee workerBee;
 
     /**
      *
@@ -83,7 +85,7 @@ public class DataLoaderServlet extends HttpServlet {
                     case LoaderRequestDTO.FIND_CLUBS_WITHIN_RADIUS:
                         resp = dataUtil.findLoadedClubsWithinRadius(dto.getLatitude(), 
                                 dto.getLongitude(), dto.getRadius(),
-                                WorkerBee.KILOMETRES, dto.getPage());
+                                WorkerBee.KILOMETRES, dto.getPage(), workerBee);
                         break;
                     case LoaderRequestDTO.UPDATE_CITY_COORDINATES:
                         resp = loader.updateCityCoordinates(dto.getCityID(),

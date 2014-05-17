@@ -57,6 +57,9 @@ public class GcmDevice implements Serializable {
     @Size(max = 255)
     @Column(name = "product")
     private String product;
+    @Size(max = 255)
+    @Column(name = "gcmRegistrationID")
+    private String gcmRegistrationID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateRegistered")
@@ -96,6 +99,14 @@ public class GcmDevice implements Serializable {
 
     public void setGcmDeviceID(int gcmDeviceID) {
         this.gcmDeviceID = gcmDeviceID;
+    }
+
+    public String getGcmRegistrationID() {
+        return gcmRegistrationID;
+    }
+
+    public void setGcmRegistrationID(String gcmRegistrationID) {
+        this.gcmRegistrationID = gcmRegistrationID;
     }
 
     public String getManufacturer() {

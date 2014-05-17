@@ -20,6 +20,15 @@ public class VolunteerDTO {
     private String lastName;
     private String middleName;
     private String pin;
+    private GcmDeviceDTO gcmDevice;
+
+    public GcmDeviceDTO getGcmDevice() {
+        return gcmDevice;
+    }
+
+    public void setGcmDevice(GcmDeviceDTO gcmDevice) {
+        this.gcmDevice = gcmDevice;
+    }
     
     public VolunteerDTO(Volunteer a) {
         volunteerID = a.getVolunteerID();

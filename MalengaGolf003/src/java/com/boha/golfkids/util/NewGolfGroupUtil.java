@@ -546,14 +546,14 @@ public class NewGolfGroupUtil {
             f.setCellphone("999 999 9999");
             f.setPin("12345");
             dataUtil.em.persist(f);
-            Query w = dataUtil.em.createNamedQuery("Parent.findByEmail", Parent.class);
+           /* Query w = dataUtil.em.createNamedQuery("Parent.findByEmail", Parent.class);
             w.setParameter("email", f.getEmail());
             Parent parent = (Parent) w.getSingleResult();
             GolfGroupParent d = new GolfGroupParent();
             d.setDateRegistered(new Date());
             d.setGolfGroup(gg);
             d.setParent(parent);
-            dataUtil.em.persist(d);
+            dataUtil.em.persist(d); */
 
         }
         return pList;
@@ -735,8 +735,7 @@ public class NewGolfGroupUtil {
         int index = 0;
         for (File file : girlsFiles) {
             if (index < females.size()) {
-                Player p = pList.get(index);
-                if (p.getGender() == GENDER_BOYS) continue;
+                Player p = females.get(index);
                 File newFile = new File(playerDir, "t" + p.getPlayerID() + ".jpg");
                 String name = p.getFirstName() + " " + p.getLastName();
                 try {
@@ -750,8 +749,7 @@ public class NewGolfGroupUtil {
         index = 0;
         for (File file : boysFiles) {
             if (index < males.size()) {
-                Player p = pList.get(index);
-                if (p.getGender() == GENDER_GIRLS) continue;
+                Player p = males.get(index);
                 File newFile = new File(playerDir, "t" + p.getPlayerID() + ".jpg");
                 String name = p.getFirstName() + " " + p.getLastName();
                 try {

@@ -30,7 +30,10 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "errorStore")
 @NamedQueries({
-    @NamedQuery(name = "ErrorStore.findAll", query = "SELECT e FROM ErrorStore e")})
+    @NamedQuery(name = "ErrorStore.findByPeriod", 
+            query = "SELECT e FROM ErrorStore e where e.dateOccured BETWEEN :startDate AND :endDate order by e.dateOccured desc")
+
+})
 public class ErrorStore implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

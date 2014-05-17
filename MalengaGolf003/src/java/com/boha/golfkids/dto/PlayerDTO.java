@@ -30,6 +30,7 @@ public class PlayerDTO {
     private int parentID;
     private int numberOfTournaments;
     private List<LeaderBoardDTO> scores;
+    private GcmDeviceDTO gcmDevice;
 
     public PlayerDTO(Player a) {
         playerID = a.getPlayerID();
@@ -60,6 +61,14 @@ public class PlayerDTO {
      }
     public int getParentID() {
         return parentID;
+    }
+
+    public GcmDeviceDTO getGcmDevice() {
+        return gcmDevice;
+    }
+
+    public void setGcmDevice(GcmDeviceDTO gcmDevice) {
+        this.gcmDevice = gcmDevice;
     }
 
     public int getNumberOfTournaments() {

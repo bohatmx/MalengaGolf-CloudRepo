@@ -143,18 +143,18 @@ public class PhotoServlet extends HttpServlet {
                             logger.log(Level.INFO, "picture with associated json: {0}", json);
                             dto = gson.fromJson(json, PhotoUploadDTO.class);
                             if (dto != null) {
-                                createGolfGroupDirectory(rootDir, golfGroupDir, dto.getGolfGroupID());
+                                golfGroupDir = createGolfGroupDirectory(rootDir, golfGroupDir, dto.getGolfGroupID());
                                 if (dto.getPlayerID() > 0) {
-                                    createPlayerDirectory(golfGroupDir, playerDir);
+                                    playerDir = createPlayerDirectory(golfGroupDir, playerDir);
                                 }
                                 if (dto.getParentID() > 0) {
-                                    createParentDirectory(golfGroupDir, parentDir);
+                                    parentDir = createParentDirectory(golfGroupDir, parentDir);
                                 }
                                 if (dto.getScorerID() > 0) {
-                                    createScorerDirectory(golfGroupDir, scorerDir);
+                                    scorerDir = createScorerDirectory(golfGroupDir, scorerDir);
                                 }
                                 if (dto.getTournamentID() > 0) {
-                                    createTournamentDirectory(golfGroupDir, tournamentDir, dto.getTournamentID());
+                                    tournamentDir = createTournamentDirectory(golfGroupDir, tournamentDir, dto.getTournamentID());
                                 }
                             }
                         } else {
@@ -190,6 +190,7 @@ public class PhotoServlet extends HttpServlet {
                         }
                     }
                     if (dto.getPlayerID() > 0) {
+                        logger.log(Level.OFF, "player photo about to download", dto.getPlayerID());
                         switch (dto.getType()) {
                             case PhotoUploadDTO.PICTURES_FULL_SIZE:
                                 imageFile = new File(playerDir, "f" + dto.getPlayerID() + ".jpg");
@@ -234,7 +235,7 @@ public class PhotoServlet extends HttpServlet {
         return resp;
     }
 
-    private void createTournamentDirectory(File golfGroupDir, File tournamentDir, int id) {
+    private File createTournamentDirectory(File golfGroupDir, File tournamentDir, int id) {
         logger.log(Level.INFO, "tournament photo to be downloaded");
         tournamentDir = new File(golfGroupDir, TOURNAMENT_PREFIX + id);
         if (!tournamentDir.exists()) {
@@ -242,10 +243,10 @@ public class PhotoServlet extends HttpServlet {
             logger.log(Level.INFO, "tournament  directory created - {0}",
                     tournamentDir.getAbsolutePath());
         }
-        
+       return tournamentDir; 
     }
 
-    private void createScorerDirectory(File golfGroupDir, File scorerDir) {
+    private File createScorerDirectory(File golfGroupDir, File scorerDir) {
         logger.log(Level.INFO, "scorer photo to be downloaded");
         scorerDir = new File(golfGroupDir, SCORER_DIR);
         if (!scorerDir.exists()) {
@@ -254,9 +255,10 @@ public class PhotoServlet extends HttpServlet {
                     scorerDir.getAbsolutePath());
 
         }
+        return scorerDir;
     }
 
-    private void createParentDirectory(File golfGroupDir, File parentDir) {
+    private File createParentDirectory(File golfGroupDir, File parentDir) {
         logger.log(Level.INFO, "parent photo to be downloaded");
         parentDir = new File(golfGroupDir, PARENT_DIR);
         if (!parentDir.exists()) {
@@ -265,27 +267,30 @@ public class PhotoServlet extends HttpServlet {
                     parentDir.getAbsolutePath());
 
         }
+        return parentDir;
     }
 
-    private void createPlayerDirectory(File golfGroupDir, File playerDir) {
+    private File createPlayerDirectory(File golfGroupDir, File playerDir) {
         logger.log(Level.INFO, "player photo to be downloaded");
         playerDir = new File(golfGroupDir, PLAYER_DIR);
+        logger.log(Level.INFO, "just after new {0}", playerDir);
         if (!playerDir.exists()) {
             playerDir.mkdir();
             logger.log(Level.INFO, "player  directory created - {0}",
                     playerDir.getAbsolutePath());
 
         }
+        return playerDir;
     }
 
-    private void createGolfGroupDirectory(File rootDir, File golfGroupDir, int id) {
+    private File createGolfGroupDirectory(File rootDir, File golfGroupDir, int id) {
         golfGroupDir = new File(rootDir, GOLF_GROUP_PREFIX + id);
         if (!golfGroupDir.exists()) {
             golfGroupDir.mkdir();
             logger.log(Level.INFO, "golfgroup directory created - {0}",
                     golfGroupDir.getAbsolutePath());
         }
-        
+       return golfGroupDir; 
     }
 
     private void writeFile(InputStream stream, File imageFile) throws FileNotFoundException, IOException {

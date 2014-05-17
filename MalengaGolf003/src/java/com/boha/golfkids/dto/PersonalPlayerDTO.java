@@ -20,7 +20,7 @@ public class PersonalPlayerDTO {
     private List<PersonalScoreDTO> personalScoreList;
     private int countryID, clubID;
     private String countryName, countryCode, clubName;
-
+    private GcmDeviceDTO gcmDevice;
     public PersonalPlayerDTO(PersonalPlayer a) {
         firstName = a.getFirstName();
         lastName = a.getLastName();
@@ -43,6 +43,15 @@ public class PersonalPlayerDTO {
         return firstName;
     }
 
+    public GcmDeviceDTO getGcmDevice() {
+        return gcmDevice;
+    }
+
+    public void setGcmDevice(GcmDeviceDTO gcmDevice) {
+        this.gcmDevice = gcmDevice;
+    }
+
+    
     public String getPin() {
         return pin;
     }

@@ -23,6 +23,7 @@ public class ParentDTO {
     private String pin;
     private int exampleFlag;
     private List<PlayerDTO> players;
+    private GcmDeviceDTO gcmDevice;
 
     public ParentDTO(Parent a) {
         parentID = a.getParentID();
@@ -42,6 +43,14 @@ public class ParentDTO {
 
     public void setParentID(int parentID) {
         this.parentID = parentID;
+    }
+
+    public GcmDeviceDTO getGcmDevice() {
+        return gcmDevice;
+    }
+
+    public void setGcmDevice(GcmDeviceDTO gcmDevice) {
+        this.gcmDevice = gcmDevice;
     }
 
     public String getCellphone() {

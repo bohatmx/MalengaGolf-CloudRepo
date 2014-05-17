@@ -7,6 +7,7 @@
 package com.boha.golfkids.data;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -28,6 +29,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -42,6 +44,8 @@ import javax.validation.constraints.Size;
 
 })
 public class GolfGroup implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
+    private List<ErrorStoreAndroid> errorStoreAndroidList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
     private List<GcmDevice> gcmDeviceList;   
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "golfGroup")
@@ -102,6 +106,14 @@ public class GolfGroup implements Serializable {
         this.golfGroupName = golfGroupName;
         this.email = email;
         this.dateRegistered = dateRegistered;
+    }
+
+    public List<ErrorStoreAndroid> getErrorStoreAndroidList() {
+        return errorStoreAndroidList;
+    }
+
+    public void setErrorStoreAndroidList(List<ErrorStoreAndroid> errorStoreAndroidList) {
+        this.errorStoreAndroidList = errorStoreAndroidList;
     }
 
     public int getGolfGroupID() {
@@ -239,6 +251,8 @@ public class GolfGroup implements Serializable {
     public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
         this.gcmDeviceList = gcmDeviceList;
     }
+
+   
 
   
     

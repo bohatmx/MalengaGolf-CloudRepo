@@ -21,6 +21,7 @@ public class AdministratorDTO {
     private String lastName;
     private String pin;
     private int golfGroupID;
+    private GcmDeviceDTO gcmDevice;
 
     public AdministratorDTO(Administrator a) {
         administratorID = a.getAdministratorID();
@@ -39,6 +40,14 @@ public class AdministratorDTO {
 
     public void setGolfGroupID(int golfGroupID) {
         this.golfGroupID = golfGroupID;
+    }
+
+    public GcmDeviceDTO getGcmDevice() {
+        return gcmDevice;
+    }
+
+    public void setGcmDevice(GcmDeviceDTO gcmDevice) {
+        this.gcmDevice = gcmDevice;
     }
 
 

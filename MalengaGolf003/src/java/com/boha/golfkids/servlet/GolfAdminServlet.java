@@ -72,11 +72,12 @@ public class GolfAdminServlet extends HttpServlet {
             platformUtil.addErrorStore(9, "Bad, rogue request detected", "GolfAdminServlet");
             out.close();
         } else {
-            log.log(Level.WARNING, "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
+            log.log(Level.WARNING, "######################################### "
+                    + "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
                 switch (dto.getRequestType()) {
                     case RequestDTO.GET_ERROR_REPORTS:
-                        resp = dataUtil.getAndroidErrors(0, 0);
+                        resp = dataUtil.getMalengaGolfEvents(0, 0);
                         break;
                     case RequestDTO.SEND_GCM_REGISTRATION:
                         resp = CloudMessagingRegistrar.sendRegistration(dto.getGcmRegistrationID(), 
@@ -129,22 +130,22 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.updateTournamentScore(dto.getLeaderBoard());
                         break;
                     case RequestDTO.ADD_TOURNAMENT_PLAYERS:
-                        resp = dataUtil.addTournamentPlayer(dto.getLeaderBoard());
+                        resp = dataUtil.addTournamentPlayer(dto.getLeaderBoard(), platformUtil);
                         break;
 
                     case RequestDTO.ADD_TOURNAMENT:
-                        resp = dataUtil.addTournament(dto.getTournament());
+                        resp = dataUtil.addTournament(dto.getTournament(), platformUtil);
 
                         break;
                     case RequestDTO.ADD_PLAYER:
-                        resp = dataUtil.addPlayer(dto.getPlayer(), dto.getGolfGroupID());
+                        resp = dataUtil.addPlayer(dto.getPlayer(), dto.getGolfGroupID(), platformUtil);
                         break;
                     case RequestDTO.UPDATE_PLAYER:
                         dataUtil.updatePlayer(dto.getPlayer());
                         break;
 
                     case RequestDTO.ADD_PARENT:
-                        resp = dataUtil.addParent(dto.getParent(), dto.getGolfGroupID());
+                        resp = dataUtil.addParent(dto.getParent(), dto.getGolfGroupID(), platformUtil);
                         break;
                     case RequestDTO.UPDATE_PARENT:
                         dataUtil.updateParent(dto.getParent());
@@ -204,7 +205,7 @@ public class GolfAdminServlet extends HttpServlet {
                         break;
 
                     case RequestDTO.ADD_SCORER:
-                        resp = dataUtil.addScorer(dto.getScorer(), dto.getGolfGroupID());
+                        resp = dataUtil.addScorer(dto.getScorer(), dto.getGolfGroupID(), platformUtil);
                         break;
                     case RequestDTO.UPDATE_SCORER:
                         dataUtil.updateScorer(dto.getScorer());
@@ -259,18 +260,18 @@ public class GolfAdminServlet extends HttpServlet {
                         response.getOutputStream().close();
                         log.log(Level.OFF, "### Zipped Length of Response: {0} -  "
                                 + "unzipped length: {1}", new Object[]{zipped.length(), json.length()});
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                         log.log(Level.SEVERE, "Zipping problem - probably the zipper cannot find the zipped file", e);
-                        PrintWriter out = response.getWriter();
-                        response.setContentType("application/json;charset=UTF-8");
-                        out.println(json);
-                        out.close();
+                        try (PrintWriter out = response.getWriter()) {
+                            response.setContentType("application/json;charset=UTF-8");
+                            out.println(json);
+                        }
                     }
                 } else {
                     response.setContentType("application/json;charset=UTF-8");
-                    PrintWriter out = response.getWriter();
-                    out.println(json);
-                    out.close();
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println(json);
+                    }
                 }
 
                 long end = System.currentTimeMillis();

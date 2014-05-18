@@ -40,6 +40,16 @@ public class ResponseDTO {
     private List<VideoClipDTO> videoClips;
     private List<ErrorStoreAndroidDTO> errorStoreAndroidList;
     private List<ErrorStoreDTO> errorStoreList;
+    private String log;
+
+    public String getLog() {
+        return log;
+    }
+
+    public void setLog(String log) {
+        this.log = log;
+    }
+    
     //
     public static final int LOGIN_EXCEPTION = 101;
     public static final int DATA_EXCEPTION = 102;

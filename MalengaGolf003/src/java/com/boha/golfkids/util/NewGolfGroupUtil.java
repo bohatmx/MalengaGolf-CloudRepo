@@ -102,24 +102,28 @@ public class NewGolfGroupUtil {
             dataUtil.em.merge(cc);
 
         }
-        generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #1", 1, true, 18, 0, dataUtil);
-        generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #2", 3, true, 18, 0, dataUtil);
+        generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #1", 1, true, 18, 0, dataUtil, platformUtil);
+        generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #2", 3, true, 18, 0, dataUtil, platformUtil);
 
-        generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #3", 4, false, 18, GENDER_BOYS, dataUtil);
-        generateExampleTournament(false, gg, pList, club.getClubID(), "Sample Tournament #4", 4, false, 18, GENDER_GIRLS, dataUtil);
+        generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #3", 4, false, 18, GENDER_BOYS, dataUtil, platformUtil);
+        generateExampleTournament(false, gg, pList, club.getClubID(), "Sample Tournament #4", 4, false, 18, GENDER_GIRLS, dataUtil, platformUtil);
 
-        generateExampleTournament(false, gg, pList, club.getClubID(), "Sample Tournament #5", 3, false, 9, 0, dataUtil);
-        generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #6", 6, false, 18, GENDER_BOYS, dataUtil);
+        generateExampleTournament(false, gg, pList, club.getClubID(), "Sample Tournament #5", 3, false, 9, 0, dataUtil, platformUtil);
+        generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #6", 6, false, 18, GENDER_BOYS, dataUtil, platformUtil);
 
         getPictureFiles(gg, pList);
 
-        log.log(Level.OFF, "*************** DONE! - Example players, parents and tournaments generated: {0}", gg.getGolfGroupName());
+        String msg = MESSAGE + gg.getGolfGroupName();
+        log.log(Level.OFF, "*************** DONE! - SampleExample players, parents and tournaments generated: {0}", gg.getGolfGroupName());
+        
+        platformUtil.addErrorStore(777, msg, "NewGolfGroupUtil");
     }
 
+    static final String MESSAGE = "Sample tournaments generated for ";
     private static void generateExampleTournament(boolean isLive, GolfGroup gg, List<Player> pList,
             int clubID,
             String tournamentName, int rounds, boolean useAgeGroups, int holesPerRound, int gender,
-            DataUtil dataUtil) throws DataException {
+            DataUtil dataUtil, PlatformUtil platformUtil) throws DataException {
         DateTime dt = new DateTime();
         dt = dt.minusDays(7);
         //
@@ -148,7 +152,7 @@ public class NewGolfGroupUtil {
         if (useAgeGroups) {
             t.setUseAgeGroups(1);
         }
-        ResponseDTO r = dataUtil.addTournament(t);
+        ResponseDTO r = dataUtil.addTournament(t, platformUtil);
         Tournament tournament = new Tournament();
         List<TournamentDTO> tList = r.getTournaments();
         for (TournamentDTO tn : tList) {
@@ -157,7 +161,7 @@ public class NewGolfGroupUtil {
                 break;
             }
         }
-        List<LeaderBoard> list = addPlayersToTournament(pList, tournament, gender, dataUtil);
+        List<LeaderBoard> list = addPlayersToTournament(pList, tournament, gender, dataUtil, platformUtil);
         log.log(Level.INFO, "LeaderBoard items generated, about to score: {0}", list.size());
 
         List<TourneyScoreByRound> tsbrList = generateScores(list, tournament.getTournamentID(), dataUtil, tournament.getGolfRounds());
@@ -513,9 +517,9 @@ public class NewGolfGroupUtil {
                 genderCount = 8;
             }
         } else {
-            genderCount = rand.nextInt(16);
-            if (genderCount < 8) {
-                genderCount = 8;
+            genderCount = rand.nextInt(8);
+            if (genderCount < 4) {
+                genderCount = 4;
             }
         }
 
@@ -626,7 +630,7 @@ public class NewGolfGroupUtil {
      dataUtil.em.persist(d); */
 
     private static List<LeaderBoard> addPlayersToTournament(List<Player> pList,
-            Tournament t, int gender, DataUtil dataUtil) throws DataException {
+            Tournament t, int gender, DataUtil dataUtil, PlatformUtil platformUtil) throws DataException {
         List<LeaderBoard> lbList;
         switch (gender) {
             case 0: //All players
@@ -640,7 +644,7 @@ public class NewGolfGroupUtil {
                     LeaderBoardDTO lb = new LeaderBoardDTO();
                     lb.setTournamentID(t.getTournamentID());
                     lb.setPlayer(new PlayerDTO(player));
-                    dataUtil.addTournamentPlayer(lb);
+                    dataUtil.addTournamentPlayer(lb, platformUtil);
 
                 }
                 break;
@@ -658,7 +662,7 @@ public class NewGolfGroupUtil {
                     LeaderBoardDTO lb = new LeaderBoardDTO();
                     lb.setTournamentID(t.getTournamentID());
                     lb.setPlayer(new PlayerDTO(player));
-                    dataUtil.addTournamentPlayer(lb);
+                    dataUtil.addTournamentPlayer(lb, platformUtil);
 
                 }
                 break;
@@ -676,7 +680,7 @@ public class NewGolfGroupUtil {
                     LeaderBoardDTO lb = new LeaderBoardDTO();
                     lb.setTournamentID(t.getTournamentID());
                     lb.setPlayer(new PlayerDTO(player));
-                    dataUtil.addTournamentPlayer(lb);
+                    dataUtil.addTournamentPlayer(lb, platformUtil);
 
                 }
                 break;

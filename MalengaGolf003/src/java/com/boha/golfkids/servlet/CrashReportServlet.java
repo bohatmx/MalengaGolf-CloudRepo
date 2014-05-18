@@ -77,14 +77,16 @@ public class CrashReportServlet extends HttpServlet {
         e.setStackTrace(request.getParameter("STACK_TRACE"));
 
         String custom = request.getParameter("CUSTOM_DATA");
-    //golfGroupID = 21
+        //golfGroupID = 21
         //golfGroupName = MLB Golfers
-        int x = custom.indexOf("=");
-        int y = custom.indexOf("\n");
-        String id = custom.substring(x + 2, y);
-        System.out.println("---------------------------> id extracted: " + id);
-        GolfGroup gg = dataUtil.getGroupByID(Integer.parseInt(id));
-        e.setGolfGroup(gg);
+        if (custom != null) {
+            int x = custom.indexOf("=");
+            int y = custom.indexOf("\n");
+            String id = custom.substring(x + 2, y);
+            System.out.println("---------------------------> id extracted: " + id);
+            GolfGroup gg = dataUtil.getGroupByID(Integer.parseInt(id));
+            e.setGolfGroup(gg);
+        }
 
         dataUtil.addAndroidError(e);
 

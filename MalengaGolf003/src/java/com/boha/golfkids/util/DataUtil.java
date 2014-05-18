@@ -46,6 +46,7 @@ import com.boha.golfkids.dto.TournamentDTO;
 import com.boha.golfkids.dto.TourneyScoreByRoundDTO;
 import com.boha.golfkids.dto.VideoClipDTO;
 import com.boha.golfkids.util.golfdata.LoaderResponseDTO;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -80,7 +81,7 @@ public class DataUtil {
 
     static final int ADMIN = 1, PLAYER = 2, SCORER = 3, PARENT = 4, VOLUNTEER = 5;
 
-    private void addGcmDevice(GolfGroup gg, int type, int id, GcmDeviceDTO dev) throws DataException {
+    private void addGcmDevice(GolfGroup gg, int type, int id, GcmDeviceDTO dev, PlatformUtil platformUtil) throws DataException {
         logger.log(Level.INFO, "...adding GCM device for {0}", gg.getGolfGroupName());
         try {
             GcmDevice g = new GcmDevice();
@@ -109,6 +110,7 @@ public class DataUtil {
             }
             em.persist(g);
             logger.log(Level.INFO, "GCM Device added: {0}", g.getModel());
+            platformUtil.addErrorStore(444, "GCM device added " + dev.getModel(), "DataUtil");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "################ Failed to add device");
             throw new DataException("Failed to add device\n"
@@ -175,7 +177,7 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO getAndroidErrors(
+    public ResponseDTO getMalengaGolfEvents(
             long startDate, long endDate) throws DataException {
         ResponseDTO r = new ResponseDTO();
         if (startDate == 0) {
@@ -195,8 +197,11 @@ public class DataUtil {
             }
             r.setErrorStoreAndroidList(dList);
             r.setErrorStoreList(getServerErrors(startDate, endDate).getErrorStoreList());
+            
+            String log = LogfileUtil.getFileString();
+            r.setLog(log);
             logger.log(Level.OFF, "Android Errors found {0}", r.getErrorStoreAndroidList().size());
-        } catch (Exception e) {
+        } catch (DataException | IOException e) {
             logger.log(Level.SEVERE, "Failed to findClubsWithinRadius");
             throw new DataException("Failed to findClubsWithinRadius\n"
                     + getErrorString(e));
@@ -864,7 +869,7 @@ public class DataUtil {
                 t.setHolesPerRound(tps.getTournament().getHolesPerRound());
                 //
                 em.persist(t);
-                logger.log(Level.WARNING, "Tsbr added .......");
+                //logger.log(Level.WARNING, "Tsbr added .......");
             }
             //
             Query q = em.createQuery("select a from TourneyScoreByRound a WHERE a.leaderBoard.leaderBoardID = :lID");
@@ -1439,15 +1444,19 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO addTournamentPlayer(LeaderBoardDTO leaderBoardDTO) throws DataException {
+    public ResponseDTO addTournamentPlayer(LeaderBoardDTO leaderBoardDTO, PlatformUtil platformUtil) throws DataException {
 
         ResponseDTO r = new ResponseDTO();
+        if (leaderBoardDTO.getTournamentID() == 0) {
+            throw new DataException("Tournament ID is zero on attempt to add Tournament player");
+        }
         LeaderBoard s = new LeaderBoard();
         s.setDateRegistered(new Date());
         s.setPlayer(getPlayerByID(leaderBoardDTO.getPlayer().getPlayerID()));
         s.setTournament(getTournamentByID(leaderBoardDTO.getTournamentID()));
         try {
             em.persist(s);
+            logger.log(Level.INFO, "addTournamentPlayer persisted ....");
             Query q = em.createQuery("select a from LeaderBoard a where a.player.playerID = :pID and a.tournament.tournamentID = :tID");
             q.setParameter("pID", leaderBoardDTO.getPlayer().getPlayerID());
             q.setParameter("tID", leaderBoardDTO.getTournamentID());
@@ -1473,13 +1482,37 @@ public class DataUtil {
             if (s.getTournament().getUseAgeGroups() == 1) {
                 setAgeGroup(leaderBoard, s.getTournament().getStartDate().getTime());
             }
-            r.setLeaderBoard(new LeaderBoardDTO(leaderBoard));
             List<TourneyScoreByRoundDTO> tsbrList = addTournamentScoreByRound(leaderBoard, list);
+            Query zz = em.createNamedQuery("LeaderBoard.findByTournament", LeaderBoard.class);
+            zz.setParameter("id", leaderBoardDTO.getTournamentID());
+            List<LeaderBoard> lbList = zz.getResultList();
+            List<LeaderBoardDTO> dtoList = new ArrayList();
+            for (LeaderBoard x : lbList) {
+                dtoList.add(new LeaderBoardDTO(x));
+            }
+
+            zz = em.createNamedQuery("TourneyScoreByRound.getByTourney", TourneyScoreByRound.class);
+            zz.setParameter("id", leaderBoardDTO.getTournamentID());
+            List<TourneyScoreByRound> tsbList = zz.getResultList();
+
+            for (LeaderBoardDTO lb : dtoList) {
+                lb.setTourneyScoreByRoundList(new ArrayList<TourneyScoreByRoundDTO>());
+                for (TourneyScoreByRound tsbr : tsbList) {
+                    if (tsbr.getLeaderBoard().getLeaderBoardID() == lb.getLeaderBoardID()) {
+                        lb.getTourneyScoreByRoundList().add(new TourneyScoreByRoundDTO(tsbr));
+                    }
+                }
+
+            }
+            r.setLeaderBoardList(dtoList);
+            r.setLeaderBoard(new LeaderBoardDTO(leaderBoard));           
             r.getLeaderBoard().setTourneyScoreByRoundList(tsbrList);
 
         } catch (PersistenceException e) {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("Duplicate detected. Record already exists");
+            platformUtil.addErrorStore(7, "Duplicate detected\n\n" + getErrorString(e), "DataUtil");
+            
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add Tournament player", e);
@@ -1489,7 +1522,7 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO addTournament(TournamentDTO dto) throws DataException {
+    public ResponseDTO addTournament(TournamentDTO dto, PlatformUtil platformUtil) throws DataException {
 
         ResponseDTO r = new ResponseDTO();
         Tournament t = new Tournament();
@@ -1553,6 +1586,7 @@ public class DataUtil {
 
             logger.log(Level.INFO, "\n### Added Tournament {0} group: {1}",
                     new Object[]{t.getTourneyName(), t.getGolfGroup().getGolfGroupName()});
+            platformUtil.addErrorStore(555, "Tournament added, rounds: " + t.getGolfRounds(), "DataUtil");
         } catch (PersistenceException e) {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("Duplicate detected. Record already exists");
@@ -1565,7 +1599,7 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO addParent(ParentDTO dto, int golfGroupID) throws DataException {
+    public ResponseDTO addParent(ParentDTO dto, int golfGroupID, PlatformUtil platformUtil) throws DataException {
 
         ResponseDTO r = new ResponseDTO();
         Parent p = new Parent();
@@ -1587,7 +1621,7 @@ public class DataUtil {
             dtoList.add(new ParentDTO(p));
             r.setParents(dtoList);
             if (dto.getGcmDevice() != null) {
-                addGcmDevice(getGroupByID(golfGroupID), PARENT, p.getParentID(), dto.getGcmDevice());
+                addGcmDevice(getGroupByID(golfGroupID), PARENT, p.getParentID(), dto.getGcmDevice(), platformUtil);
             }
             logger.log(Level.INFO, "\n### Added Parent {0}  {1}", new Object[]{p.getFirstName(), p.getLastName()});
 
@@ -1744,7 +1778,7 @@ public class DataUtil {
         return sb.toString();
     }
 
-    public ResponseDTO addPlayer(PlayerDTO d, int golfGroupID) throws DataException {
+    public ResponseDTO addPlayer(PlayerDTO d, int golfGroupID, PlatformUtil platformUtil) throws DataException {
         ResponseDTO r = new ResponseDTO();
         Player p = new Player();
         p.setCellphone(d.getCellphone());
@@ -1774,7 +1808,7 @@ public class DataUtil {
             r.setPlayers(new ArrayList<PlayerDTO>());
             r.getPlayers().add(new PlayerDTO(p));
             if (d.getGcmDevice() != null) {
-                addGcmDevice(getGroupByID(golfGroupID), PLAYER, player.getPlayerID(), d.getGcmDevice());
+                addGcmDevice(getGroupByID(golfGroupID), PLAYER, player.getPlayerID(), d.getGcmDevice(), platformUtil);
             }
             logger.log(Level.INFO, "\n### Added Player {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
         } catch (PersistenceException e) {
@@ -1790,7 +1824,7 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO addScorer(ScorerDTO d, int golfGroupID) throws DataException {
+    public ResponseDTO addScorer(ScorerDTO d, int golfGroupID, PlatformUtil platformUtil) throws DataException {
         ResponseDTO r = new ResponseDTO();
         Scorer p = new Scorer();
         p.setCellphone(d.getCellphone());
@@ -1809,7 +1843,7 @@ public class DataUtil {
             r.setScorers(new ArrayList<ScorerDTO>());
             r.getScorers().add(new ScorerDTO(s));
             if (d.getGcmDevice() != null) {
-                addGcmDevice(getGroupByID(golfGroupID), SCORER, s.getScorerID(), d.getGcmDevice());
+                addGcmDevice(getGroupByID(golfGroupID), SCORER, s.getScorerID(), d.getGcmDevice(), platformUtil);
             }
             logger.log(Level.INFO, "\n### Added Scorer {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
         } catch (PersistenceException e) {
@@ -1893,12 +1927,13 @@ public class DataUtil {
             NewGolfGroupUtil.generate(gg, this, platformUtil);
             if (admin.getGcmDevice() != null) {
                 try {
-                    addGcmDevice(gg, ADMIN, r2.getAdministrator().getAdministratorID(), admin.getGcmDevice());
+                    addGcmDevice(gg, ADMIN, r2.getAdministrator().getAdministratorID(), admin.getGcmDevice(), platformUtil);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "#### GCM device not added...", e);
                 }
             }
             logger.log(Level.INFO, "\n### Added GolfGroup {0}", g.getGolfGroupName());
+            platformUtil.addErrorStore(777, "GolfGroup registered", "DataUtil");
 
         } catch (PersistenceException e) {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);

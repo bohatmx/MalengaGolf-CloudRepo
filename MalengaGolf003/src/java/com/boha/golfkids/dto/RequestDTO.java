@@ -13,7 +13,7 @@ import java.util.List;
 public class RequestDTO {
 
     private String email, pin, gcmRegistrationID;
-    private int golfGroupID;    
+    private int golfGroupID;
     private int tournamentID, playerID, countryID, provinceID, clubCourseID;
     private GolfGroupDTO golfGroup;
     private TournamentDTO tournament;
@@ -31,7 +31,7 @@ public class RequestDTO {
     private boolean zippedResponse;
     private double latitude, longitude;
     private int radius, radiusType, page;
-    
+
     //
     public static final int ADMIN_LOGIN = 1;
     public static final int ADD_GOLF_GROUP = 2;
@@ -50,7 +50,7 @@ public class RequestDTO {
     public static final int ADD_PLAYER = 15;
     public static final int UPDATE_PLAYER = 16;
     public static final int UPDATE_PLAYER_PARENT = 17;
-    
+
     public static final int GET_CLUBS_IN_PROVINCE = 18;
     public static final int GET_CLUBS_IN_COUNTRY = 19;
     public static final int GET_AGE_GROUPS = 20;
@@ -61,11 +61,11 @@ public class RequestDTO {
     public static final int GET_COUNTRIES = 25;
     public static final int ADD_CLUB_COURSE = 30;
     public static final int UPDATE_CLUB_COURSE = 31;
-    
+
     public static final int ADD_TEE_TIMES = 32;
     public static final int GET_TOURNAMENT_SCORES = 33;
     public static final int UPDATE_TEE_TIMES = 34;
-    
+
     public static final int REMOVE_TOURNAMENT_PLAYER = 35;
     public static final int UPDATE_TOURNAMENT_SCORE_TOTALS = 36;
     public static final int GET_TEE_TIMES = 37;
@@ -75,40 +75,43 @@ public class RequestDTO {
     public static final int GET_TOURNAMENT_PLAYERS = 41;
     public static final int CLOSE_TOURNAMENT = 42;
     public static final int GET_PLAYER_HISTORY = 43;
-    
+
     public static final int ADD_PERSONAL_PLAYER = 44;
     public static final int UPDATE_PERSONAL_PLAYER = 45;
     public static final int ADD_PERSONAL_SCORE = 46;
     public static final int GET_PERSONAL_SCORES = 47;
     public static final int PERSONAL_PLAYER_LOGIN = 48;
     public static final int UPDATE_WINNER_FLAG = 50;
-    
+
     public static final int GET_GOLFGROUP_THUMBNAILS = 60;
     public static final int GET_TOURNAMENT_THUMBNAILS = 61;
     public static final int GET_GOLFGROUP_PICTURES = 62;
     public static final int GET_TOURNAMENT_PICTURES = 63;
-    
+
     public static final int ADD_VIDEO_CLIP = 64;
     public static final int GET_VIDEO_CLIPS_BY_GOLF_GROUP = 66;
-    
+
     public static final int CLOSE_LEADERBORD = 67;
     public static final int WITHDRAW_PLAYER = 69;
     public static final int DELETE_TOURNAMENT = 70;
-    
+
     public static final int GET_PROVINCES = 71;
     public static final int SEND_GCM_REGISTRATION = 72;
     public static final int GET_ERROR_REPORTS = 73;
-    
+
+    public static final int SIGN_IN_SCORER = 75;
+    public static final int SIGN_IN_PLAYER = 76;
+    public static final int SIGN_IN_LEADERBOARD = 77;
+    public static final int GET_TOURNAMENTS = 78;
+
     public static final int GET_CLUBS_NEARBY = 119;
     public static final int GET_CLUBS_IN_STATE = 120;
-    
+
     public static final int PICTURES_FULL_SIZE = 1;
     public static final int PICTURES_THUMBNAILS = 2;
-    
-    
-    
+
     private int winnerFlag, leaderBoardID, type;
-    
+
     private int personalPlayerID;
     private PersonalPlayerDTO personalPlayer;
     private PersonalScoreDTO personalScore;
@@ -148,8 +151,7 @@ public class RequestDTO {
     public void setPage(int page) {
         this.page = page;
     }
-    
-    
+
     public VideoClipDTO getVideoClip() {
         return videoClip;
     }
@@ -157,8 +159,6 @@ public class RequestDTO {
     public void setVideoClip(VideoClipDTO videoClip) {
         this.videoClip = videoClip;
     }
-    
-    
 
     public LeaderBoardDTO getLeaderBoard() {
         return leaderBoard;
@@ -245,7 +245,6 @@ public class RequestDTO {
         return provinceID;
     }
 
- 
     public PlayerDTO getPlayer() {
         return player;
     }
@@ -266,7 +265,6 @@ public class RequestDTO {
         this.club = club;
     }
 
-    
     public List<TourneyScoreByRoundDTO> getTourneyScoreByRoundList() {
         return tourneyScoreByRoundList;
     }
@@ -282,7 +280,6 @@ public class RequestDTO {
     public void setTourneyScoreByRoundList(List<TourneyScoreByRoundDTO> tourneyScoreByRoundList) {
         this.tourneyScoreByRoundList = tourneyScoreByRoundList;
     }
-
 
     public List<PlayerDTO> getPlayerList() {
         return playerList;
@@ -300,7 +297,6 @@ public class RequestDTO {
         this.tourneyScoreByRound = tourneyScoreByRound;
     }
 
-   
     public String getEmail() {
         return email;
     }
@@ -420,5 +416,5 @@ public class RequestDTO {
     public void setRadiusType(int radiusType) {
         this.radiusType = radiusType;
     }
-    
+
 }

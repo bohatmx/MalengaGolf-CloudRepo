@@ -8,6 +8,7 @@ import com.boha.golfkids.dto.AgeGroupDTO;
 import com.boha.golfkids.dto.CountryDTO;
 import com.boha.golfkids.dto.RequestDTO;
 import com.boha.golfkids.dto.ResponseDTO;
+import com.boha.golfkids.dto.TournamentDTO;
 import com.boha.golfkids.util.CloudMessagingRegistrar;
 import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;
@@ -62,9 +63,7 @@ public class GolfAdminServlet extends HttpServlet {
         Gson gson = new Gson();
         ResponseDTO resp = new ResponseDTO();
         RequestDTO dto = getRequest(gson, request);
-        log.log(Level.WARNING, "---> ipAddress: {0} name: {1} port: {2}", 
-                new Object[]{request.getLocalAddr(), request.getLocalName(), request.getLocalPort()});
-        //
+        
         if (dto == null) {
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
@@ -76,11 +75,27 @@ public class GolfAdminServlet extends HttpServlet {
                     + "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
                 switch (dto.getRequestType()) {
+                     case RequestDTO.GET_TOURNAMENTS:
+                        List<TournamentDTO> list = dataUtil.getTournamentByGroup(dto.getGolfGroupID());
+                        resp.setTournaments(list);
+                        break;
+                    case RequestDTO.SIGN_IN_LEADERBOARD:
+                        resp = dataUtil.signInLeaderBoard(dto.getGolfGroupID());
+                        break;
+                    case RequestDTO.SIGN_IN_SCORER:
+                        resp = dataUtil.signInScorer(dto.getEmail(), dto.getPin());
+                        break;
+                    case RequestDTO.SIGN_IN_PLAYER:
+                        resp = dataUtil.signInPlayer(dto.getEmail(), dto.getPin());
+                        break;
+                    case RequestDTO.ADMIN_LOGIN:
+                        resp = dataUtil.signInAdministrator(dto.getEmail(), dto.getPin());
+                        break;
                     case RequestDTO.GET_ERROR_REPORTS:
                         resp = dataUtil.getMalengaGolfEvents(0, 0);
                         break;
                     case RequestDTO.SEND_GCM_REGISTRATION:
-                        resp = CloudMessagingRegistrar.sendRegistration(dto.getGcmRegistrationID(), 
+                        resp = CloudMessagingRegistrar.sendRegistration(dto.getGcmRegistrationID(),
                                 platformUtil);
                         break;
                     case RequestDTO.UPDATE_TEE_TIMES:
@@ -119,10 +134,7 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.GET_LEADERBOARD:
                         resp = leaderBoardUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
                         break;
-                    case RequestDTO.GET_LEADERBOARD_BOYS:
-                        break;
-                    case RequestDTO.GET_LEADERBOARD_GIRLS:
-                        break;
+
                     case RequestDTO.UPDATE_TOURNAMENT_SCORES:
                         resp = dataUtil.updateTournamentScoreByRound(dto.getLeaderBoard());
                         break;
@@ -150,9 +162,7 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.UPDATE_PARENT:
                         dataUtil.updateParent(dto.getParent());
                         break;
-                    case RequestDTO.ADMIN_LOGIN:
-                        resp = dataUtil.signInAdministrator(dto.getEmail(), dto.getPin());
-                        break;
+
                     case RequestDTO.ADD_ADMINISTRATOR:
                         resp = dataUtil.addGolfGroupAdmin(dto.getAdministrator());
 

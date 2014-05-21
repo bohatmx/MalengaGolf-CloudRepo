@@ -752,21 +752,53 @@ public class DataUtil {
         return r;
 
     }
+    public ResponseDTO signInLeaderBoard(int golfGroupID) throws LoginException, DataException {
+        ResponseDTO r = new ResponseDTO();
+        GolfGroup gg = getGroupByID(golfGroupID);
+        r.setGolfGroup(new GolfGroupDTO(gg));        
+        r.setTournaments(getTournamentByGroup(golfGroupID));
+        return r;
 
-    public ResponseDTO signInPlayer(String email,
+    }
+    public ResponseDTO signInScorer(String email,
             String pin) throws LoginException, DataException {
         ResponseDTO r = new ResponseDTO();
-        Query q = em.createNamedQuery("Player.login", Administrator.class);
+        Query q = em.createNamedQuery("Scorer.login", Scorer.class);
         q.setMaxResults(1);
         q.setParameter("email", email);
         q.setParameter("pin", pin);
 
-        Administrator a = (Administrator) q.getSingleResult();
+        Scorer a = (Scorer) q.getSingleResult();
         if (a == null) {
             throw new LoginException();
         }
-        r.setAdministrator(new AdministratorDTO(a));
+        r.setScorers(new ArrayList());
+        r.getScorers().add(new ScorerDTO(a));
         r.setGolfGroup(new GolfGroupDTO(a.getGolfGroup()));
+        return r;
+
+    }
+
+    public ResponseDTO signInPlayer(String email,
+            String pin) throws LoginException, DataException {
+        ResponseDTO r = new ResponseDTO();
+        Query q = em.createNamedQuery("Player.login", Player.class);
+        q.setMaxResults(1);
+        q.setParameter("email", email);
+        q.setParameter("pin", pin);
+
+        Player a = (Player) q.getSingleResult();
+        if (a == null) {
+            throw new LoginException();
+        }
+        r.setPlayers(new ArrayList<PlayerDTO>());
+        r.getPlayers().add(new PlayerDTO(a));
+        //get golfGroup
+        q = em.createNamedQuery("GolfGroupPlayer.findByGolfGroup", GolfGroupPlayer.class);
+        q.setParameter("id", a.getPlayerID());
+        q.setMaxResults(1);
+        GolfGroupPlayer ggp = (GolfGroupPlayer)q.getSingleResult();
+        r.setGolfGroup(new GolfGroupDTO(ggp.getGolfGroup()));
         return r;
 
     }
@@ -1816,7 +1848,7 @@ public class DataUtil {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("This player email already has an account");
 
-        } catch (Exception e) {
+        } catch (DataException | DuplicateException e) {
             logger.log(Level.SEVERE, "Failed to add Player", e);
             throw new DataException("Failed to add Player\n" + getErrorString(e));
         } finally {
@@ -1851,7 +1883,7 @@ public class DataUtil {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("This Scorer email already has an account");
 
-        } catch (Exception e) {
+        } catch (DataException e) {
             logger.log(Level.SEVERE, "Failed to add Scorer", e);
             throw new DataException("Failed to add Scorer\n" + getErrorString(e));
         } finally {
@@ -1867,8 +1899,9 @@ public class DataUtil {
         a.setEmail(d.getEmail());
         a.setFirstName(d.getFirstName());
         a.setLastName(d.getLastName());
-        a.setPin(d.getPin());
+        a.setPin(getPin());
         a.setSuperUserFlag(d.getSuperUserFlag());
+        
         if (d.getGolfGroupID() > 0) {
             GolfGroup gg = getGroupByID(d.getGolfGroupID());
             a.setGolfGroup(gg);
@@ -1897,6 +1930,18 @@ public class DataUtil {
         return r;
     }
 
+    private String getPin() {
+        Random rand = new Random(System.currentTimeMillis());
+        StringBuilder sb = new StringBuilder();
+        sb.append(rand.nextInt(9));
+        sb.append(rand.nextInt(9));
+        sb.append(rand.nextInt(9));
+        sb.append(rand.nextInt(9));
+        sb.append(rand.nextInt(9));
+        sb.append(rand.nextInt(9));
+        logger.log(Level.OFF, "pin generated: {0}", sb.toString());
+        return sb.toString();
+    }
     public ResponseDTO addGolfGroup(GolfGroupDTO d, AdministratorDTO admin, PlatformUtil platformUtil)
             throws DataException {
         ResponseDTO r = new ResponseDTO();

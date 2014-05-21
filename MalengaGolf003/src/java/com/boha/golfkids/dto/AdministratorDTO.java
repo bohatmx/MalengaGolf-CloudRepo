@@ -31,7 +31,9 @@ public class AdministratorDTO {
         lastName = a.getLastName();
         superUserFlag = a.getSuperUserFlag();
         pin = a.getPin();
-        golfGroupID = a.getGolfGroup().getGolfGroupID();
+        if (a.getGolfGroup() != null) {
+            golfGroupID = a.getGolfGroup().getGolfGroupID();
+        }
     }
 
     public int getGolfGroupID() {

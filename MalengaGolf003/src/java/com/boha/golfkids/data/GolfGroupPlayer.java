@@ -34,7 +34,11 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "GolfGroupPlayer.findByGolfGroup", 
             query = "SELECT g FROM GolfGroupPlayer g "
                     + "where g.golfGroup.golfGroupID = :id"),
-@NamedQuery(name = "GolfGroupPlayer.deleteByGolfGroup", 
+    
+    @NamedQuery(name = "GolfGroupPlayer.findByPlayer", 
+            query = "SELECT g FROM GolfGroupPlayer g where g.player.playerID = :id"),
+
+    @NamedQuery(name = "GolfGroupPlayer.deleteByGolfGroup", 
             query = "delete FROM GolfGroupPlayer g "
                     + "where g.golfGroup.golfGroupID = :id")
 })

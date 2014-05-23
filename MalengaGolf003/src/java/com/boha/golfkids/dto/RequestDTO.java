@@ -25,6 +25,7 @@ public class RequestDTO {
     private ParentDTO parent;
     private ClubDTO club;
     private ScorerDTO scorer;
+    private GcmDeviceDTO gcmDevice;
     private List<LeaderBoardDTO> players;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private int requestType;
@@ -103,6 +104,7 @@ public class RequestDTO {
     public static final int SIGN_IN_PLAYER = 76;
     public static final int SIGN_IN_LEADERBOARD = 77;
     public static final int GET_TOURNAMENTS = 78;
+    public static final int GET_PLAYER_GROUPS = 80;
 
     public static final int GET_CLUBS_NEARBY = 119;
     public static final int GET_CLUBS_IN_STATE = 120;
@@ -186,6 +188,14 @@ public class RequestDTO {
 
     public int getWinnerFlag() {
         return winnerFlag;
+    }
+
+    public GcmDeviceDTO getGcmDevice() {
+        return gcmDevice;
+    }
+
+    public void setGcmDevice(GcmDeviceDTO gcmDevice) {
+        this.gcmDevice = gcmDevice;
     }
 
     public void setWinnerFlag(int winnerFlag) {

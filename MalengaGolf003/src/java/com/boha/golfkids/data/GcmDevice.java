@@ -78,7 +78,7 @@ public class GcmDevice implements Serializable {
     @ManyToOne
     private Administrator administrator;
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private GolfGroup golfGroup;
 
     public GcmDevice() {

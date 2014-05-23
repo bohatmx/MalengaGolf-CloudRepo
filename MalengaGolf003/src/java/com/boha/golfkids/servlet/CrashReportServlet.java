@@ -79,13 +79,17 @@ public class CrashReportServlet extends HttpServlet {
         String custom = request.getParameter("CUSTOM_DATA");
         //golfGroupID = 21
         //golfGroupName = MLB Golfers
-        if (custom != null) {
-            int x = custom.indexOf("=");
-            int y = custom.indexOf("\n");
-            String id = custom.substring(x + 2, y);
-            System.out.println("---------------------------> id extracted: " + id);
-            GolfGroup gg = dataUtil.getGroupByID(Integer.parseInt(id));
-            e.setGolfGroup(gg);
+        try {
+            if (custom != null || !custom.trim().isEmpty()) {
+                int x = custom.indexOf("=");
+                int y = custom.indexOf("\n");
+                String id = custom.substring(x + 2, y);
+                System.out.println("---------------------------> id extracted: " + id);
+                GolfGroup gg = dataUtil.getGroupByID(Integer.parseInt(id));
+                e.setGolfGroup(gg);
+            }
+        } catch (Exception ex) {
+            log.log(Level.OFF, "no custom data found", ex);
         }
 
         dataUtil.addAndroidError(e);

@@ -35,6 +35,7 @@ public class ResponseDTO {
     private List<GolfGroupParentDTO> golfGroupParents;
     private List<ScorerDTO> scorers;
     private GolfGroupDTO golfGroup;
+    
     private List<String> imageFileNames;
     private AdministratorDTO administrator;
     private List<VideoClipDTO> videoClips;

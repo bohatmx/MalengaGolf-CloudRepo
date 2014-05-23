@@ -82,7 +82,7 @@ public class DataUtil {
     static final int ADMIN = 1, PLAYER = 2, SCORER = 3, PARENT = 4, VOLUNTEER = 5;
 
     private void addGcmDevice(GolfGroup gg, int type, int id, GcmDeviceDTO dev, PlatformUtil platformUtil) throws DataException {
-        logger.log(Level.INFO, "...adding GCM device for {0}", gg.getGolfGroupName());
+        logger.log(Level.INFO, "...adding GCM device ");
         try {
             GcmDevice g = new GcmDevice();
             g.setGolfGroup(gg);
@@ -90,6 +90,7 @@ public class DataUtil {
             g.setManufacturer(dev.getManufacturer());
             g.setModel(dev.getModel());
             g.setSerial(dev.getSerial());
+            g.setGcmRegistrationID(dev.getGcmRegistrationID());
             switch (type) {
                 case ADMIN:
                     g.setAdministrator(getAdministratorByID(id));
@@ -197,7 +198,7 @@ public class DataUtil {
             }
             r.setErrorStoreAndroidList(dList);
             r.setErrorStoreList(getServerErrors(startDate, endDate).getErrorStoreList());
-            
+
             String log = LogfileUtil.getFileString();
             r.setLog(log);
             logger.log(Level.OFF, "Android Errors found {0}", r.getErrorStoreAndroidList().size());
@@ -583,6 +584,25 @@ public class DataUtil {
         return sb.toString();
     }
 
+    public ResponseDTO getPlayerGroups(int playerID) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("GolfGroupPlayer.findByPlayer", GolfGroupPlayer.class);
+            q.setParameter("id", playerID);
+            List<GolfGroupPlayer> list = q.getResultList();
+            r.setGolfGroups(new ArrayList<GolfGroupDTO>());
+            for (GolfGroupPlayer ggp : list) {
+                r.getGolfGroups().add(new GolfGroupDTO(ggp.getGolfGroup()));
+            }
+            logger.log(Level.OFF, "player groups found, playerID: {0} list: {1}", 
+                    new Object[]{playerID, r.getGolfGroups().size()});
+            
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, null, e);
+            throw new DataException();
+        }
+        return r;
+    }
     public ResponseDTO getClubsByCountry(int countryID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -736,69 +756,100 @@ public class DataUtil {
     }
 
     public ResponseDTO signInAdministrator(String email,
-            String pin) throws LoginException, DataException {
+            String pin, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws LoginException, DataException {
         ResponseDTO r = new ResponseDTO();
-        Query q = em.createNamedQuery("Administrator.login", Administrator.class);
-        q.setMaxResults(1);
-        q.setParameter("email", email);
-        q.setParameter("pin", pin);
+        try {
+            Query q = em.createNamedQuery("Administrator.login", Administrator.class);
+            q.setMaxResults(1);
+            q.setParameter("email", email);
+            q.setParameter("pin", pin);
 
-        Administrator a = (Administrator) q.getSingleResult();
-        if (a == null) {
+            Administrator a = (Administrator) q.getSingleResult();
+            if (a == null) {
+                throw new LoginException();
+            }
+            r.setAdministrator(new AdministratorDTO(a));
+            r.setGolfGroup(new GolfGroupDTO(a.getGolfGroup()));
+            if (gcmDevice != null) {
+                addGcmDevice(a.getGolfGroup(), ADMIN, a.getAdministratorID(), gcmDevice, platformUtil);
+            }
+        } catch (NoResultException e) {
+            logger.log(Level.WARNING, null, e);
             throw new LoginException();
         }
-        r.setAdministrator(new AdministratorDTO(a));
-        r.setGolfGroup(new GolfGroupDTO(a.getGolfGroup()));
         return r;
 
     }
-    public ResponseDTO signInLeaderBoard(int golfGroupID) throws LoginException, DataException {
+
+    public ResponseDTO signInLeaderBoard(int golfGroupID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         GolfGroup gg = getGroupByID(golfGroupID);
-        r.setGolfGroup(new GolfGroupDTO(gg));        
+        r.setGolfGroup(new GolfGroupDTO(gg));
         r.setTournaments(getTournamentByGroup(golfGroupID));
+
         return r;
 
     }
-    public ResponseDTO signInScorer(String email,
-            String pin) throws LoginException, DataException {
-        ResponseDTO r = new ResponseDTO();
-        Query q = em.createNamedQuery("Scorer.login", Scorer.class);
-        q.setMaxResults(1);
-        q.setParameter("email", email);
-        q.setParameter("pin", pin);
 
-        Scorer a = (Scorer) q.getSingleResult();
-        if (a == null) {
+    public ResponseDTO signInScorer(String email,
+            String pin, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws LoginException, DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("Scorer.login", Scorer.class);
+            q.setMaxResults(1);
+            q.setParameter("email", email);
+            q.setParameter("pin", pin);
+
+            Scorer a = (Scorer) q.getSingleResult();
+            if (a == null) {
+                throw new LoginException();
+            }
+            r.setScorers(new ArrayList());
+            r.getScorers().add(new ScorerDTO(a));
+            r.setGolfGroup(new GolfGroupDTO(a.getGolfGroup()));
+            if (gcmDevice != null) {
+                addGcmDevice(a.getGolfGroup(), SCORER, a.getScorerID(), gcmDevice, platformUtil);
+            }
+        } catch (NoResultException e) {
             throw new LoginException();
         }
-        r.setScorers(new ArrayList());
-        r.getScorers().add(new ScorerDTO(a));
-        r.setGolfGroup(new GolfGroupDTO(a.getGolfGroup()));
         return r;
 
     }
 
     public ResponseDTO signInPlayer(String email,
-            String pin) throws LoginException, DataException {
+            String pin, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws LoginException, DataException {
         ResponseDTO r = new ResponseDTO();
-        Query q = em.createNamedQuery("Player.login", Player.class);
-        q.setMaxResults(1);
-        q.setParameter("email", email);
-        q.setParameter("pin", pin);
+        logger.log(Level.INFO, "..... email: {0} pin: {1}", new Object[]{email, pin});
+        try {
+            Query q = em.createNamedQuery("Player.login", Player.class);
+            q.setMaxResults(1);
+            q.setParameter("email", email);
+            q.setParameter("pin", pin);
 
-        Player a = (Player) q.getSingleResult();
-        if (a == null) {
+            Player a = (Player) q.getSingleResult();
+            if (a == null) {
+                throw new LoginException();
+            }
+            r.setPlayers(new ArrayList<PlayerDTO>());
+            r.getPlayers().add(new PlayerDTO(a));
+            //get golfGroup
+            q = em.createNamedQuery("GolfGroupPlayer.findByPlayer", GolfGroupPlayer.class);
+            q.setParameter("id", a.getPlayerID());
+            List<GolfGroupPlayer> ggpList = q.getResultList();
+            r.setGolfGroups(new ArrayList<GolfGroupDTO>());
+            for (GolfGroupPlayer ggp : ggpList) {
+                r.getGolfGroups().add(new GolfGroupDTO(ggp.getGolfGroup()));
+            }
+            if (gcmDevice != null) {
+                addGcmDevice(null, PLAYER, a.getPlayerID(), gcmDevice, platformUtil);
+            }
+            //TODO - think about how to handle player who belongs to multiple groups
+            logger.log(Level.INFO, "Player signed in {0} {1}", new Object[]{a.getFirstName(), a.getLastName()});
+        } catch (NoResultException e) {
+            logger.log(Level.SEVERE, "Player not found", e);
             throw new LoginException();
         }
-        r.setPlayers(new ArrayList<PlayerDTO>());
-        r.getPlayers().add(new PlayerDTO(a));
-        //get golfGroup
-        q = em.createNamedQuery("GolfGroupPlayer.findByGolfGroup", GolfGroupPlayer.class);
-        q.setParameter("id", a.getPlayerID());
-        q.setMaxResults(1);
-        GolfGroupPlayer ggp = (GolfGroupPlayer)q.getSingleResult();
-        r.setGolfGroup(new GolfGroupDTO(ggp.getGolfGroup()));
         return r;
 
     }
@@ -1537,14 +1588,13 @@ public class DataUtil {
 
             }
             r.setLeaderBoardList(dtoList);
-            r.setLeaderBoard(new LeaderBoardDTO(leaderBoard));           
+            r.setLeaderBoard(new LeaderBoardDTO(leaderBoard));
             r.getLeaderBoard().setTourneyScoreByRoundList(tsbrList);
 
         } catch (PersistenceException e) {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("Duplicate detected. Record already exists");
             platformUtil.addErrorStore(7, "Duplicate detected\n\n" + getErrorString(e), "DataUtil");
-            
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add Tournament player", e);
@@ -1812,36 +1862,48 @@ public class DataUtil {
 
     public ResponseDTO addPlayer(PlayerDTO d, int golfGroupID, PlatformUtil platformUtil) throws DataException {
         ResponseDTO r = new ResponseDTO();
-        Player p = new Player();
-        p.setCellphone(d.getCellphone());
-        if (d.getDateOfBirth() > 0) {
-            p.setDateOfBirth(new Date(d.getDateOfBirth()));
-        }
-        p.setDateRegistered(new Date());
-        p.setEmail(d.getEmail());
-        p.setFirstName(d.getFirstName());
-        p.setLastName(d.getLastName());
-        p.setMiddleName(d.getMiddleName());
-
-        p.setGender(d.getGender());
-        p.setPin(getRandomPin());
-        p.setYearJoined(d.getYearJoined());
-        if (d.getParentID() > 0) {
-            Parent parent = getParentByID(d.getParentID());
-            p.setParent(parent);
-        }
+        boolean isNewPlayer = false;
         try {
-            em.persist(p);
+            Player p = null;
             Query q = em.createNamedQuery("Player.findByEmail", Player.class);
-            q.setParameter("email", p.getEmail());
+            q.setParameter("email", d.getEmail());
             q.setMaxResults(1);
-            Player player = (Player) q.getSingleResult();
-            r = addGolfGroupPlayer(player.getPlayerID(), golfGroupID);
+            p = (Player) q.getSingleResult();
+            if (p == null) {
+                isNewPlayer = true;
+                p = new Player();
+            }
+            p.setCellphone(d.getCellphone());
+            if (d.getDateOfBirth() > 0) {
+                p.setDateOfBirth(new Date(d.getDateOfBirth()));
+            }
+            p.setDateRegistered(new Date());
+            p.setEmail(d.getEmail());
+            p.setFirstName(d.getFirstName());
+            p.setLastName(d.getLastName());
+            p.setMiddleName(d.getMiddleName());
+
+            p.setGender(d.getGender());
+            p.setPin(getRandomPin());
+            p.setYearJoined(d.getYearJoined());
+            if (d.getParentID() > 0) {
+                Parent parent = getParentByID(d.getParentID());
+                p.setParent(parent);
+            }
+            if (isNewPlayer) {
+                em.persist(p);
+                q = em.createNamedQuery("Player.findByEmail", Player.class);
+                q.setParameter("email", p.getEmail());
+                q.setMaxResults(1);
+                p = (Player) q.getSingleResult();
+            } else {
+                em.merge(p);
+            }
+
+            r = addGolfGroupPlayer(p.getPlayerID(), golfGroupID);
             r.setPlayers(new ArrayList<PlayerDTO>());
             r.getPlayers().add(new PlayerDTO(p));
-            if (d.getGcmDevice() != null) {
-                addGcmDevice(getGroupByID(golfGroupID), PLAYER, player.getPlayerID(), d.getGcmDevice(), platformUtil);
-            }
+
             logger.log(Level.INFO, "\n### Added Player {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
         } catch (PersistenceException e) {
             logger.log(Level.SEVERE, "Duplicate Player", e);
@@ -1901,7 +1963,7 @@ public class DataUtil {
         a.setLastName(d.getLastName());
         a.setPin(getPin());
         a.setSuperUserFlag(d.getSuperUserFlag());
-        
+
         if (d.getGolfGroupID() > 0) {
             GolfGroup gg = getGroupByID(d.getGolfGroupID());
             a.setGolfGroup(gg);
@@ -1942,6 +2004,7 @@ public class DataUtil {
         logger.log(Level.OFF, "pin generated: {0}", sb.toString());
         return sb.toString();
     }
+
     public ResponseDTO addGolfGroup(GolfGroupDTO d, AdministratorDTO admin, PlatformUtil platformUtil)
             throws DataException {
         ResponseDTO r = new ResponseDTO();

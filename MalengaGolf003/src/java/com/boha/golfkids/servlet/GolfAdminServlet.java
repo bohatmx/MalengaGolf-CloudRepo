@@ -14,6 +14,7 @@ import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;
 import com.boha.golfkids.util.GZipUtility;
 import com.boha.golfkids.util.LeaderBoardUtil;
+import com.boha.golfkids.util.LoginException;
 import com.boha.golfkids.util.PlatformUtil;
 import com.boha.golfkids.util.WorkerBee;
 import com.google.gson.Gson;
@@ -75,6 +76,9 @@ public class GolfAdminServlet extends HttpServlet {
                     + "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
                 switch (dto.getRequestType()) {
+                    case RequestDTO.GET_PLAYER_GROUPS:
+                        resp = dataUtil.getPlayerGroups(dto.getPlayerID());
+                        break;
                      case RequestDTO.GET_TOURNAMENTS:
                         List<TournamentDTO> list = dataUtil.getTournamentByGroup(dto.getGolfGroupID());
                         resp.setTournaments(list);
@@ -83,13 +87,13 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.signInLeaderBoard(dto.getGolfGroupID());
                         break;
                     case RequestDTO.SIGN_IN_SCORER:
-                        resp = dataUtil.signInScorer(dto.getEmail(), dto.getPin());
+                        resp = dataUtil.signInScorer(dto.getEmail(), dto.getPin(), dto.getGcmDevice(),platformUtil);
                         break;
                     case RequestDTO.SIGN_IN_PLAYER:
-                        resp = dataUtil.signInPlayer(dto.getEmail(), dto.getPin());
+                        resp = dataUtil.signInPlayer(dto.getEmail(), dto.getPin(), dto.getGcmDevice(), platformUtil);
                         break;
                     case RequestDTO.ADMIN_LOGIN:
-                        resp = dataUtil.signInAdministrator(dto.getEmail(), dto.getPin());
+                        resp = dataUtil.signInAdministrator(dto.getEmail(), dto.getPin(), dto.getGcmDevice(), platformUtil);
                         break;
                     case RequestDTO.GET_ERROR_REPORTS:
                         resp = dataUtil.getMalengaGolfEvents(0, 0);
@@ -245,7 +249,11 @@ public class GolfAdminServlet extends HttpServlet {
                         resp.setStatusCode(7);
                         break;
                 }
-
+            } catch (LoginException e) {
+                resp.setStatusCode(ResponseDTO.DATA_EXCEPTION);
+                resp.setMessage("SignIn failed. Please try again later");
+                log.log(Level.SEVERE, "SignIn failed", e);
+                platformUtil.addErrorStore(8, "SignIn failed", "GolfAdminServlet");
             } catch (DataException e) {
                 resp.setStatusCode(ResponseDTO.DATA_EXCEPTION);
                 resp.setMessage("Database failed. Please try again later");

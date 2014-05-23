@@ -35,6 +35,10 @@ import javax.validation.constraints.NotNull;
             query = "SELECT g FROM GolfGroupPlayer g "
                     + "where g.golfGroup.golfGroupID = :id"),
     
+    @NamedQuery(name = "GolfGroupPlayer.findByGolfGroupPlayer", 
+            query = "SELECT g FROM GolfGroupPlayer g where g.player.playerID = :pID "
+                    + " and g.golfGroup.golfGroupID = :gID"),
+    
     @NamedQuery(name = "GolfGroupPlayer.findByPlayer", 
             query = "SELECT g FROM GolfGroupPlayer g where g.player.playerID = :id"),
 

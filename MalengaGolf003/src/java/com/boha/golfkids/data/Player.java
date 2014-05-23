@@ -35,7 +35,7 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Player.login",
             query = "SELECT a FROM Player a "
-            + "where a.email = :email and a.pin = :pin"),
+            + " where a.email = :email and a.pin = :pin"),
 
     @NamedQuery(name = "Player.findByEmail",
             query = "SELECT a FROM Player a "

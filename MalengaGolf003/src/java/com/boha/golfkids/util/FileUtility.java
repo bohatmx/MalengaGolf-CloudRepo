@@ -41,7 +41,7 @@ public class FileUtility {
         List<String> list = new ArrayList<>();
         File rootDir = GolfProperties.getImageDir();
         File ggRoot = new File(rootDir, PhotoServlet.GOLF_GROUP_PREFIX + golfGroupID);
-        
+
         File dir = null;
         switch (type) {
             case RequestDTO.PICTURES_FULL_SIZE:
@@ -49,24 +49,35 @@ public class FileUtility {
                 if (!dir.exists()) {
                     return list;
                 }
+                if (dir.exists()) {
+                    File[] files = dir.listFiles();
+                    for (File file : files) {
+                        if (file.getName().contains("f")) {
+                            list.add(file.getName());
+                        }
+                    }
+                }
                 logger.log(Level.OFF, "full size dir: {0}", dir.getAbsolutePath());
                 break;
             case RequestDTO.PICTURES_THUMBNAILS:
                 File tournDir = new File(ggRoot, PhotoServlet.TOURNAMENT_PREFIX + tournamentID);
-                dir = new File(tournDir, PhotoServlet.THUMB_PREFIX + tournamentID);
+                dir = tournDir; //new File(tournDir, PhotoServlet.THUMB_PREFIX + tournamentID);
                 logger.log(Level.OFF, "thumb dir: {0}", dir.getAbsolutePath());
+                if (dir.exists()) {
+                    File[] files = dir.listFiles();
+                    for (File file : files) {
+                        if (file.getName().contains("t")) {
+                            list.add(file.getName());
+                        }
+                    }
+                }
                 break;
         }
-        
-        if (dir.exists()) {
-            File[] files = dir.listFiles();
-            for (File file : files) {
-                list.add(file.getName());
-            }
-        }
-        logger.log(Level.OFF, "Image files found: {0}", list.size());
+
+        logger.log(Level.OFF, "######## Image files found: {0}", list.size());
         return list;
     }
+
     public static List<String> getImageFilesGolfGroup(int golfGroupID, int type) throws Exception {
         List<String> list = new ArrayList<>();
         File rootDir = GolfProperties.getImageDir();

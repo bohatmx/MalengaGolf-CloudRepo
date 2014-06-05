@@ -25,7 +25,7 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint("/mg")
 public class MalengaGolfWSEndpoint {
     
-     private static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
+     private static final Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
 
     @OnMessage
     public String onMessage(String message) {        
@@ -37,7 +37,7 @@ public class MalengaGolfWSEndpoint {
     
   
     public void echo(String message) {
-        log.log(Level.INFO, "Message echo - {0}", message);
+        log.log(Level.INFO, "####### Message echo - {0}", message);
     }
     @OnOpen
     public void onOpen (Session peer) {

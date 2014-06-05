@@ -13,6 +13,7 @@ import com.boha.golfkids.util.CloudMessagingRegistrar;
 import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;
 import com.boha.golfkids.util.GZipUtility;
+import com.boha.golfkids.util.LeaderBoardPointsUtil;
 import com.boha.golfkids.util.LeaderBoardUtil;
 import com.boha.golfkids.util.LoginException;
 import com.boha.golfkids.util.PlatformUtil;
@@ -48,6 +49,8 @@ public class GolfAdminServlet extends HttpServlet {
     PlatformUtil platformUtil;
     @EJB
     WorkerBee workerBee;
+    @EJB
+    LeaderBoardPointsUtil leaderBoardPointsUtil;
 
     /**
      *
@@ -64,7 +67,7 @@ public class GolfAdminServlet extends HttpServlet {
         Gson gson = new Gson();
         ResponseDTO resp = new ResponseDTO();
         RequestDTO dto = getRequest(gson, request);
-        
+
         if (dto == null) {
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
@@ -79,15 +82,21 @@ public class GolfAdminServlet extends HttpServlet {
                     case RequestDTO.GET_PLAYER_GROUPS:
                         resp = dataUtil.getPlayerGroups(dto.getPlayerID());
                         break;
-                     case RequestDTO.GET_TOURNAMENTS:
+                    case RequestDTO.GET_APPUSER_GROUPS:
+                        resp = dataUtil.getAppUserGroups(dto.getAppUserID());
+                        break;
+                    case RequestDTO.GET_TOURNAMENTS:
                         List<TournamentDTO> list = dataUtil.getTournamentByGroup(dto.getGolfGroupID());
                         resp.setTournaments(list);
                         break;
-                    case RequestDTO.SIGN_IN_LEADERBOARD:
-                        resp = dataUtil.signInLeaderBoard(dto.getGolfGroupID());
+                    case RequestDTO.SIGNIN_APP_USER:
+                        resp = dataUtil.signInAppUser(dto.getEmail(), dto.getGcmDevice(), platformUtil);
+                        break;
+                    case RequestDTO.REGISTER_APP_USER:
+                        resp = dataUtil.addAppUser(dto.getGolfGroupID(), dto.getEmail(), platformUtil);
                         break;
                     case RequestDTO.SIGN_IN_SCORER:
-                        resp = dataUtil.signInScorer(dto.getEmail(), dto.getPin(), dto.getGcmDevice(),platformUtil);
+                        resp = dataUtil.signInScorer(dto.getEmail(), dto.getPin(), dto.getGcmDevice(), platformUtil);
                         break;
                     case RequestDTO.SIGN_IN_PLAYER:
                         resp = dataUtil.signInPlayer(dto.getEmail(), dto.getPin(), dto.getGcmDevice(), platformUtil);
@@ -136,7 +145,16 @@ public class GolfAdminServlet extends HttpServlet {
 
                         break;
                     case RequestDTO.GET_LEADERBOARD:
-                        resp = leaderBoardUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
+                        switch (dto.getTournamentType()) {
+                            case RequestDTO.STROKE_PLAY_INDIVIDUAL:
+                                resp = leaderBoardUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
+                                break;
+                            case RequestDTO.STABLEFORD_INDIVIDUAL:
+                                resp = leaderBoardPointsUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
+                                break;
+
+                        }
+
                         break;
 
                     case RequestDTO.UPDATE_TOURNAMENT_SCORES:
@@ -247,6 +265,7 @@ public class GolfAdminServlet extends HttpServlet {
                     default:
                         platformUtil.addErrorStore(7, "Request Type specified not on", "GolfAdminServlet");
                         resp.setStatusCode(7);
+                        resp.setMessage("Request Type specified not on");
                         break;
                 }
             } catch (LoginException e) {

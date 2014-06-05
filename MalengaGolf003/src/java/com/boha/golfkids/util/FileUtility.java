@@ -13,6 +13,7 @@ import com.boha.golfkids.servlet.PhotoServlet;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -57,6 +58,7 @@ public class FileUtility {
                         }
                     }
                 }
+                Collections.reverse(list);
                 logger.log(Level.OFF, "full size dir: {0}", dir.getAbsolutePath());
                 break;
             case RequestDTO.PICTURES_THUMBNAILS:
@@ -71,6 +73,7 @@ public class FileUtility {
                         }
                     }
                 }
+                Collections.reverse(list);
                 break;
         }
 

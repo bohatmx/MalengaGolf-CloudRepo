@@ -16,7 +16,7 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     public TournamentDTO() {
     }
 
-    private int tournamentID;
+    private int tournamentID, tournamentType;
     private long closingDate;
     private long endDate;
     private int golfRounds, numberOfRegisteredPlayers;
@@ -35,6 +35,7 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     
     public TournamentDTO(Tournament a) {
         tournamentID = a.getTournamentID();
+        tournamentType = a.getTournamentType();
         closedForScoringFlag = a.getClosedForScoringFlag();
         exampleFlag = a.getExampleFlag();
         useAgeGroups = a.getUseAgeGroups();
@@ -64,6 +65,15 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
 
     }
 
+    public int getTournamentType() {
+        return tournamentType;
+    }
+
+    public void setTournamentType(int tournamentType) {
+        this.tournamentType = tournamentType;
+    }
+
+    
     public int getUseAgeGroups() {
         return useAgeGroups;
     }

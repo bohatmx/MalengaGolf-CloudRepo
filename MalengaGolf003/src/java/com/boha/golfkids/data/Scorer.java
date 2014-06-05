@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,6 +48,7 @@ import javax.validation.constraints.Size;
             query = "SELECT s FROM Scorer s where s.golfGroup.golfGroupID = :id "
                     + "order by s.lastName, s.firstName")})
 public class Scorer implements Serializable {
+   
     
     @OneToMany(mappedBy = "scorer")
     private List<GcmDevice> gcmDeviceList;
@@ -199,6 +201,5 @@ public class Scorer implements Serializable {
         this.gcmDeviceList = gcmDeviceList;
     }
 
- 
     
 }

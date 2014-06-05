@@ -34,8 +34,27 @@ public class TourneyScoreByRoundDTO {
     private int score16;
     private int score17;
     private int score18;
+    //
+    private int points1;
+    private int points2;
+    private int points3;
+    private int points4;
+    private int points5;
+    private int points6;
+    private int points7;
+    private int points8;
+    private int points9;
+    private int points10;
+    private int points11;
+    private int points12;
+    private int points13;
+    private int points14;
+    private int points15;
+    private int points16;
+    private int points17;
+    private int points18;
     private int scoringComplete;
-    private int totalScore, par, holesPerRound;
+    private int totalScore, totalPoints, par, holesPerRound;
     private int leaderBoardID, tournamentID;
 
     public TourneyScoreByRoundDTO() {
@@ -73,6 +92,26 @@ public class TourneyScoreByRoundDTO {
         score17 = a.getScore17();
         score18 = a.getScore18();
         totalScore = a.getTotalScore();
+        //
+        points1 = a.getPoints1();
+        points2 = a.getPoints2();
+        points3 = a.getPoints3();
+        points4 = a.getPoints4();
+        points5 = a.getPoints5();
+        points6 = a.getPoints6();
+        points7 = a.getPoints7();
+        points8 = a.getPoints8();
+        points9 = a.getPoints9();
+        points10 = a.getPoints10();
+        points11 = a.getPoints11();
+        points12 = a.getPoints12();
+        points13 = a.getPoints13();
+        points14 = a.getPoints14();
+        points15 = a.getPoints15();
+        points16 = a.getPoints16();
+        points17 = a.getPoints17();
+        points18 = a.getPoints18();
+        totalPoints = a.getTotalPoints();
     }
 
     public ClubCourseDTO getClubCourse() {
@@ -101,6 +140,158 @@ public class TourneyScoreByRoundDTO {
 
     public int getTee() {
         return tee;
+    }
+
+    public int getPoints1() {
+        return points1;
+    }
+
+    public void setPoints1(int points1) {
+        this.points1 = points1;
+    }
+
+    public int getPoints2() {
+        return points2;
+    }
+
+    public void setPoints2(int points2) {
+        this.points2 = points2;
+    }
+
+    public int getPoints3() {
+        return points3;
+    }
+
+    public void setPoints3(int points3) {
+        this.points3 = points3;
+    }
+
+    public int getPoints4() {
+        return points4;
+    }
+
+    public void setPoints4(int points4) {
+        this.points4 = points4;
+    }
+
+    public int getPoints5() {
+        return points5;
+    }
+
+    public void setPoints5(int points5) {
+        this.points5 = points5;
+    }
+
+    public int getPoints6() {
+        return points6;
+    }
+
+    public void setPoints6(int points6) {
+        this.points6 = points6;
+    }
+
+    public int getPoints7() {
+        return points7;
+    }
+
+    public void setPoints7(int points7) {
+        this.points7 = points7;
+    }
+
+    public int getPoints8() {
+        return points8;
+    }
+
+    public void setPoints8(int points8) {
+        this.points8 = points8;
+    }
+
+    public int getPoints9() {
+        return points9;
+    }
+
+    public void setPoints9(int points9) {
+        this.points9 = points9;
+    }
+
+    public int getPoints10() {
+        return points10;
+    }
+
+    public void setPoints10(int points10) {
+        this.points10 = points10;
+    }
+
+    public int getPoints11() {
+        return points11;
+    }
+
+    public void setPoints11(int points11) {
+        this.points11 = points11;
+    }
+
+    public int getPoints12() {
+        return points12;
+    }
+
+    public void setPoints12(int points12) {
+        this.points12 = points12;
+    }
+
+    public int getPoints13() {
+        return points13;
+    }
+
+    public void setPoints13(int points13) {
+        this.points13 = points13;
+    }
+
+    public int getPoints14() {
+        return points14;
+    }
+
+    public void setPoints14(int points14) {
+        this.points14 = points14;
+    }
+
+    public int getPoints15() {
+        return points15;
+    }
+
+    public void setPoints15(int points15) {
+        this.points15 = points15;
+    }
+
+    public int getPoints16() {
+        return points16;
+    }
+
+    public void setPoints16(int points16) {
+        this.points16 = points16;
+    }
+
+    public int getPoints17() {
+        return points17;
+    }
+
+    public void setPoints17(int points17) {
+        this.points17 = points17;
+    }
+
+    public int getPoints18() {
+        return points18;
+    }
+
+    public void setPoints18(int points18) {
+        this.points18 = points18;
+    }
+
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
     }
 
     public void setTee(int tee) {

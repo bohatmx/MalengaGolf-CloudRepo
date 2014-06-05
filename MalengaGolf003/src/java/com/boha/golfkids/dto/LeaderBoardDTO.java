@@ -14,6 +14,9 @@ import java.util.List;
  */
 public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
 
+    public static final int NO_PAR_STATUS = 9999,
+            WINNER_BY_PLAYOFF = 2,
+            WINNER_BY_COUNT_OUT = 1, SORT_BY_PAR_STATUS = 1, SORT_BY_TOTAL_POINTS = 2;
     private int leaderBoardID, position, parStatus, tournamentID;
     private PlayerDTO player;
     private AgeGroupDTO ageGroup;
@@ -22,8 +25,8 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
     private long startDate;
     private String tournamentName, clubName;
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
-    private int winnerFlag;
-    private int withDrawn;
+    private int winnerFlag, tournamentType;
+    private int withDrawn, sortType = SORT_BY_PAR_STATUS;
     private int orderOfMeritPoints;
     private int scoreRound1,
             scoreRound2,
@@ -32,6 +35,13 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
             scoreRound5,
             scoreRound6,
             totalScore;
+    private int pointsRound1,
+            pointsRound2,
+            pointsRound3,
+            pointsRound4,
+            pointsRound5,
+            pointsRound6,
+            totalPoints;
 
     public LeaderBoardDTO() {
     }
@@ -50,8 +60,9 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
 
     private void setBasics(LeaderBoard a) {
         leaderBoardID = a.getLeaderBoardID();
+        tournamentType = a.getTournament().getTournamentType();
         age = a.getAge();
-        
+
         withDrawn = a.getWithDrawn();
         winnerFlag = a.getWinnerFlag();
         player = new PlayerDTO(a.getPlayer());
@@ -63,7 +74,7 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         holesPerRound = t.getHolesPerRound();
         clubName = t.getClub().getClubName();
         orderOfMeritPoints = a.getOrderOfMeritPoints();
-       
+
         if (a.getAgeGroup() != null) {
             ageGroup = new AgeGroupDTO(a.getAgeGroup());
         }
@@ -73,7 +84,7 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         if (a.getScoringComplete() > 0) {
             scoringComplete = true;
         }
-        
+
         scoreRound1 = a.getScoreRound1();
         scoreRound2 = a.getScoreRound2();
         scoreRound3 = a.getScoreRound3();
@@ -81,6 +92,15 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         scoreRound5 = a.getScoreRound5();
         scoreRound6 = a.getScoreRound6();
         totalScore = a.getTotalScore();
+
+        pointsRound1 = a.getPointsRound1();
+        pointsRound2 = a.getPointsRound2();
+        pointsRound3 = a.getPointsRound3();
+        pointsRound4 = a.getPointsRound4();
+        pointsRound5 = a.getPointsRound5();
+        pointsRound6 = a.getPointsRound6();
+        totalPoints = a.getTotalPoints();
+
         rounds = a.getTournament().getGolfRounds();
     }
 
@@ -88,9 +108,26 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         return position;
     }
 
+    public int getSortType() {
+        return sortType;
+    }
+
+    public void setSortType(int sortType) {
+        this.sortType = sortType;
+    }
+
     public int getAge() {
         return age;
     }
+
+    public int getTournamentType() {
+        return tournamentType;
+    }
+
+    public void setTournamentType(int tournamentType) {
+        this.tournamentType = tournamentType;
+    }
+
 
     public int getOrderOfMeritPoints() {
         return orderOfMeritPoints;
@@ -107,7 +144,6 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
     public void setScoringComplete(boolean scoringComplete) {
         this.scoringComplete = scoringComplete;
     }
-
 
     public void setAge(int age) {
         this.age = age;
@@ -217,6 +253,62 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
         this.tourneyScoreByRoundList = tourneyScoreByRoundList;
     }
 
+    public int getPointsRound1() {
+        return pointsRound1;
+    }
+
+    public void setPointsRound1(int pointsRound1) {
+        this.pointsRound1 = pointsRound1;
+    }
+
+    public int getPointsRound2() {
+        return pointsRound2;
+    }
+
+    public void setPointsRound2(int pointsRound2) {
+        this.pointsRound2 = pointsRound2;
+    }
+
+    public int getPointsRound3() {
+        return pointsRound3;
+    }
+
+    public void setPointsRound3(int pointsRound3) {
+        this.pointsRound3 = pointsRound3;
+    }
+
+    public int getPointsRound4() {
+        return pointsRound4;
+    }
+
+    public void setPointsRound4(int pointsRound4) {
+        this.pointsRound4 = pointsRound4;
+    }
+
+    public int getPointsRound5() {
+        return pointsRound5;
+    }
+
+    public void setPointsRound5(int pointsRound5) {
+        this.pointsRound5 = pointsRound5;
+    }
+
+    public int getPointsRound6() {
+        return pointsRound6;
+    }
+
+    public void setPointsRound6(int pointsRound6) {
+        this.pointsRound6 = pointsRound6;
+    }
+
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
+    }
+
     public boolean isTied() {
         return tied;
     }
@@ -306,17 +398,26 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
     @Override
     public int compareTo(LeaderBoardDTO t) {
 
-        if (this.getParStatus() < t.getParStatus()) {
-            return 1;
-        }
-        if (this.getParStatus() > t.getParStatus()) {
-            return -1;
+        switch (sortType) {
+            case SORT_BY_PAR_STATUS:
+                if (this.getParStatus() < t.getParStatus()) {
+                    return 1;
+                }
+                if (this.getParStatus() > t.getParStatus()) {
+                    return -1;
+                }
+                break;
+            case SORT_BY_TOTAL_POINTS:
+                if (this.getTotalPoints() < t.getTotalPoints()) {
+                    return -1;
+                }
+                if (this.getTotalPoints() > t.getTotalPoints()) {
+                    return 1;
+                }
+                break;
         }
 
         return 0;
     }
-    public static final int NO_PAR_STATUS = 9999,
-            WINNER_BY_PLAYOFF = 2,
-            WINNER_BY_COUNT_OUT = 1;
 
 }

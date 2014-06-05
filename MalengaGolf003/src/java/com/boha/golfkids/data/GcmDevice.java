@@ -39,6 +39,9 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "GcmDevice.findByProduct", query = "SELECT g FROM GcmDevice g WHERE g.product = :product"),
     @NamedQuery(name = "GcmDevice.findByDateRegistered", query = "SELECT g FROM GcmDevice g WHERE g.dateRegistered = :dateRegistered")})
 public class GcmDevice implements Serializable {
+    @JoinColumn(name = "appUserID", referencedColumnName = "appUserID")
+    @ManyToOne(optional = false)
+    private AppUser appUser;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -195,5 +198,14 @@ public class GcmDevice implements Serializable {
     public String toString() {
         return "com.boha.golfkids.data.GcmDevice[ gcmDeviceID=" + gcmDeviceID + " ]";
     }
+
+    public AppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
+    }
+
     
 }

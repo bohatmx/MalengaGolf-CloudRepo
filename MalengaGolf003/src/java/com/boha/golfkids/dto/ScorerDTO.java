@@ -40,7 +40,9 @@ public class ScorerDTO {
         email = a.getEmail();
         cellphone = a.getCellphone();
         dateRegistered = a.getDateRegistered().getTime();
-        golfGroupID = a.getGolfGroup().getGolfGroupID();
+        if (a.getGolfGroup() != null) { 
+            golfGroupID = a.getGolfGroup().getGolfGroupID();
+        }
     }
 
     public Integer getScorerID() {

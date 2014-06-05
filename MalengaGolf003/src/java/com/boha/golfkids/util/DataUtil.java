@@ -6,6 +6,8 @@ package com.boha.golfkids.util;
 
 import com.boha.golfkids.data.Administrator;
 import com.boha.golfkids.data.Agegroup;
+import com.boha.golfkids.data.AppUser;
+import com.boha.golfkids.data.AppUserGroup;
 import com.boha.golfkids.data.Club;
 import com.boha.golfkids.data.ClubCourse;
 import com.boha.golfkids.data.Country;
@@ -27,6 +29,7 @@ import com.boha.golfkids.data.TourneyScoreByRound;
 import com.boha.golfkids.data.VideoClip;
 import com.boha.golfkids.dto.AdministratorDTO;
 import com.boha.golfkids.dto.AgeGroupDTO;
+import com.boha.golfkids.dto.AppUserDTO;
 import com.boha.golfkids.dto.ClubCourseDTO;
 import com.boha.golfkids.dto.ClubDTO;
 import com.boha.golfkids.dto.CountryDTO;
@@ -54,7 +57,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
@@ -63,7 +65,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import javax.sql.DataSource;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Years;
@@ -79,7 +80,7 @@ public class DataUtil {
     @PersistenceContext
     EntityManager em;
 
-    static final int ADMIN = 1, PLAYER = 2, SCORER = 3, PARENT = 4, VOLUNTEER = 5;
+    static final int ADMIN = 1, PLAYER = 2, SCORER = 3, PARENT = 4, VOLUNTEER = 5, APP_USER = 6;
 
     private void addGcmDevice(GolfGroup gg, int type, int id, GcmDeviceDTO dev, PlatformUtil platformUtil) throws DataException {
         logger.log(Level.INFO, "...adding GCM device ");
@@ -106,6 +107,9 @@ public class DataUtil {
                     break;
                 case VOLUNTEER:
                     //TODO - sort volunteer relationship
+                    break;
+                case APP_USER:
+                    g.setAppUser(em.find(AppUser.class, id));
                     break;
 
             }
@@ -594,15 +598,36 @@ public class DataUtil {
             for (GolfGroupPlayer ggp : list) {
                 r.getGolfGroups().add(new GolfGroupDTO(ggp.getGolfGroup()));
             }
-            logger.log(Level.OFF, "player groups found, playerID: {0} list: {1}", 
+            logger.log(Level.OFF, "player groups found, playerID: {0} list: {1}",
                     new Object[]{playerID, r.getGolfGroups().size()});
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, null, e);
             throw new DataException();
         }
         return r;
     }
+
+    public ResponseDTO getAppUserGroups(int appUserID) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("AppUserGroup.findByAppUser", AppUserGroup.class);
+            q.setParameter("id", appUserID);
+            List<AppUserGroup> list = q.getResultList();
+            r.setGolfGroups(new ArrayList<GolfGroupDTO>());
+            for (AppUserGroup ggp : list) {
+                r.getGolfGroups().add(new GolfGroupDTO(ggp.getGolfGroup()));
+            }
+            logger.log(Level.OFF, "appUser groups found, appUserID: {0} list: {1}",
+                    new Object[]{appUserID, r.getGolfGroups().size()});
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, null, e);
+            throw new DataException();
+        }
+        return r;
+    }
+
     public ResponseDTO getClubsByCountry(int countryID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -781,12 +806,84 @@ public class DataUtil {
 
     }
 
-    public ResponseDTO signInLeaderBoard(int golfGroupID) throws DataException {
+    public ResponseDTO addAppUser(int golfGroupID, String email, PlatformUtil platformUtil) throws DataException {
+        logger.log(Level.OFF, "addAppUser golfGroupID: {0} email: {1}", new Object[]{golfGroupID, email});
         ResponseDTO r = new ResponseDTO();
-        GolfGroup gg = getGroupByID(golfGroupID);
-        r.setGolfGroup(new GolfGroupDTO(gg));
-        r.setTournaments(getTournamentByGroup(golfGroupID));
+        AppUser au;
+        try {
+            Query q = em.createNamedQuery("AppUser.findByEmail", AppUser.class);
+            q.setParameter("email", email);
+            q.setMaxResults(1);
+            try {
+                au = (AppUser) q.getSingleResult();
+                AppUserGroup gg = new AppUserGroup();
+                gg.setAppUser(au);
+                gg.setGolfGroup(getGroupByID(golfGroupID));
+                gg.setDateRegistered(new Date());
+                em.persist(gg);
+                logger.log(Level.OFF, "user added to group");
+            } catch (NoResultException e) {
+                logger.log(Level.OFF, "did not find existing appUser");
+                au = new AppUser();
+                au.setEmail(email);
+                au.setDateRegistered(new Date());
+                em.persist(au);
+                q = em.createNamedQuery("AppUser.findByEmail", AppUser.class);
+                q.setParameter("email", email);
+                q.setMaxResults(1);
+                au = (AppUser) q.getSingleResult();
+                AppUserGroup augroup = new AppUserGroup();
+                augroup.setAppUser(au);
+                GolfGroup g = getGroupByID(golfGroupID);
+                if (g == null) {
+                    throw new DataException("Golf Group is NULL - should not be");
+                }
+                augroup.setGolfGroup(g);
+                augroup.setDateRegistered(new Date());
+                em.persist(augroup);
+                logger.log(Level.OFF, "appUser added, appUserGroup added: {0}", email);
+                platformUtil.addErrorStore(888, "mgGolf User added: " + email, "DataUtil");
+            }
 
+        } catch (Exception e) {
+            logger.log(Level.WARNING, null, e);
+            throw new DataException("Unable to add app user");
+        }
+        r.setMessage("Looks like everythings's cool, app user done");
+        logger.log(Level.OFF, "ready to exit ............................");
+        return r;
+
+    }
+
+    public ResponseDTO signInAppUser(String email, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws DataException, LoginException {
+        ResponseDTO r = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("AppUser.findByEmail", AppUser.class);
+            q.setParameter("email", email);
+            q.setMaxResults(1);
+            AppUser au = (AppUser) q.getSingleResult();
+            Query z = em.createNamedQuery("AppUserGroup.findByAppUser", AppUserGroup.class);
+            z.setParameter("id", au.getAppUserID());
+            List<AppUserGroup> apgList = z.getResultList();
+
+            r.setAppUser(new AppUserDTO(au));
+            r.getAppUser().setGolfGroupList(new ArrayList<GolfGroupDTO>());
+            for (AppUserGroup aug : apgList) {
+                r.getAppUser().getGolfGroupList().add(new GolfGroupDTO(aug.getGolfGroup()));
+                logger.log(Level.OFF, "App User Group added to response");
+            }
+            if (gcmDevice != null) {
+                addGcmDevice(null, APP_USER, au.getAppUserID(), gcmDevice, platformUtil);
+            }
+            logger.log(Level.OFF, "App User signed in\n{0}", au.getEmail());
+            platformUtil.addErrorStore(222, "App User signed in\n" + au.getEmail(), "DataUtil");
+        } catch (NoResultException e) {
+            throw new LoginException();
+
+        } catch (Exception e) {
+            logger.log(Level.WARNING, null, e);
+            throw new DataException("Unable to sign in LeaderBoard app user");
+        }
         return r;
 
     }
@@ -990,6 +1087,107 @@ public class DataUtil {
         return r;
     }
 
+    public ResponseDTO updateTournamentScoreByRound(List<LeaderBoardDTO> list) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        for (LeaderBoardDTO leaderboard : list) {
+            LeaderBoard tps = getLeaderBoardByID(leaderboard.getLeaderBoardID());
+            try {
+                for (TourneyScoreByRoundDTO tsbr : leaderboard.getTourneyScoreByRoundList()) {
+                    TourneyScoreByRound t = getTourneyScoreByRoundByID(tsbr.getTourneyScoreByRoundID());
+                    t.setScoringComplete(tsbr.getScoringComplete());
+                    if (tsbr.getScore1() > 0) {
+                        t.setScore1(tsbr.getScore1());
+                    }
+                    if (tsbr.getScore2() > 0) {
+                        t.setScore2(tsbr.getScore2());
+                    }
+                    if (tsbr.getScore3() > 0) {
+                        t.setScore3(tsbr.getScore3());
+                    }
+                    if (tsbr.getScore4() > 0) {
+                        t.setScore4(tsbr.getScore4());
+                    }
+                    if (tsbr.getScore5() > 0) {
+                        t.setScore5(tsbr.getScore5());
+                    }
+                    if (tsbr.getScore6() > 0) {
+                        t.setScore6(tsbr.getScore6());
+                    }
+                    if (tsbr.getScore7() > 0) {
+                        t.setScore7(tsbr.getScore7());
+                    }
+                    if (tsbr.getScore8() > 0) {
+                        t.setScore8(tsbr.getScore8());
+                    }
+                    if (tsbr.getScore9() > 0) {
+                        t.setScore9(tsbr.getScore9());
+                    }
+                    if (tsbr.getScore10() > 0) {
+                        t.setScore10(tsbr.getScore10());
+                    }
+                    if (tsbr.getScore11() > 0) {
+                        t.setScore11(tsbr.getScore11());
+                    }
+                    if (tsbr.getScore12() > 0) {
+                        t.setScore12(tsbr.getScore12());
+                    }
+                    if (tsbr.getScore13() > 0) {
+                        t.setScore13(tsbr.getScore13());
+                    }
+                    if (tsbr.getScore14() > 0) {
+                        t.setScore14(tsbr.getScore14());
+                    }
+                    if (tsbr.getScore15() > 0) {
+                        t.setScore15(tsbr.getScore15());
+                    }
+                    if (tsbr.getScore16() > 0) {
+                        t.setScore16(tsbr.getScore16());
+                    }
+                    if (tsbr.getScore17() > 0) {
+                        t.setScore17(tsbr.getScore17());
+                    }
+                    if (tsbr.getScore18() > 0) {
+                        t.setScore18(tsbr.getScore18());
+                    }
+                    em.merge(t);
+
+                }
+                scoreTotals(tps);
+                int cnt = 0;
+                for (TourneyScoreByRoundDTO tsbr : leaderboard.getTourneyScoreByRoundList()) {
+                    if (tsbr.getScoringComplete() > 0) {
+                        cnt++;
+                    }
+                }
+                if (cnt == leaderboard.getTourneyScoreByRoundList().size()) {
+                    leaderboard.setScoringComplete(true);
+                    tps.setScoringComplete(1);
+                    em.merge(tps);
+                }
+
+                logger.log(Level.INFO, "Player scores by hole updated");
+            } catch (DataException e) {
+                logger.log(Level.INFO, "Unable to update score", e);
+                throw new DataException("Unable to update score\n" + getErrorString(e));
+            }
+        }
+        r = getTournamentPlayers(list.get(0).getTournamentID());
+        //check if everybody done, close the tourney scoring
+        int incomplete = 0;
+        for (LeaderBoardDTO lb : r.getLeaderBoardList()) {
+            if (!lb.isScoringComplete()) {
+                incomplete++;
+            }
+        }
+        if (incomplete == 0) {
+            Tournament t =getTournamentByID(list.get(0).getTournamentID());
+            t.setClosedForScoringFlag(1);
+            em.merge(t);
+            logger.log(Level.INFO, "Tournament scoring closed: {0}", t.getTourneyName());
+        }
+        return r;
+    }
+
     public ResponseDTO updateTournamentScoreByRound(LeaderBoardDTO leaderboard) throws DataException {
         ResponseDTO r = new ResponseDTO();
         LeaderBoard tps = getLeaderBoardByID(leaderboard.getLeaderBoardID());
@@ -997,6 +1195,25 @@ public class DataUtil {
             for (TourneyScoreByRoundDTO tsbr : leaderboard.getTourneyScoreByRoundList()) {
                 TourneyScoreByRound t = getTourneyScoreByRoundByID(tsbr.getTourneyScoreByRoundID());
                 t.setScoringComplete(tsbr.getScoringComplete());
+                t.setPoints1(tsbr.getPoints1());
+                t.setPoints2(tsbr.getPoints2());
+                t.setPoints3(tsbr.getPoints3());
+                t.setPoints4(tsbr.getPoints4());
+                t.setPoints5(tsbr.getPoints5());
+                t.setPoints6(tsbr.getPoints6());
+                t.setPoints7(tsbr.getPoints7());
+                t.setPoints8(tsbr.getPoints8());
+                t.setPoints9(tsbr.getPoints9());
+                t.setPoints10(tsbr.getPoints10());
+                t.setPoints11(tsbr.getPoints11());
+                t.setPoints12(tsbr.getPoints12());
+                t.setPoints13(tsbr.getPoints13());
+                t.setPoints14(tsbr.getPoints14());
+                t.setPoints15(tsbr.getPoints15());
+                t.setPoints16(tsbr.getPoints16());
+                t.setPoints17(tsbr.getPoints17());
+                t.setPoints18(tsbr.getPoints18());
+                
                 if (tsbr.getScore1() > 0) {
                     t.setScore1(tsbr.getScore1());
                 }
@@ -1625,6 +1842,7 @@ public class DataUtil {
         t.setPar(dto.getPar());
         t.setExampleFlag(dto.getExampleFlag());
         t.setUseAgeGroups(dto.getUseAgeGroups());
+        t.setTournamentType(dto.getTournamentType());
 
         try {
             em.persist(t);

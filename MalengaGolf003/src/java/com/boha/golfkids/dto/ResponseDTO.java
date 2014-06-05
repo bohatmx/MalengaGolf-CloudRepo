@@ -35,7 +35,7 @@ public class ResponseDTO {
     private List<GolfGroupParentDTO> golfGroupParents;
     private List<ScorerDTO> scorers;
     private GolfGroupDTO golfGroup;
-    
+    private AppUserDTO appUser;
     private List<String> imageFileNames;
     private AdministratorDTO administrator;
     private List<VideoClipDTO> videoClips;
@@ -71,6 +71,14 @@ public class ResponseDTO {
 
     public void setErrorStoreList(List<ErrorStoreDTO> errorStoreList) {
         this.errorStoreList = errorStoreList;
+    }
+
+    public AppUserDTO getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(AppUserDTO appUser) {
+        this.appUser = appUser;
     }
     
 

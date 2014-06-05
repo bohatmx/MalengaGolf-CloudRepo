@@ -13,7 +13,7 @@ import java.util.List;
 public class RequestDTO {
 
     private String email, pin, gcmRegistrationID;
-    private int golfGroupID;
+    private int golfGroupID, appUserID, tournamentType;
     private int tournamentID, playerID, countryID, provinceID, clubCourseID;
     private GolfGroupDTO golfGroup;
     private TournamentDTO tournament;
@@ -105,12 +105,19 @@ public class RequestDTO {
     public static final int SIGN_IN_LEADERBOARD = 77;
     public static final int GET_TOURNAMENTS = 78;
     public static final int GET_PLAYER_GROUPS = 80;
+    
+    public static final int REGISTER_APP_USER = 81;
+    public static final int SIGNIN_APP_USER = 82;
+    public static final int GET_APPUSER_GROUPS = 83;
 
     public static final int GET_CLUBS_NEARBY = 119;
     public static final int GET_CLUBS_IN_STATE = 120;
 
     public static final int PICTURES_FULL_SIZE = 1;
     public static final int PICTURES_THUMBNAILS = 2;
+    
+    public static final int STROKE_PLAY_INDIVIDUAL = 1;
+    public static final int STABLEFORD_INDIVIDUAL = 2;
 
     private int winnerFlag, leaderBoardID, type;
 
@@ -132,6 +139,14 @@ public class RequestDTO {
 
     public void setClubCourse(ClubCourseDTO clubCourse) {
         this.clubCourse = clubCourse;
+    }
+
+    public int getAppUserID() {
+        return appUserID;
+    }
+
+    public void setAppUserID(int appUserID) {
+        this.appUserID = appUserID;
     }
 
     public String getGcmRegistrationID() {
@@ -237,6 +252,14 @@ public class RequestDTO {
 
     public void setPersonalPlayer(PersonalPlayerDTO personalPlayer) {
         this.personalPlayer = personalPlayer;
+    }
+
+    public int getTournamentType() {
+        return tournamentType;
+    }
+
+    public void setTournamentType(int tournamentType) {
+        this.tournamentType = tournamentType;
     }
 
     public PersonalScoreDTO getPersonalScore() {

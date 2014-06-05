@@ -99,6 +99,8 @@ public class Tournament implements Serializable {
     private int golfRounds;
     @Column(name = "exampleFlag")
     private int exampleFlag;
+    @Column(name = "tournamentType")
+    private int tournamentType;
 
     @Column(name = "closedForScoringFlag")
     private int closedForScoringFlag;
@@ -154,6 +156,14 @@ public class Tournament implements Serializable {
 
     public void setClosedForRegistrationFlag(int closedForRegistrationFlag) {
         this.closedForRegistrationFlag = closedForRegistrationFlag;
+    }
+
+    public int getTournamentType() {
+        return tournamentType;
+    }
+
+    public void setTournamentType(int tournamentType) {
+        this.tournamentType = tournamentType;
     }
 
     public Date getClosingDate() {

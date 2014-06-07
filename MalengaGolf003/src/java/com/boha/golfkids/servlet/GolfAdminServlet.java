@@ -164,6 +164,9 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.updateTournamentScore(dto.getLeaderBoard());
                         break;
                     case RequestDTO.ADD_TOURNAMENT_PLAYERS:
+                        resp = dataUtil.addTournamentPlayers(dto.getIdList(), dto.getTournamentID(), platformUtil);
+                        break;
+                    case RequestDTO.ADD_TOURNAMENT_PLAYER:
                         resp = dataUtil.addTournamentPlayer(dto.getLeaderBoard(), platformUtil);
                         break;
 

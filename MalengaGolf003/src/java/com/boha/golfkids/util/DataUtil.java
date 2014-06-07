@@ -360,6 +360,9 @@ public class DataUtil {
             tx.setClosedForScoringFlag(t.getClosedForScoringFlag());
             tx.setClosedForRegistrationFlag(t.getClosedForRegistrationFlag());
             tx.setGolfRounds(t.getGolfRounds());
+            if (t.getTournamentType() > 0) {
+                tx.setTournamentType(t.getTournamentType());
+            }
             em.merge(tx);
             logger.log(Level.INFO, "Tournament updated OK");
             r.setMessage("Tournament is updated");
@@ -1180,7 +1183,7 @@ public class DataUtil {
             }
         }
         if (incomplete == 0) {
-            Tournament t =getTournamentByID(list.get(0).getTournamentID());
+            Tournament t = getTournamentByID(list.get(0).getTournamentID());
             t.setClosedForScoringFlag(1);
             em.merge(t);
             logger.log(Level.INFO, "Tournament scoring closed: {0}", t.getTourneyName());
@@ -1213,7 +1216,7 @@ public class DataUtil {
                 t.setPoints16(tsbr.getPoints16());
                 t.setPoints17(tsbr.getPoints17());
                 t.setPoints18(tsbr.getPoints18());
-                
+
                 if (tsbr.getScore1() > 0) {
                     t.setScore1(tsbr.getScore1());
                 }
@@ -1741,6 +1744,59 @@ public class DataUtil {
             throw new DataException("Failed to remove Tournament player\n" + getErrorString(e));
         }
 
+        return r;
+    }
+
+    public ResponseDTO addTournamentPlayers(List<Integer> list, int tournamentID, PlatformUtil platformUtil) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        r.setLeaderBoardList(new ArrayList<LeaderBoardDTO>());
+        try {
+            for (Integer lb : list) {
+                LeaderBoard s = new LeaderBoard();
+                s.setDateRegistered(new Date());
+                s.setPlayer(getPlayerByID(lb.intValue()));
+                s.setTournament(getTournamentByID(tournamentID));
+                try {
+                    em.persist(s);
+                    logger.log(Level.INFO, "addTournamentPlayer persisted ....");
+                    Query q = em.createQuery("select a from LeaderBoard a where a.player.playerID = :pID and a.tournament.tournamentID = :tID");
+                    q.setParameter("pID", lb.intValue());
+                    q.setParameter("tID", tournamentID);
+                    q.setMaxResults(1);
+                    LeaderBoard leaderBoard = (LeaderBoard) q.getSingleResult();
+                    List<TourneyScoreByRoundDTO> pList = new ArrayList<>();
+                    //
+                    Query z = em.createNamedQuery("TournamentCourse.findByTourney", TournamentCourse.class);
+                    z.setParameter("id", leaderBoard.getTournament().getTournamentID());
+                    List<TournamentCourse> tcList = z.getResultList();
+
+                    for (TournamentCourse tc : tcList) {
+                        TourneyScoreByRoundDTO dto = new TourneyScoreByRoundDTO();
+                        dto.setGolfRound(tc.getRound());
+                        dto.setClubCourse(new ClubCourseDTO(tc.getClubCourse()));
+                        dto.setHolesPerRound(s.getTournament().getHolesPerRound());
+                        dto.setPar(tc.getClubCourse().getPar());
+                        dto.setTournamentID(leaderBoard.getTournament().getTournamentID());
+                        dto.setLeaderBoardID(leaderBoard.getLeaderBoardID());
+                        pList.add(dto);
+                    }
+                    LeaderBoardDTO lbd = new LeaderBoardDTO(leaderBoard);
+                    List<TourneyScoreByRoundDTO> tsbrList = addTournamentScoreByRound(leaderBoard, pList);
+                    lbd.setTourneyScoreByRoundList(tsbrList);
+                    r.getLeaderBoardList().add(lbd);
+                    logger.log(Level.INFO, "Player added to tournament");
+
+                } catch (PersistenceException e) {
+                    r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
+                    r.setMessage("Duplicate detected. Record already exists");
+                    platformUtil.addErrorStore(7, "Duplicate detected\n\n" + getErrorString(e), "DataUtil");
+                }
+            }
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to add Tournament players", e);
+            throw new DataException("Failed to add Tournament players\n" + getErrorString(e));
+        }
         return r;
     }
 

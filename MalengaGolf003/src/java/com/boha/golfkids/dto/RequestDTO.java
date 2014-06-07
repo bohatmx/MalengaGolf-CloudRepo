@@ -32,6 +32,7 @@ public class RequestDTO {
     private boolean zippedResponse;
     private double latitude, longitude;
     private int radius, radiusType, page;
+    private List<Integer> idList;
 
     //
     public static final int ADMIN_LOGIN = 1;
@@ -39,7 +40,8 @@ public class RequestDTO {
     public static final int UPDATE_GOLF_GROUP = 3;
     public static final int ADD_TOURNAMENT = 4;
     public static final int UPDATE_TOURNAMENT = 5;
-    public static final int ADD_TOURNAMENT_PLAYERS = 6;
+    public static final int ADD_TOURNAMENT_PLAYER = 6;
+    public static final int ADD_TOURNAMENT_PLAYERS = 616;
     public static final int UPDATE_TOURNAMENT_SCORES = 7;
     public static final int ADD_PARENT = 8;
     public static final int UPDATE_PARENT = 9;
@@ -131,6 +133,14 @@ public class RequestDTO {
 
     public List<LeaderBoardDTO> getLeaderBoardList() {
         return leaderBoardList;
+    }
+
+    public List<Integer> getIdList() {
+        return idList;
+    }
+
+    public void setIdList(List<Integer> idList) {
+        this.idList = idList;
     }
 
     public ClubCourseDTO getClubCourse() {

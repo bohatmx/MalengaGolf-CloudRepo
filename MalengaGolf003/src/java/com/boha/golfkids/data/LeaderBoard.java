@@ -93,10 +93,7 @@ public class LeaderBoard implements Serializable {
     private int scoreRound5;
     @Column(name = "scoreRound6")
     private int scoreRound6;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "pointsRound1")
-    private int pointsRound1;
+    
     @Column(name = "pointsRound2")
     private int pointsRound2;
     @Column(name = "pointsRound3")
@@ -109,22 +106,16 @@ public class LeaderBoard implements Serializable {
     private int pointsRound6;
     @Column(name = "totalPoints")
     private int totalPoints;
-    @Column(name = "ageGroupID")
-    private int ageGroupID;
+   
     @Column(name = "age")
     private int age;
     @Column(name = "scoringComplete")
     private int scoringComplete;
     @Column(name = "withDrawn")
     private int withDrawn;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "tournamentID")
-    private int tournamentID;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "playerID")
-    private int playerID;
+    @Column(name = "pointsRound1")
+    private int pointsRound1;
+    
     
     @Column(name = "orderOfMeritPoints")
     private int orderOfMeritPoints;
@@ -278,22 +269,13 @@ public class LeaderBoard implements Serializable {
         this.orderOfMeritPoints = orderOfMeritPoints;
     }
 
-    public int getTournamentID() {
-        return tournamentID;
-    }
-
-    public void setTournamentID(int tournamentID) {
-        this.tournamentID = tournamentID;
-    }
-
-    public int getPlayerID() {
-        return playerID;
-    }
-
-    public void setPlayerID(int playerID) {
-        this.playerID = playerID;
-    }
    
+    public int getPointsRound1() {   
+        return pointsRound1;
+    }
+    public void setPointsRound1(int pointsRound1) {
+        this.pointsRound1 = pointsRound1;
+    }
 
     public int getWinnerFlag() {
         return winnerFlag;
@@ -351,14 +333,6 @@ public class LeaderBoard implements Serializable {
         this.scoreRound6 = scoreRound6;
     }
 
-    public int getPointsRound1() {
-        return pointsRound1;
-    }
-
-    public void setPointsRound1(int pointsRound1) {
-        this.pointsRound1 = pointsRound1;
-    }
-
     public int getPointsRound2() {
         return pointsRound2;
     }
@@ -405,14 +379,6 @@ public class LeaderBoard implements Serializable {
 
     public void setTotalPoints(int totalPoints) {
         this.totalPoints = totalPoints;
-    }
-
-    public int getAgeGroupID() {
-        return ageGroupID;
-    }
-
-    public void setAgeGroupID(int ageGroupID) {
-        this.ageGroupID = ageGroupID;
     }
 
     public int getAge() {

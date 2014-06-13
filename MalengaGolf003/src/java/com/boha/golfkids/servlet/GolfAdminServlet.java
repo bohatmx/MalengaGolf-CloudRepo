@@ -75,7 +75,7 @@ public class GolfAdminServlet extends HttpServlet {
             platformUtil.addErrorStore(9, "Bad, rogue request detected", "GolfAdminServlet");
             out.close();
         } else {
-            log.log(Level.WARNING, "######################################### "
+            log.log(Level.WARNING, "################################### "
                     + "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
                 switch (dto.getRequestType()) {
@@ -121,7 +121,7 @@ public class GolfAdminServlet extends HttpServlet {
                         resp = dataUtil.closeTournament(dto.getTournamentID());
                         break;
                     case RequestDTO.CLOSE_LEADERBORD:
-                        resp = leaderBoardUtil.closeLeaderBoard(dto.getLeaderBoardList(), dto.getTournamentID());
+                        resp = leaderBoardUtil.closeLeaderBoard(dto.getTournamentID());
                         break;
 
                     case RequestDTO.UPDATE_WINNER_FLAG:
@@ -137,6 +137,9 @@ public class GolfAdminServlet extends HttpServlet {
                         break;
                     case RequestDTO.GET_CLUBS_IN_PROVINCE:
                         resp = dataUtil.getClubsByProvince(dto.getProvinceID(), dto.getPage(), workerBee);
+                        break;
+                    case RequestDTO.DELETE_SAMPLE_TOURNAMENTS:
+                        resp = dataUtil.deleteSample(dto.getGolfGroupID(), dto.getCountryID());
                         break;
                     case RequestDTO.GET_CLUBS_NEARBY:
                         resp = workerBee.getClubsWithinRadius(

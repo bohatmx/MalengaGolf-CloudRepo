@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,6 +41,9 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Scorer.findByEmail", 
             query = "SELECT a FROM Scorer a "
                     + "where a.email = :email"),
+    
+    @NamedQuery(name = "Scorer.getSampleScorers",
+            query = "SELECT t FROM Scorer t where t.exampleFlag > 0 and t.golfGroup.golfGroupID = :id "),
  
     
     @NamedQuery(name = "Scorer.findByGolfGroup", 

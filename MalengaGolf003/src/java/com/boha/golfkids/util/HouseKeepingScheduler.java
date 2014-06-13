@@ -21,7 +21,7 @@ import javax.ejb.Stateless;
 @Stateless
 public class HouseKeepingScheduler {
     
-    @Schedule(minute="*/10",hour = "*")
+    @Schedule(minute="*/30",hour = "*")
     public void cleanUp() {
         startDiskCleanup();
     }

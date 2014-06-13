@@ -409,10 +409,10 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
                 break;
             case SORT_BY_TOTAL_POINTS:
                 if (this.getTotalPoints() < t.getTotalPoints()) {
-                    return -1;
+                    return 1;
                 }
                 if (this.getTotalPoints() > t.getTotalPoints()) {
-                    return 1;
+                    return -1;
                 }
                 break;
         }

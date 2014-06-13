@@ -45,6 +45,7 @@ public class LeaderBoardPointsUtil {
             List<LeaderBoardDTO> lbList, List<TourneyScoreByRound> tourneyScoreList) {
         for (LeaderBoard s : baseList) {
             LeaderBoardDTO d = new LeaderBoardDTO();
+            d.setTournamentType(s.getTournament().getTournamentType());
             d.setLeaderBoardID(s.getLeaderBoardID());
             d.setWinnerFlag(s.getWinnerFlag());
             d.setPlayer(new PlayerDTO(s.getPlayer()));
@@ -80,6 +81,7 @@ public class LeaderBoardPointsUtil {
 
     public ResponseDTO getTournamentLeaderBoard(int tournamentID, DataUtil dataUtil)
             throws DataException {
+        log.log(Level.OFF, "Getting Points LeaderBoard .......");
         try {
             Tournament t = dataUtil.getTournamentByID(tournamentID);
             if (t.getUseAgeGroups() > 0) {
@@ -87,7 +89,7 @@ public class LeaderBoardPointsUtil {
             } else {
                 return getLeaderBoard(t);
             }
-        } catch (Exception e) {
+        } catch (DataException e) {
             log.log(Level.SEVERE, null, e);
             throw new DataException("Failed to get LeaderBoard\n"
                     + getErrorString(e));
@@ -115,7 +117,7 @@ public class LeaderBoardPointsUtil {
             carrier.setLeaderBoardList(combinedList);
             r.getLeaderBoardCarriers().add(carrier);
 
-        } catch (Exception e) {
+        } catch (DataException e) {
             log.log(Level.SEVERE, null, e);
             throw new DataException("Failed to get LeaderBoardByAgeGroup\n"
                     + getErrorString(e));
@@ -251,7 +253,7 @@ public class LeaderBoardPointsUtil {
                 }
                 
             }
-         } catch (Exception e) {
+         } catch (DataException e) {
             log.log(Level.SEVERE, null, e);
             throw new DataException("Failed to close LeaderBoard\n"
                     + getErrorString(e));
@@ -486,11 +488,7 @@ public class LeaderBoardPointsUtil {
     }
     public static final int NO_PAR_STATUS = 9999;
 
-    private void logm(int par, int score, int parStatus) {
-        log.log(Level.INFO, " par status = {0} par: {1} score: {2}",
-                new Object[]{parStatus, par, score});
-    }
-
+   
     private void setCurrentRoundStatus(LeaderBoardDTO lb, TourneyScoreByRoundDTO r) {
 
         int cnt = 0;

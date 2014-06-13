@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.ErrorStoreAndroid;
@@ -13,16 +12,19 @@ import com.boha.golfkids.data.ErrorStoreAndroid;
  * @author aubreyM
  */
 public class ErrorStoreAndroidDTO {
+
     private int errorStoreAndroidID, golfGroupID;
     private String golfGroupName, logCat, stackTrace, androidVersion,
             brand, appVersionCode, appVersionName, packageName, phoneModel;
     private long errorDate;
-    
+
     public ErrorStoreAndroidDTO(ErrorStoreAndroid a) {
         errorDate = a.getErrorDate().getTime();
         errorStoreAndroidID = a.getErrorStoreAndroidID();
-        golfGroupID = a.getGolfGroup().getGolfGroupID();
-        golfGroupName = a.getGolfGroup().getGolfGroupName();
+        if (a.getGolfGroup() != null) {
+            golfGroupID = a.getGolfGroup().getGolfGroupID();
+            golfGroupName = a.getGolfGroup().getGolfGroupName();
+        }
         logCat = a.getLogCat();
         stackTrace = a.getStackTrace();
         androidVersion = a.getAndroidVersion();
@@ -128,5 +130,5 @@ public class ErrorStoreAndroidDTO {
     public void setErrorDate(long errorDate) {
         this.errorDate = errorDate;
     }
-    
+
 }

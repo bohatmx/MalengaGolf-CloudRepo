@@ -37,16 +37,19 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Tournament.findByGolfGroup",
             query = "SELECT t FROM Tournament t "
             + "where t.golfGroup.golfGroupID = :id "
-            + "order by t.startDate desc"),
+            + "order by t.startDate DESC"),
     
     @NamedQuery(name = "Tournament.delete",
             query = "DELETE FROM Tournament t where t.tournamentID = :id"),
+    
+    @NamedQuery(name = "Tournament.deleteSamples",
+            query = "DELETE FROM Tournament t where t.exampleFlag > 0 and t.golfGroup.golfGroupID = :id"),
     
     @NamedQuery(name = "Tournament.findByPlayer",
             query = "SELECT distinct t FROM Tournament t, LeaderBoard b "
                     + "where t.tournamentID = b.tournament.tournamentID "
                     + "and b.player.playerID = :id "
-                    + "order by t.startDate desc"),
+                    + "order by t.startDate DESC"),
 
     @NamedQuery(name = "Tournament.findByClub",
             query = "select a from Tournament a where a.club.clubID = :id")

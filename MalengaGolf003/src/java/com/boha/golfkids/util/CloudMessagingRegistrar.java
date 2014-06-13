@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class CloudMessagingRegistrar {
 
-    private static final String API_KEY = "AIzaSyCq7tnU1c4bTv2JD1YdbVzh-ybgEnmoCWo";
+    public static final String API_KEY = "AIzaSyA4ah0D6WpBvVuUQD5dokRw0-BaXZgBA8Q";
 
     public static ResponseDTO sendRegistration(String regID, PlatformUtil platformUtil) throws IOException {
         logger.log(Level.INFO,

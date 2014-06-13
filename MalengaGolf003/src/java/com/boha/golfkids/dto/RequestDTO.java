@@ -111,6 +111,7 @@ public class RequestDTO {
     public static final int REGISTER_APP_USER = 81;
     public static final int SIGNIN_APP_USER = 82;
     public static final int GET_APPUSER_GROUPS = 83;
+    public static final int DELETE_SAMPLE_TOURNAMENTS = 84;
 
     public static final int GET_CLUBS_NEARBY = 119;
     public static final int GET_CLUBS_IN_STATE = 120;

@@ -25,7 +25,7 @@ import javax.persistence.Query;
 public class CloudMsgUtil {
 
     private static final int RETRIES = 5;
-    public static final String API_KEY = "AIzaSyCJIUMPXsL-GVAfNAl1i-fDy6qf7g5TtCU";
+    public static final String API_KEY = CloudMessagingRegistrar.API_KEY;
 /*
     public static ResponseDTO sendInstructorToTraineeMessage(HelpResponseDTO req, PlatformUtil platformUtil) throws
             Exception, DataException {

@@ -8,16 +8,15 @@ package com.boha.golfkids.util;
 import com.boha.golfkids.data.Club;
 import com.boha.golfkids.data.ClubCourse;
 import com.boha.golfkids.data.GolfGroup;
-import com.boha.golfkids.data.GolfGroupParent;
 import com.boha.golfkids.data.GolfGroupPlayer;
 import com.boha.golfkids.data.LeaderBoard;
-import com.boha.golfkids.data.Parent;
 import com.boha.golfkids.data.Player;
 import com.boha.golfkids.data.Scorer;
 import com.boha.golfkids.data.Tournament;
 import com.boha.golfkids.data.TourneyScoreByRound;
 import com.boha.golfkids.dto.LeaderBoardDTO;
 import com.boha.golfkids.dto.PlayerDTO;
+import com.boha.golfkids.dto.RequestDTO;
 import com.boha.golfkids.dto.ResponseDTO;
 import com.boha.golfkids.dto.TournamentDTO;
 import java.io.File;
@@ -39,9 +38,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
-import javax.transaction.UserTransaction;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Years;
@@ -135,6 +132,7 @@ public class NewGolfGroupUtil {
         t.setGolfGroupID(gg.getGolfGroupID());
         t.setHolesPerRound(holesPerRound);
         t.setExampleFlag(1);
+        t.setTournamentType(RequestDTO.STROKE_PLAY_INDIVIDUAL);
 
         if (holesPerRound == 9) {
             t.setPar(36);
@@ -302,14 +300,14 @@ public class NewGolfGroupUtil {
                 setCounters(holeCnt, pair);
                 tsbr.setScore18(0);
                 dataUtil.em.merge(tsbr);
-                log.log(Level.INFO, "enabling live leaderBoard, hole: 18");
+                ////log.log(Level.INFO, "enabling live leaderBoard, hole: 18");
                 break;
             case 17:
                 setCounters(holeCnt, pair);
                 tsbr.setScore18(0);
                 tsbr.setScore17(0);
                 dataUtil.em.merge(tsbr);
-                log.log(Level.INFO, "enabling live leaderBoard, hole: 17");
+                //log.log(Level.INFO, "enabling live leaderBoard, hole: 17");
                 break;
             case 16:
                 setCounters(holeCnt, pair);
@@ -317,7 +315,7 @@ public class NewGolfGroupUtil {
                 tsbr.setScore17(0);
                 tsbr.setScore16(0);
                 dataUtil.em.merge(tsbr);
-                log.log(Level.INFO, "enabling live leaderBoard, hole: 16");
+                //log.log(Level.INFO, "enabling live leaderBoard, hole: 16");
                 break;
             case 15:
                 setCounters(holeCnt, pair);
@@ -326,7 +324,7 @@ public class NewGolfGroupUtil {
                 tsbr.setScore16(0);
                 tsbr.setScore15(0);
                 dataUtil.em.merge(tsbr);
-                log.log(Level.INFO, "enabling live leaderBoard, hole: 15");
+                //log.log(Level.INFO, "enabling live leaderBoard, hole: 15");
             case 14:
                 setCounters(holeCnt, pair);
                 tsbr.setScore18(0);
@@ -335,7 +333,7 @@ public class NewGolfGroupUtil {
                 tsbr.setScore15(0);
                 tsbr.setScore14(0);
                 dataUtil.em.merge(tsbr);
-                log.log(Level.INFO, "enabling live leaderBoard, hole: 14");
+                //log.log(Level.INFO, "enabling live leaderBoard, hole: 14");
                 break;
             case 13:
                 setCounters(holeCnt, pair);
@@ -580,7 +578,7 @@ public class NewGolfGroupUtil {
                         int id = 0;
                         if (rs.next()) {
                             player.setPlayerID(rs.getInt(1));
-                            log.log(Level.INFO, "######### playerID returned: {0}", id);
+                            //log.log(Level.INFO, "######### playerID returned: {0}", id);
                         }
                         //
                         if (player.getPlayerID() > 0) {
@@ -592,7 +590,7 @@ public class NewGolfGroupUtil {
                             pList.add(ggp.getPlayer());
                         }
                     } else {
-                        log.log(Level.OFF, "..return from execute {0}", isOK);
+                        //log.log(Level.OFF, "..return from execute {0}", isOK);
                     }
                 }
 

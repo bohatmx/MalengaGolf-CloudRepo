@@ -228,7 +228,7 @@ public class LeaderBoardUtil {
         return r;
     }
 
-    public ResponseDTO closeLeaderBoard(List<LeaderBoardDTO> list, int tournamentID) throws DataException {
+    public ResponseDTO closeLeaderBoard(int tournamentID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
             //close tournament
@@ -242,12 +242,15 @@ public class LeaderBoardUtil {
             Query y = em.createNamedQuery("TourneyScoreByRound.getByTourney", TourneyScoreByRound.class);
             y.setParameter("id", tournamentID);
             List<TourneyScoreByRound> tsbrList = y.getResultList();
-            for (LeaderBoardDTO lb : list) {
-                LeaderBoard b = em.find(LeaderBoard.class, lb.getLeaderBoardID());
+            
+            Query xx = em.createNamedQuery("LeaderBoard.findByTournament", LeaderBoard.class);
+            xx.setParameter("id", tournamentID);
+            List<LeaderBoard> list = xx.getResultList();
+            for (LeaderBoard b : list) {
                 setPointsPermanently(meritPoint, b);
                 em.merge(b);
                 for (TourneyScoreByRound tsbr : tsbrList) {
-                    if (tsbr.getLeaderBoard().getLeaderBoardID() == lb.getLeaderBoardID()) {
+                    if (tsbr.getLeaderBoard().getLeaderBoardID() == b.getLeaderBoardID()) {
                         tsbr.setScoringComplete(1);
                         em.merge(tsbr);
                     }

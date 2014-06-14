@@ -41,6 +41,7 @@ import com.boha.golfkids.dto.ErrorStoreDTO;
 import com.boha.golfkids.dto.GcmDeviceDTO;
 import com.boha.golfkids.dto.GolfGroupDTO;
 import com.boha.golfkids.dto.GolfGroupPlayerDTO;
+import com.boha.golfkids.dto.ImportPlayerDTO;
 import com.boha.golfkids.dto.LeaderBoardDTO;
 import com.boha.golfkids.dto.LeaderBoardTeamDTO;
 import com.boha.golfkids.dto.ParentDTO;
@@ -2614,13 +2615,15 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO importPlayers(List<PlayerDTO> list, int golfGroupID) throws DataException {
+    public ResponseDTO importPlayers(List<ImportPlayerDTO> list, int golfGroupID) throws DataException {
         ResponseDTO r = new ResponseDTO();
+        GolfGroup gg = getGroupByID(golfGroupID);
         r.setPlayers(new ArrayList<PlayerDTO>());
         List<Player> playerList = new ArrayList();
         boolean isNewPlayer = false;
+        int count = 0, updCount = 0;
         try {
-            for (PlayerDTO d : list) {
+            for (ImportPlayerDTO d : list) {
                 Player p = null;
                 Query q = em.createNamedQuery("Player.findByEmail", Player.class);
                 q.setParameter("email", d.getEmail());
@@ -2645,7 +2648,6 @@ public class DataUtil {
                 p.setLastName(d.getLastName());
                 p.setGender(d.getGender());
                 p.setPin(getRandomPin());
-                p.setYearJoined(d.getYearJoined());
 
                 if (isNewPlayer) {
                     em.persist(p);
@@ -2654,32 +2656,96 @@ public class DataUtil {
                     q.setMaxResults(1);
                     p = (Player) q.getSingleResult();
                     playerList.add(p);
+                    GolfGroupPlayer ggp = new GolfGroupPlayer();
+                    ggp.setGolfGroup(gg);
+                    ggp.setPlayer(p);
+                    ggp.setDateRegistered(new Date());
+                    em.persist(ggp);
                     log.log(Level.INFO, "Player imported to Group: {0} {1}",
                             new Object[]{p.getFirstName(), p.getLastName()});
+                    count++;
                 } else {
                     em.merge(p);
                     log.log(Level.INFO, "Player import updated, not new, to Group: {0} {1}",
                             new Object[]{p.getFirstName(), p.getLastName()});
+                    updCount++;
                 }
             }
-            GolfGroup gg = getGroupByID(golfGroupID);
-            for (Player player : playerList) {
-                GolfGroupPlayer ggp = new GolfGroupPlayer();
-                ggp.setGolfGroup(gg);
-                ggp.setPlayer(player);
-                ggp.setDateRegistered(new Date());
-                em.persist(ggp);
-            }
-            Query q = em.createNamedQuery("Player.findByGolfGroup", Player.class);
-            q.setParameter("id", golfGroupID);
-            List<Player> pList = q.getResultList();
-            for (Player player : pList) {
-                r.getPlayers().add(new PlayerDTO(player));
-            }
+              r.setMessage("Players added: " + count + " - updated: " + updCount);
+            
+//            Query q = em.createNamedQuery("Player.findByGolfGroup", Player.class);
+//            q.setParameter("id", golfGroupID);
+//            List<Player> pList = q.getResultList();
+//            for (Player player : pList) {
+//                r.getPlayers().add(new PlayerDTO(player));
+//            }
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
             throw new DataException("Failed to import players\n" + getErrorString(e));
+        }
+
+        return r;
+    }
+
+    public ResponseDTO importPlayer(ImportPlayerDTO d, int golfGroupID) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        r.setPlayers(new ArrayList<PlayerDTO>());
+        boolean isNewPlayer = false;
+        Player p = new Player();
+        try {
+            Query q = em.createNamedQuery("Player.findByEmail", Player.class);
+            q.setParameter("email", d.getEmail());
+            q.setMaxResults(1);
+            try {
+                p = (Player) q.getSingleResult();
+                if (p == null) {
+                    isNewPlayer = true;
+                    p = new Player();
+                }
+            } catch (NoResultException e) {
+                isNewPlayer = true;
+            }
+            p.setCellphone(d.getCellphone());
+            if (d.getDateOfBirth() > 0) {
+                p.setDateOfBirth(new Date(d.getDateOfBirth()));
+            }
+            p.setDateRegistered(new Date());
+            p.setEmail(d.getEmail());
+            p.setFirstName(d.getFirstName());
+            p.setLastName(d.getLastName());
+            p.setGender(d.getGender());
+            p.setPin(getRandomPin());
+
+            if (isNewPlayer) {
+                em.persist(p);
+                q = em.createNamedQuery("Player.findByEmail", Player.class);
+                q.setParameter("email", p.getEmail());
+                q.setMaxResults(1);
+                p = (Player) q.getSingleResult();
+                r.getPlayers().add(new PlayerDTO(p));
+                log.log(Level.INFO, "Player imported to Group: {0} {1}",
+                        new Object[]{p.getFirstName(), p.getLastName()});
+                GolfGroupPlayer ggp = new GolfGroupPlayer();
+                ggp.setGolfGroup(getGroupByID(golfGroupID));
+                ggp.setPlayer(p);
+                ggp.setDateRegistered(new Date());
+                try {
+                    em.persist(ggp);
+                } catch (PersistenceException e) {
+                    log.log(Level.OFF, "Duplicate detected, ignored");
+                } catch (Exception e) {
+                    log.log(Level.OFF, "Duplicate detected I THINK, ignored");
+                }
+            } else {
+                em.merge(p);
+                log.log(Level.INFO, "Player import updated, not new, to Group: {0} {1}",
+                        new Object[]{p.getFirstName(), p.getLastName()});
+            }
+
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed", e);
+            throw new DataException("Failed to import player\n" + getErrorString(e));
         }
 
         return r;

@@ -61,9 +61,9 @@ public class Player implements Serializable, Comparable<Player> {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "player")
     private List<TeamMember> teamMemberList;
     @Column(name = "gender")
-    private Integer gender;
+    private int gender;
     @Column(name = "yearJoined")
-    private Integer yearJoined;
+    private int yearJoined;
     @OneToMany(mappedBy = "player")
     private List<GcmDevice> gcmDeviceList;
 
@@ -243,19 +243,19 @@ public class Player implements Serializable, Comparable<Player> {
         this.gcmDeviceList = gcmDeviceList;
     }
 
-    public Integer getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 
-    public Integer getYearJoined() {
+    public int getYearJoined() {
         return yearJoined;
     }
 
-    public void setYearJoined(Integer yearJoined) {
+    public void setYearJoined(int yearJoined) {
         this.yearJoined = yearJoined;
     }
 

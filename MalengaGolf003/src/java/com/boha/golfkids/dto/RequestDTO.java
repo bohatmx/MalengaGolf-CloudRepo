@@ -16,6 +16,7 @@ public class RequestDTO {
     private int golfGroupID, appUserID, tournamentType;
     private int tournamentID, playerID, countryID, provinceID, clubCourseID;
     private TeamDTO team;
+    private ImportPlayerDTO importPlayer;
     private TourneyScoreByRoundTeamDTO tourneyScoreByRoundTeam;
     private GolfGroupDTO golfGroup;
     private TournamentDTO tournament;
@@ -134,6 +135,24 @@ public class RequestDTO {
     private ClubCourseDTO clubCourse;
 
     private List<LeaderBoardDTO> leaderBoardList;
+    private List<ImportPlayerDTO> importPlayers;
+
+    public List<ImportPlayerDTO> getImportPlayers() {
+        return importPlayers;
+    }
+
+    public void setImportPlayers(List<ImportPlayerDTO> importPlayers) {
+        this.importPlayers = importPlayers;
+    }
+    
+    
+    public ImportPlayerDTO getImportPlayer() {
+        return importPlayer;
+    }
+
+    public void setImportPlayer(ImportPlayerDTO importPlayer) {
+        this.importPlayer = importPlayer;
+    }
 
     public List<LeaderBoardDTO> getLeaderBoardList() {
         return leaderBoardList;

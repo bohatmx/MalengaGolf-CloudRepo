@@ -80,7 +80,7 @@ public class GolfAdminServlet extends HttpServlet {
             try {
                 switch (dto.getRequestType()) {
                     case RequestDTO.IMPORT_PLAYERS:
-                        resp = dataUtil.importPlayers(dto.getPlayerList(), dto.getGolfGroupID());
+                        resp = dataUtil.importPlayers(dto.getImportPlayers(), dto.getGolfGroupID());
                         break;
                     case RequestDTO.GET_PLAYER_GROUPS:
                         resp = dataUtil.getPlayerGroups(dto.getPlayerID());
@@ -371,6 +371,7 @@ public class GolfAdminServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        log.log(Level.OFF, "################# POST REQUEST COMING IN ..........");
         processRequest(request, response);
     }
 

@@ -55,8 +55,11 @@ import javax.validation.constraints.Size;
             query = "select a from Tournament a where a.club.clubID = :id")
 })
 public class Tournament implements Serializable {
+   
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
+    private List<LeaderBoardTeam> leaderBoardTeamList;
     @Column(name = "useAgeGroups")
-    private Integer useAgeGroups;
+    private int useAgeGroups;
     @OneToMany(mappedBy = "tournament")
     private List<VideoClip> videoClipList;
     
@@ -287,12 +290,22 @@ public class Tournament implements Serializable {
         this.exampleFlag = exampleFlag;
     }
 
-    public Integer getUseAgeGroups() {
+    public int getUseAgeGroups() {
         return useAgeGroups;
     }
 
-    public void setUseAgeGroups(Integer useAgeGroups) {
+    public void setUseAgeGroups(int useAgeGroups) {
         this.useAgeGroups = useAgeGroups;
+    }
+
+ 
+
+    public List<LeaderBoardTeam> getLeaderBoardTeamList() {
+        return leaderBoardTeamList;
+    }
+
+    public void setLeaderBoardTeamList(List<LeaderBoardTeam> leaderBoardTeamList) {
+        this.leaderBoardTeamList = leaderBoardTeamList;
     }
     
 

@@ -15,6 +15,8 @@ public class RequestDTO {
     private String email, pin, gcmRegistrationID;
     private int golfGroupID, appUserID, tournamentType;
     private int tournamentID, playerID, countryID, provinceID, clubCourseID;
+    private TeamDTO team;
+    private TourneyScoreByRoundTeamDTO tourneyScoreByRoundTeam;
     private GolfGroupDTO golfGroup;
     private TournamentDTO tournament;
     private PlayerDTO player;
@@ -112,6 +114,7 @@ public class RequestDTO {
     public static final int SIGNIN_APP_USER = 82;
     public static final int GET_APPUSER_GROUPS = 83;
     public static final int DELETE_SAMPLE_TOURNAMENTS = 84;
+    public static final int IMPORT_PLAYERS = 85;
 
     public static final int GET_CLUBS_NEARBY = 119;
     public static final int GET_CLUBS_IN_STATE = 120;
@@ -146,6 +149,22 @@ public class RequestDTO {
 
     public ClubCourseDTO getClubCourse() {
         return clubCourse;
+    }
+
+    public TeamDTO getTeam() {
+        return team;
+    }
+
+    public void setTeam(TeamDTO team) {
+        this.team = team;
+    }
+
+    public TourneyScoreByRoundTeamDTO getTourneyScoreByRoundTeam() {
+        return tourneyScoreByRoundTeam;
+    }
+
+    public void setTourneyScoreByRoundTeam(TourneyScoreByRoundTeamDTO tourneyScoreByRoundTeam) {
+        this.tourneyScoreByRoundTeam = tourneyScoreByRoundTeam;
     }
 
     public void setClubCourse(ClubCourseDTO clubCourse) {

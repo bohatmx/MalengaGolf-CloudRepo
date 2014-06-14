@@ -84,7 +84,7 @@ public class CrashReportServlet extends HttpServlet {
                 int x = custom.indexOf("=");
                 int y = custom.indexOf("\n");
                 String id = custom.substring(x + 2, y);
-                System.out.println("---------------------------> id extracted: " + id);
+                System.out.println("-----------------------> id extracted: " + id);
                 GolfGroup gg = dataUtil.getGroupByID(Integer.parseInt(id));
                 e.setGolfGroup(gg);
             }

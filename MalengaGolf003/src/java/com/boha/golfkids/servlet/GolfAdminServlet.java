@@ -79,6 +79,9 @@ public class GolfAdminServlet extends HttpServlet {
                     + "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
                 switch (dto.getRequestType()) {
+                    case RequestDTO.IMPORT_PLAYERS:
+                        resp = dataUtil.importPlayers(dto.getPlayerList(), dto.getGolfGroupID());
+                        break;
                     case RequestDTO.GET_PLAYER_GROUPS:
                         resp = dataUtil.getPlayerGroups(dto.getPlayerID());
                         break;

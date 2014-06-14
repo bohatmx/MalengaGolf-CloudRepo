@@ -43,6 +43,7 @@ import javax.validation.constraints.NotNull;
                     + "order by a.club.clubID")
     })
 public class ClubCourse implements Serializable {
+   
     @Column(name = "parHole1")
     private int parHole1;
     @Column(name = "parHole2")
@@ -79,6 +80,8 @@ public class ClubCourse implements Serializable {
     private int parHole17;
     @Column(name = "parHole18")
     private int parHole18;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clubCourse")
+    private List<TourneyScoreByRoundTeam> tourneyScoreByRoundTeamList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "clubCourse")
     private List<TournamentCourse> tournamentCourseList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "clubCourse")
@@ -170,6 +173,7 @@ public class ClubCourse implements Serializable {
     public void setTournamentCourseList(List<TournamentCourse> tournamentCourseList) {
         this.tournamentCourseList = tournamentCourseList;
     }
+  
 
     public int getParHole1() {
         return parHole1;
@@ -287,6 +291,7 @@ public class ClubCourse implements Serializable {
         return parHole15;
     }
 
+
     public void setParHole15(int parHole15) {
         this.parHole15 = parHole15;
     }
@@ -294,7 +299,6 @@ public class ClubCourse implements Serializable {
     public int getParHole16() {
         return parHole16;
     }
-
 
     public void setParHole16(int parHole16) {
         this.parHole16 = parHole16;
@@ -314,6 +318,14 @@ public class ClubCourse implements Serializable {
 
     public void setParHole18(int parHole18) {
         this.parHole18 = parHole18;
+    }
+
+    public List<TourneyScoreByRoundTeam> getTourneyScoreByRoundTeamList() {
+        return tourneyScoreByRoundTeamList;
+    }
+
+    public void setTourneyScoreByRoundTeamList(List<TourneyScoreByRoundTeam> tourneyScoreByRoundTeamList) {
+        this.tourneyScoreByRoundTeamList = tourneyScoreByRoundTeamList;
     }
     
 }

@@ -42,6 +42,9 @@ import javax.validation.constraints.Size;
 
 })
 public class GolfGroup implements Serializable {
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
+    private List<Team> teamList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
     private List<AppUserGroup> appUserGroupList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "golfGroup")
@@ -258,6 +261,14 @@ public class GolfGroup implements Serializable {
 
     public void setAppUserGroupList(List<AppUserGroup> appUserGroupList) {
         this.appUserGroupList = appUserGroupList;
+    }
+
+    public List<Team> getTeamList() {
+        return teamList;
+    }
+
+    public void setTeamList(List<Team> teamList) {
+        this.teamList = teamList;
     }
 
    

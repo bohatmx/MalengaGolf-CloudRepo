@@ -18,14 +18,17 @@ import com.boha.golfkids.data.GolfGroup;
 import com.boha.golfkids.data.GolfGroupParent;
 import com.boha.golfkids.data.GolfGroupPlayer;
 import com.boha.golfkids.data.LeaderBoard;
+import com.boha.golfkids.data.LeaderBoardTeam;
 import com.boha.golfkids.data.OrderOfMeritPoint;
 import com.boha.golfkids.data.Parent;
 import com.boha.golfkids.data.Player;
 import com.boha.golfkids.data.Province;
 import com.boha.golfkids.data.Scorer;
+import com.boha.golfkids.data.Team;
 import com.boha.golfkids.data.Tournament;
 import com.boha.golfkids.data.TournamentCourse;
 import com.boha.golfkids.data.TourneyScoreByRound;
+import com.boha.golfkids.data.TourneyScoreByRoundTeam;
 import com.boha.golfkids.data.VideoClip;
 import com.boha.golfkids.dto.AdministratorDTO;
 import com.boha.golfkids.dto.AgeGroupDTO;
@@ -39,6 +42,7 @@ import com.boha.golfkids.dto.GcmDeviceDTO;
 import com.boha.golfkids.dto.GolfGroupDTO;
 import com.boha.golfkids.dto.GolfGroupPlayerDTO;
 import com.boha.golfkids.dto.LeaderBoardDTO;
+import com.boha.golfkids.dto.LeaderBoardTeamDTO;
 import com.boha.golfkids.dto.ParentDTO;
 import com.boha.golfkids.dto.PlayerDTO;
 import com.boha.golfkids.dto.ProvinceDTO;
@@ -47,6 +51,7 @@ import com.boha.golfkids.dto.ScorerDTO;
 import com.boha.golfkids.dto.TournamentCourseDTO;
 import com.boha.golfkids.dto.TournamentDTO;
 import com.boha.golfkids.dto.TourneyScoreByRoundDTO;
+import com.boha.golfkids.dto.TourneyScoreByRoundTeamDTO;
 import com.boha.golfkids.dto.VideoClipDTO;
 import static com.boha.golfkids.util.DeleteSampleUtil.log;
 import com.boha.golfkids.util.golfdata.LoaderResponseDTO;
@@ -77,12 +82,12 @@ import org.joda.time.Years;
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class DataUtil {
-    
+
     @PersistenceContext
     EntityManager em;
-    
+
     static final int ADMIN = 1, PLAYER = 2, SCORER = 3, PARENT = 4, VOLUNTEER = 5, APP_USER = 6;
-    
+
     public ResponseDTO deleteSample(int golfGroupID, int countryID) throws Exception {
         ResponseDTO w = new ResponseDTO();
         try {
@@ -90,7 +95,7 @@ public class DataUtil {
             r.setParameter("id", golfGroupID);
             int e = r.executeUpdate();
             log.log(Level.INFO, "Sample tournaments deleted: {0}", e);
-            
+
             Query q = em.createNamedQuery("Player.getSamplePlayers", Player.class);
             q.setParameter("id", golfGroupID);
             List<Player> list = q.getResultList();
@@ -140,7 +145,7 @@ public class DataUtil {
                 case APP_USER:
                     g.setAppUser(em.find(AppUser.class, id));
                     break;
-                
+
             }
             em.persist(g);
             logger.log(Level.INFO, "GCM Device added: {0}", g.getModel());
@@ -151,7 +156,7 @@ public class DataUtil {
                     + getErrorString(e));
         }
     }
-    
+
     public void addAndroidError(ErrorStoreAndroid err) throws DataException {
         try {
             em.persist(err);
@@ -162,7 +167,7 @@ public class DataUtil {
                     + getErrorString(e));
         }
     }
-    
+
     public ResponseDTO getAndroidErrorsByGolfGroup(
             int golfGroupID) throws DataException {
         ResponseDTO r = new ResponseDTO();
@@ -182,7 +187,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO getServerErrors(
             long startDate, long endDate) throws DataException {
         ResponseDTO r = new ResponseDTO();
@@ -210,7 +215,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO getMalengaGolfEvents(
             long startDate, long endDate) throws DataException {
         ResponseDTO r = new ResponseDTO();
@@ -231,7 +236,7 @@ public class DataUtil {
             }
             r.setErrorStoreAndroidList(dList);
             r.setErrorStoreList(getServerErrors(startDate, endDate).getErrorStoreList());
-            
+
             String log = LogfileUtil.getFileString();
             r.setLog(log);
             logger.log(Level.OFF, "Android Errors found {0}", r.getErrorStoreAndroidList().size());
@@ -242,7 +247,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO findClubsWithinRadius(
             double latitude, double longitude, int radius, int type, int page, WorkerBee bee) throws DataException {
         ResponseDTO r = new ResponseDTO();
@@ -259,7 +264,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public LoaderResponseDTO findLoadedClubsWithinRadius(
             double latitude, double longitude, int radius, int type, int page, WorkerBee bee) throws DataException {
         LoaderResponseDTO r = new LoaderResponseDTO();
@@ -277,7 +282,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO withdrawPlayer(int tournamentID, int leaderBoardID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -304,7 +309,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO addVideoClip(VideoClipDTO clip) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -327,17 +332,17 @@ public class DataUtil {
                 dList.add(new VideoClipDTO(videoClip));
             }
             r.setVideoClips(dList);
-            
+
             logger.log(Level.INFO, "Video clip added");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add videoClip");
             throw new DataException("Failed to add videoClip\n"
                     + getErrorString(e));
         }
-        
+
         return r;
     }
-    
+
     public ResponseDTO getVideoClips(int golfGroupID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -350,16 +355,16 @@ public class DataUtil {
                 dList.add(new VideoClipDTO(videoClip));
             }
             r.setVideoClips(dList);
-            
+
         } catch (Exception e) {
             logger.log(Level.INFO, "Failed to get videoClips");
             throw new DataException("Failed to get videoClips\n"
                     + getErrorString(e));
         }
-        
+
         return r;
     }
-    
+
     public ResponseDTO closeTournament(int tournamentID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -372,10 +377,10 @@ public class DataUtil {
             throw new DataException("Failed to close tournament\n"
                     + getErrorString(e));
         }
-        
+
         return r;
     }
-    
+
     public ResponseDTO updateTournament(TournamentDTO t) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -402,7 +407,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO getTournamentPlayers(int tournamentID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -419,7 +424,7 @@ public class DataUtil {
             Query qx = em.createNamedQuery("TourneyScoreByRound.getByTourney", TourneyScoreByRound.class);
             qx.setParameter("id", tournamentID);
             List<TourneyScoreByRound> xList = qx.getResultList();
-            
+
             for (LeaderBoardDTO tps : dto) {
                 tps.setTourneyScoreByRoundList(new ArrayList<TourneyScoreByRoundDTO>());
                 for (TourneyScoreByRound tbr : xList) {
@@ -429,16 +434,16 @@ public class DataUtil {
                 }
             }
             r.setLeaderBoardList(dto);
-            
+
         } catch (Exception e) {
             logger.log(Level.INFO, "Failed to get Tourney players");
             throw new DataException("Failed to get Tourney players\n"
                     + getErrorString(e));
         }
-        
+
         return r;
     }
-    
+
     public ResponseDTO getGolfGroupData(int golfGroupID, int countryID)
             throws DataException {
 
@@ -461,7 +466,7 @@ public class DataUtil {
                     }
                 }
             }
-            
+
             q = em.createNamedQuery("Tournament.findByGolfGroup", Tournament.class);
             q.setParameter("id", golfGroupID);
             List<Tournament> tourList = q.getResultList();
@@ -524,17 +529,17 @@ public class DataUtil {
             q.setParameter("id", countryID);
             List<Province> provList = q.getResultList();
             r.setProvinces(getProvinceDTOList(provList));
-            
+
             logger.log(Level.OFF, "GolfGroup data retrieved");
         } catch (Exception e) {
             logger.log(Level.INFO, "Failed to get GolfGroup");
             throw new DataException("Failed to get GolfGroup\n"
                     + getErrorString(e));
         }
-        
+
         return r;
     }
-    
+
     private List<ProvinceDTO> getProvinceDTOList(List<Province> list) {
         List<ProvinceDTO> aList = new ArrayList<>();
         for (Province p : list) {
@@ -543,7 +548,7 @@ public class DataUtil {
         logger.log(Level.OFF, "Province data retrieved: {0}", aList.size());
         return aList;
     }
-    
+
     private List<ClubDTO> getClubDTOList(List<Club> list) {
         List<ClubDTO> aList = new ArrayList<>();
         for (Club player : list) {
@@ -552,7 +557,7 @@ public class DataUtil {
         logger.log(Level.OFF, "Club data retrieved: {0}", aList.size());
         return aList;
     }
-    
+
     private List<PlayerDTO> getPlayerDTOList(List<Player> list) {
         List<PlayerDTO> playerList = new ArrayList<>();
         for (Player player : list) {
@@ -561,7 +566,7 @@ public class DataUtil {
         logger.log(Level.OFF, "Player data retrieved: {0}", playerList.size());
         return playerList;
     }
-    
+
     private List<TournamentDTO> getTournamentDTOList(List<Tournament> list) {
         List<TournamentDTO> aList = new ArrayList<>();
         for (Tournament t : list) {
@@ -570,7 +575,7 @@ public class DataUtil {
         logger.log(Level.OFF, "Tourney data retrieved: {0}", aList.size());
         return aList;
     }
-    
+
     private List<ParentDTO> getParentDTOList(List<Parent> list) {
         List<ParentDTO> aList = new ArrayList<>();
         for (Parent t : list) {
@@ -579,7 +584,7 @@ public class DataUtil {
         logger.log(Level.OFF, "Parent data retrieved: {0}", aList.size());
         return aList;
     }
-    
+
     private List<ScorerDTO> getScorerDTOList(List<Scorer> list) {
         List<ScorerDTO> aList = new ArrayList<>();
         for (Scorer t : list) {
@@ -588,7 +593,7 @@ public class DataUtil {
         logger.log(Level.OFF, "Scorer data retrieved: {0}", aList.size());
         return aList;
     }
-    
+
     private List<AdministratorDTO> getAdministratorDTOList(List<Administrator> list) {
         List<AdministratorDTO> aList = new ArrayList<>();
         for (Administrator t : list) {
@@ -597,7 +602,7 @@ public class DataUtil {
         logger.log(Level.OFF, "Admins data retrieved: {0}", aList.size());
         return aList;
     }
-    
+
     public String getErrorString(Exception e) {
         StringBuilder sb = new StringBuilder();
         if (e.getMessage() != null) {
@@ -616,10 +621,10 @@ public class DataUtil {
             sb.append("Method: ").append(method).append("\n");
             sb.append("Line Number: ").append(line).append("\n");
         }
-        
+
         return sb.toString();
     }
-    
+
     public ResponseDTO getPlayerGroups(int playerID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -632,14 +637,14 @@ public class DataUtil {
             }
             logger.log(Level.OFF, "player groups found, playerID: {0} list: {1}",
                     new Object[]{playerID, r.getGolfGroups().size()});
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, null, e);
             throw new DataException();
         }
         return r;
     }
-    
+
     public ResponseDTO getAppUserGroups(int appUserID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -652,14 +657,14 @@ public class DataUtil {
             }
             logger.log(Level.OFF, "appUser groups found, appUserID: {0} list: {1}",
                     new Object[]{appUserID, r.getGolfGroups().size()});
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, null, e);
             throw new DataException();
         }
         return r;
     }
-    
+
     public ResponseDTO getClubsByCountry(int countryID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -676,7 +681,7 @@ public class DataUtil {
             Query z = em.createNamedQuery("ClubCourse.findByCountry", ClubCourse.class);
             z.setParameter("id", countryID);
             List<ClubCourse> ccList = z.getResultList();
-            
+
             for (ProvinceDTO p : dList) {
                 p.setClubs(new ArrayList<ClubDTO>());
                 for (Club club : clubList) {
@@ -698,7 +703,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO getProvincesByCountry(int countryID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -715,7 +720,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO getClubsByProvince(int provinceID, int page, WorkerBee bee) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -733,16 +738,16 @@ public class DataUtil {
                 r.setTotalPages((list.size() / WorkerBee.ROWS_PER_PAGE));
             }
             r.setTotalClubs(list.size());
-            
+
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
         return r;
     }
-    
+
     public List<AgeGroupDTO> getAgeGroups(int golfGroupID)
             throws DataException {
-        
+
         List<AgeGroupDTO> cList = new ArrayList<>();
         try {
             Query q = em.createNamedQuery("AgeGroup.findByGolfGroup",
@@ -757,16 +762,16 @@ public class DataUtil {
         }
         return cList;
     }
-    
+
     public List<AgeGroupDTO> getAgeGroupsBoys(int golfGroupID) throws DataException {
-        
+
         List<AgeGroupDTO> cList = new ArrayList<>();
         try {
             Query q = em.createNamedQuery("AgeGroup.findByGender", Agegroup.class);
             q.setParameter("id", golfGroupID);
             q.setParameter("gender", 1);
             List<Agegroup> list = q.getResultList();
-            
+
             for (Agegroup g : list) {
                 cList.add(new AgeGroupDTO(g));
             }
@@ -775,17 +780,17 @@ public class DataUtil {
         }
         return cList;
     }
-    
+
     public List<AgeGroupDTO> getAgeGroupsGirls(int golfGroupID) throws DataException {
-        
+
         List<AgeGroupDTO> cList = new ArrayList<>();
         try {
             Query q = em.createNamedQuery("AgeGroup.findByGender", Agegroup.class);
             q.setParameter("id", golfGroupID);
             q.setParameter("gender", 2);
-            
+
             List<Agegroup> list = q.getResultList();
-            
+
             for (Agegroup g : list) {
                 cList.add(new AgeGroupDTO(g));
             }
@@ -794,9 +799,9 @@ public class DataUtil {
         }
         return cList;
     }
-    
+
     public List<CountryDTO> getCountries() throws DataException {
-        
+
         List<CountryDTO> cList = new ArrayList<>();
         try {
             Query q = em.createNamedQuery("Country.findAll", Country.class);
@@ -804,14 +809,14 @@ public class DataUtil {
             for (Country g : list) {
                 cList.add(new CountryDTO(g));
             }
-            
+
         } catch (Exception e) {
             throw new DataException(getErrorString(e));
         }
         logger.log(Level.OFF, "Country list found: {0}", cList.size());
         return cList;
     }
-    
+
     public ResponseDTO signInAdministrator(String email,
             String pin, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws LoginException, DataException {
         ResponseDTO r = new ResponseDTO();
@@ -820,7 +825,7 @@ public class DataUtil {
             q.setMaxResults(1);
             q.setParameter("email", email);
             q.setParameter("pin", pin);
-            
+
             Administrator a = (Administrator) q.getSingleResult();
             if (a == null) {
                 throw new LoginException();
@@ -835,9 +840,9 @@ public class DataUtil {
             throw new LoginException();
         }
         return r;
-        
+
     }
-    
+
     public ResponseDTO addAppUser(int golfGroupID, String email, PlatformUtil platformUtil) throws DataException {
         logger.log(Level.OFF, "addAppUser golfGroupID: {0} email: {1}", new Object[]{golfGroupID, email});
         ResponseDTO r = new ResponseDTO();
@@ -876,7 +881,7 @@ public class DataUtil {
                 logger.log(Level.OFF, "appUser added, appUserGroup added: {0}", email);
                 platformUtil.addErrorStore(888, "mgGolf User added: " + email, "DataUtil");
             }
-            
+
         } catch (Exception e) {
             logger.log(Level.WARNING, null, e);
             throw new DataException("Unable to add app user");
@@ -884,9 +889,9 @@ public class DataUtil {
         r.setMessage("Looks like everythings's cool, app user done");
         logger.log(Level.OFF, "ready to exit ............................");
         return r;
-        
+
     }
-    
+
     public ResponseDTO signInAppUser(String email, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws DataException, LoginException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -897,7 +902,7 @@ public class DataUtil {
             Query z = em.createNamedQuery("AppUserGroup.findByAppUser", AppUserGroup.class);
             z.setParameter("id", au.getAppUserID());
             List<AppUserGroup> apgList = z.getResultList();
-            
+
             r.setAppUser(new AppUserDTO(au));
             r.getAppUser().setGolfGroupList(new ArrayList<GolfGroupDTO>());
             for (AppUserGroup aug : apgList) {
@@ -911,15 +916,15 @@ public class DataUtil {
             platformUtil.addErrorStore(222, "App User signed in\n" + au.getEmail(), "DataUtil");
         } catch (NoResultException e) {
             throw new LoginException();
-            
+
         } catch (Exception e) {
             logger.log(Level.WARNING, null, e);
             throw new DataException("Unable to sign in LeaderBoard app user");
         }
         return r;
-        
+
     }
-    
+
     public ResponseDTO signInScorer(String email,
             String pin, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws LoginException, DataException {
         ResponseDTO r = new ResponseDTO();
@@ -928,7 +933,7 @@ public class DataUtil {
             q.setMaxResults(1);
             q.setParameter("email", email);
             q.setParameter("pin", pin);
-            
+
             Scorer a = (Scorer) q.getSingleResult();
             if (a == null) {
                 throw new LoginException();
@@ -943,9 +948,9 @@ public class DataUtil {
             throw new LoginException();
         }
         return r;
-        
+
     }
-    
+
     public ResponseDTO signInPlayer(String email,
             String pin, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws LoginException, DataException {
         ResponseDTO r = new ResponseDTO();
@@ -955,7 +960,7 @@ public class DataUtil {
             q.setMaxResults(1);
             q.setParameter("email", email);
             q.setParameter("pin", pin);
-            
+
             Player a = (Player) q.getSingleResult();
             if (a == null) {
                 throw new LoginException();
@@ -980,22 +985,22 @@ public class DataUtil {
             throw new LoginException();
         }
         return r;
-        
+
     }
-    
+
     public List<TournamentDTO> getTournamentByGroup(int groupID) {
-        
+
         List<TournamentDTO> list = new ArrayList<>();
         Query q = em.createNamedQuery("Tournament.findByGolfGroup", Tournament.class);
         q.setParameter("id", groupID);
         List<Tournament> tList = q.getResultList();
         GolfGroup t = em.find(GolfGroup.class, groupID);
-        
+
         for (Tournament tournament : tList) {
             TournamentDTO tx = new TournamentDTO(tournament);
             list.add(tx);
         }
-        
+
         Query qx = em.createNamedQuery("LeaderBoard.countByTourney");
         qx.setParameter("id", groupID);
         List<Object[]> results = qx.getResultList();
@@ -1010,23 +1015,23 @@ public class DataUtil {
         Collections.sort(list);
         return list;
     }
-    
+
     public Tournament getTournamentByID(int tournamentID) {
-        
+
         Tournament t = em.find(Tournament.class, tournamentID);
         return t;
     }
-    
+
     public ClubCourse getClubCourseByID(int id) {
         ClubCourse cc = em.find(ClubCourse.class, id);
         return cc;
     }
-    
+
     public LeaderBoard getLeaderBoardByID(int id) {
         LeaderBoard cc = em.find(LeaderBoard.class, id);
         return cc;
     }
-    
+
     public ResponseDTO updateWinnerFlag(int leaderBoardID, int winnerFlag) throws DataException {
         ResponseDTO r = new ResponseDTO();
         logger.log(Level.OFF, "updating winner, leaderBoardID = {0}", leaderBoardID);
@@ -1048,7 +1053,7 @@ public class DataUtil {
                                 lb.getPlayer().getLastName(), lb.getTournament().getTourneyName()});
                 }
             }
-            
+
             b.setWinnerFlag(winnerFlag);
             em.merge(b);
             logger.log(Level.INFO, "Winner flag has been updated. Congratulations to {0} {1}",
@@ -1056,11 +1061,11 @@ public class DataUtil {
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to add update winner flag", e);
             throw new DataException("Unable to add update winner flag\n" + getErrorString(e));
-            
+
         }
         return r;
     }
-    
+
     private List<TourneyScoreByRoundDTO> addTournamentScoreByRound(
             LeaderBoard tps, List<TourneyScoreByRoundDTO> scoreByRoundList)
             throws DataException {
@@ -1072,7 +1077,7 @@ public class DataUtil {
                 t.setTournamentIDx(tsbr.getTournamentID());
                 t.setClubCourse(getClubCourseByID(tsbr.getClubCourse().getClubCourseID()));
                 t.setLeaderBoard(tps);
-                
+
                 if (tps.getTournament().getHolesPerRound() == 9) {
                     t.setPar(tps.getTournament().getPar());
                 } else {
@@ -1094,11 +1099,49 @@ public class DataUtil {
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to add scoreByRound record", e);
             throw new DataException("Unable to add scoreByRound records\n" + getErrorString(e));
-            
+
         }
         return dto;
     }
-    
+
+    private List<TourneyScoreByRoundTeamDTO> addTournamentScoreByRoundTeam(
+            LeaderBoardTeam tps, List<TourneyScoreByRoundTeamDTO> scoreByRoundList)
+            throws DataException {
+        List<TourneyScoreByRoundTeamDTO> dto = new ArrayList<>();
+        try {
+            for (TourneyScoreByRoundTeamDTO tsbr : scoreByRoundList) {
+                TourneyScoreByRoundTeam t = new TourneyScoreByRoundTeam();
+                t.setGolfRound(tsbr.getGolfRound());
+                t.setTournamentIDx(tsbr.getTournamentID());
+                t.setClubCourse(getClubCourseByID(tsbr.getClubCourse().getClubCourseID()));
+                t.setLeaderBoardTeam(tps);
+
+                if (tps.getTournament().getHolesPerRound() == 9) {
+                    t.setPar(tps.getTournament().getPar());
+                } else {
+                    t.setPar(t.getClubCourse().getPar());
+                }
+                t.setHolesPerRound(tps.getTournament().getHolesPerRound());
+                //
+                em.persist(t);
+                //logger.log(Level.WARNING, "Tsbr added .......");
+            }
+            //
+            Query q = em.createQuery("select a from TourneyScoreByRoundTeam a WHERE a.leaderBoardTeam.leaderBoardTeamID = :lID");
+            q.setParameter("lID", tps.getLeaderBoardTeamID());
+            List<TourneyScoreByRoundTeam> list = q.getResultList();
+            for (TourneyScoreByRoundTeam ts : list) {
+                dto.add(new TourneyScoreByRoundTeamDTO(ts));
+            }
+            //logger.log(Level.OFF, "TourneyScoreByRound added, list: {0}", dto.size());
+        } catch (Exception e) {
+            logger.log(Level.INFO, "Unable to add scoreByRound record", e);
+            throw new DataException("Unable to add scoreByRound records\n" + getErrorString(e));
+
+        }
+        return dto;
+    }
+
     public ResponseDTO updateTeeTime(TourneyScoreByRoundDTO score) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -1106,19 +1149,19 @@ public class DataUtil {
             tsbr.setTee(score.getTee());
             tsbr.setTeeTime(new Date(score.getTeeTime()));
             em.merge(tsbr);
-            
+
             r = getTournamentPlayers(score.getTournamentID());
             logger.log(Level.INFO, "Tee Time updated: {0} on tee: {1}",
                     new Object[]{new Date(score.getTeeTime()), score.getTee()});
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to update TeeTime", e);
             throw new DataException("Unable to update TeeTime\n" + getErrorString(e));
-            
+
         }
-        
+
         return r;
     }
-    
+
     public ResponseDTO updateTournamentScoreByRound(List<LeaderBoardDTO> list) throws DataException {
         ResponseDTO r = new ResponseDTO();
         for (LeaderBoardDTO leaderboard : list) {
@@ -1186,7 +1229,7 @@ public class DataUtil {
                     }
                     if (tsbr.getScore14() > 0) {
                         t.setScore14(tsbr.getScore14());
-                    }                    
+                    }
                     if (tsbr.getScore15() > 0) {
                         t.setScore15(tsbr.getScore15());
                     }
@@ -1200,7 +1243,7 @@ public class DataUtil {
                         t.setScore18(tsbr.getScore18());
                     }
                     em.merge(t);
-                    
+
                 }
                 scoreTotals(leaderBoard);
                 int cnt = 0;
@@ -1214,7 +1257,7 @@ public class DataUtil {
                     leaderBoard.setScoringComplete(1);
                     em.merge(leaderBoard);
                 }
-                
+
                 logger.log(Level.INFO, "Player scores by hole updated");
             } catch (DataException e) {
                 logger.log(Level.INFO, "Unable to update score", e);
@@ -1237,7 +1280,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO updateTournamentScoreByRound(LeaderBoardDTO leaderboard) throws DataException {
         ResponseDTO r = new ResponseDTO();
         LeaderBoard tps = getLeaderBoardByID(leaderboard.getLeaderBoardID());
@@ -1263,7 +1306,7 @@ public class DataUtil {
                 t.setPoints16(tsbr.getPoints16());
                 t.setPoints17(tsbr.getPoints17());
                 t.setPoints18(tsbr.getPoints18());
-                
+
                 if (tsbr.getScore1() > 0) {
                     t.setScore1(tsbr.getScore1());
                 }
@@ -1319,7 +1362,7 @@ public class DataUtil {
                     t.setScore18(tsbr.getScore18());
                 }
                 em.merge(t);
-                
+
             }
             scoreTotals(tps);
             int cnt = 0;
@@ -1354,9 +1397,126 @@ public class DataUtil {
         }
         return r;
     }
-    
+
+    public ResponseDTO updateTournamentScoreByRoundTeam(LeaderBoardTeamDTO leaderboard) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        LeaderBoardTeam tps = em.find(LeaderBoardTeam.class, leaderboard.getLeaderBoardTeamID());
+        try {
+            for (TourneyScoreByRoundTeamDTO tsbr : leaderboard.getTourneyScoreByRoundTeamList()) {
+                TourneyScoreByRoundTeam t = em.find(TourneyScoreByRoundTeam.class, tsbr.getTourneyScoreByRoundID());
+                t.setScoringComplete(tsbr.getScoringComplete());
+                t.setPoints1(tsbr.getPoints1());
+                t.setPoints2(tsbr.getPoints2());
+                t.setPoints3(tsbr.getPoints3());
+                t.setPoints4(tsbr.getPoints4());
+                t.setPoints5(tsbr.getPoints5());
+                t.setPoints6(tsbr.getPoints6());
+                t.setPoints7(tsbr.getPoints7());
+                t.setPoints8(tsbr.getPoints8());
+                t.setPoints9(tsbr.getPoints9());
+                t.setPoints10(tsbr.getPoints10());
+                t.setPoints11(tsbr.getPoints11());
+                t.setPoints12(tsbr.getPoints12());
+                t.setPoints13(tsbr.getPoints13());
+                t.setPoints14(tsbr.getPoints14());
+                t.setPoints15(tsbr.getPoints15());
+                t.setPoints16(tsbr.getPoints16());
+                t.setPoints17(tsbr.getPoints17());
+                t.setPoints18(tsbr.getPoints18());
+
+                if (tsbr.getScore1() > 0) {
+                    t.setScore1(tsbr.getScore1());
+                }
+                if (tsbr.getScore2() > 0) {
+                    t.setScore2(tsbr.getScore2());
+                }
+                if (tsbr.getScore3() > 0) {
+                    t.setScore3(tsbr.getScore3());
+                }
+                if (tsbr.getScore4() > 0) {
+                    t.setScore4(tsbr.getScore4());
+                }
+                if (tsbr.getScore5() > 0) {
+                    t.setScore5(tsbr.getScore5());
+                }
+                if (tsbr.getScore6() > 0) {
+                    t.setScore6(tsbr.getScore6());
+                }
+                if (tsbr.getScore7() > 0) {
+                    t.setScore7(tsbr.getScore7());
+                }
+                if (tsbr.getScore8() > 0) {
+                    t.setScore8(tsbr.getScore8());
+                }
+                if (tsbr.getScore9() > 0) {
+                    t.setScore9(tsbr.getScore9());
+                }
+                if (tsbr.getScore10() > 0) {
+                    t.setScore10(tsbr.getScore10());
+                }
+                if (tsbr.getScore11() > 0) {
+                    t.setScore11(tsbr.getScore11());
+                }
+                if (tsbr.getScore12() > 0) {
+                    t.setScore12(tsbr.getScore12());
+                }
+                if (tsbr.getScore13() > 0) {
+                    t.setScore13(tsbr.getScore13());
+                }
+                if (tsbr.getScore14() > 0) {
+                    t.setScore14(tsbr.getScore14());
+                }
+                if (tsbr.getScore15() > 0) {
+                    t.setScore15(tsbr.getScore15());
+                }
+                if (tsbr.getScore16() > 0) {
+                    t.setScore16(tsbr.getScore16());
+                }
+                if (tsbr.getScore17() > 0) {
+                    t.setScore17(tsbr.getScore17());
+                }
+                if (tsbr.getScore18() > 0) {
+                    t.setScore18(tsbr.getScore18());
+                }
+                em.merge(t);
+
+            }
+            scoreTotals(tps);
+            int cnt = 0;
+            for (TourneyScoreByRoundTeamDTO tsbr : leaderboard.getTourneyScoreByRoundTeamList()) {
+                if (tsbr.getScoringComplete() > 0) {
+                    cnt++;
+                }
+            }
+            if (cnt == leaderboard.getTourneyScoreByRoundTeamList().size()) {
+                leaderboard.setScoringComplete(true);
+                tps.setScoringComplete(1);
+                em.merge(tps);
+            }
+            r = getTournamentPlayers(leaderboard.getTournamentID());
+            //check if everybody done, close the tourney scoring
+            int incomplete = 0;
+            for (LeaderBoardDTO lb : r.getLeaderBoardList()) {
+                if (!lb.isScoringComplete()) {
+                    incomplete++;
+                }
+            }
+            if (incomplete == 0) {
+                Tournament t = tps.getTournament();
+                t.setClosedForScoringFlag(1);
+                em.merge(t);
+                logger.log(Level.INFO, "Tournament scoring closed: {0}", t.getTourneyName());
+            }
+            logger.log(Level.INFO, "Player scores by hole updated");
+        } catch (Exception e) {
+            logger.log(Level.INFO, "Unable to update score", e);
+            throw new DataException("Unable to update score\n" + getErrorString(e));
+        }
+        return r;
+    }
+
     public void scoreTotals(LeaderBoard leaderBoard) throws DataException {
-        
+
         int overallScore = 0, overallPoints = 0;
         Query q = em.createNamedQuery("TourneyScoreByRound.getScoreTotals",
                 TourneyScoreByRound.class);
@@ -1411,7 +1571,7 @@ public class DataUtil {
                     tsbr.setTotalPoints(tot1Points);
                     overallScore += tot1;
                     overallPoints += tot1Points;
-                    
+
                     em.merge(tsbr);
                     break;
                 case 2:
@@ -1461,7 +1621,7 @@ public class DataUtil {
                     tsbr.setTotalPoints(tot2Points);
                     overallScore += tot2;
                     overallPoints += tot2Points;
-                    
+
                     em.merge(tsbr);
                     break;
                 case 3:
@@ -1511,7 +1671,7 @@ public class DataUtil {
                     tsbr.setTotalPoints(tot3Points);
                     overallScore += tot3;
                     overallPoints += tot3Points;
-                    
+
                     em.merge(tsbr);
                     break;
                 case 4:
@@ -1561,7 +1721,7 @@ public class DataUtil {
                     tsbr.setTotalPoints(tot4Points);
                     overallScore += tot4;
                     overallPoints += tot4Points;
-                    
+
                     em.merge(tsbr);
                     break;
                 case 5:
@@ -1611,7 +1771,7 @@ public class DataUtil {
                     tsbr.setTotalPoints(tot5Points);
                     overallScore += tot5;
                     overallPoints += tot5Points;
-                    
+
                     em.merge(tsbr);
                     break;
                 case 6:
@@ -1661,7 +1821,7 @@ public class DataUtil {
                     tsbr.setTotalPoints(tot6Points);
                     overallScore += tot6;
                     overallPoints += tot6Points;
-                    
+
                     em.merge(tsbr);
                     break;
             }
@@ -1675,16 +1835,337 @@ public class DataUtil {
             throw new DataException("Unable to total & update scores\n" + getErrorString(e));
         }
     }
-    
+
+    public void scoreTotals(LeaderBoardTeam leaderBoard) throws DataException {
+
+        int overallScore = 0, overallPoints = 0;
+        Query q = em.createNamedQuery("TourneyScoreByRoundTeam.getScoreTotals",
+                TourneyScoreByRoundTeam.class);
+        q.setParameter("t", leaderBoard);
+        List<TourneyScoreByRoundTeam> xlist = q.getResultList();
+        for (TourneyScoreByRoundTeam tsbr : xlist) {
+            switch (tsbr.getGolfRound()) {
+                case 1:
+                    int tot1 = 0,
+                     tot1Points = 0;
+                    tot1 += tsbr.getScore1();
+                    tot1 += tsbr.getScore2();
+                    tot1 += tsbr.getScore3();
+                    tot1 += tsbr.getScore4();
+                    tot1 += tsbr.getScore5();
+                    tot1 += tsbr.getScore6();
+                    tot1 += tsbr.getScore7();
+                    tot1 += tsbr.getScore8();
+                    tot1 += tsbr.getScore9();
+                    tot1 += tsbr.getScore10();
+                    tot1 += tsbr.getScore11();
+                    tot1 += tsbr.getScore12();
+                    tot1 += tsbr.getScore13();
+                    tot1 += tsbr.getScore14();
+                    tot1 += tsbr.getScore15();
+                    tot1 += tsbr.getScore16();
+                    tot1 += tsbr.getScore17();
+                    tot1 += tsbr.getScore18();
+                    //
+                    tot1Points += tsbr.getPoints1();
+                    tot1Points += tsbr.getPoints2();
+                    tot1Points += tsbr.getPoints3();
+                    tot1Points += tsbr.getPoints4();
+                    tot1Points += tsbr.getPoints5();
+                    tot1Points += tsbr.getPoints6();
+                    tot1Points += tsbr.getPoints7();
+                    tot1Points += tsbr.getPoints8();
+                    tot1Points += tsbr.getPoints9();
+                    tot1Points += tsbr.getPoints10();
+                    tot1Points += tsbr.getPoints11();
+                    tot1Points += tsbr.getPoints12();
+                    tot1Points += tsbr.getPoints13();
+                    tot1Points += tsbr.getPoints14();
+                    tot1Points += tsbr.getPoints15();
+                    tot1Points += tsbr.getPoints16();
+                    tot1Points += tsbr.getPoints17();
+                    tot1Points += tsbr.getPoints18();
+                    //
+                    leaderBoard.setScoreRound1(tot1);
+                    leaderBoard.setPointsRound1(tot1Points);
+                    tsbr.setTotalScore(tot1);
+                    tsbr.setTotalPoints(tot1Points);
+                    overallScore += tot1;
+                    overallPoints += tot1Points;
+
+                    em.merge(tsbr);
+                    break;
+                case 2:
+                    int tot2 = 0,
+                     tot2Points = 0;
+                    tot2 += tsbr.getScore1();
+                    tot2 += tsbr.getScore2();
+                    tot2 += tsbr.getScore3();
+                    tot2 += tsbr.getScore4();
+                    tot2 += tsbr.getScore5();
+                    tot2 += tsbr.getScore6();
+                    tot2 += tsbr.getScore7();
+                    tot2 += tsbr.getScore8();
+                    tot2 += tsbr.getScore9();
+                    tot2 += tsbr.getScore10();
+                    tot2 += tsbr.getScore11();
+                    tot2 += tsbr.getScore12();
+                    tot2 += tsbr.getScore13();
+                    tot2 += tsbr.getScore14();
+                    tot2 += tsbr.getScore15();
+                    tot2 += tsbr.getScore16();
+                    tot2 += tsbr.getScore17();
+                    tot2 += tsbr.getScore18();
+                    //
+                    tot2Points += tsbr.getPoints1();
+                    tot2Points += tsbr.getPoints2();
+                    tot2Points += tsbr.getPoints3();
+                    tot2Points += tsbr.getPoints4();
+                    tot2Points += tsbr.getPoints5();
+                    tot2Points += tsbr.getPoints6();
+                    tot2Points += tsbr.getPoints7();
+                    tot2Points += tsbr.getPoints8();
+                    tot2Points += tsbr.getPoints9();
+                    tot2Points += tsbr.getPoints10();
+                    tot2Points += tsbr.getPoints11();
+                    tot2Points += tsbr.getPoints12();
+                    tot2Points += tsbr.getPoints13();
+                    tot2Points += tsbr.getPoints14();
+                    tot2Points += tsbr.getPoints15();
+                    tot2Points += tsbr.getPoints16();
+                    tot2Points += tsbr.getPoints17();
+                    tot2Points += tsbr.getPoints18();
+                    //
+                    leaderBoard.setScoreRound2(tot2);
+                    leaderBoard.setPointsRound2(tot2Points);
+                    tsbr.setTotalScore(tot2);
+                    tsbr.setTotalPoints(tot2Points);
+                    overallScore += tot2;
+                    overallPoints += tot2Points;
+
+                    em.merge(tsbr);
+                    break;
+                case 3:
+                    int tot3 = 0,
+                     tot3Points = 0;
+                    tot3 += tsbr.getScore1();
+                    tot3 += tsbr.getScore2();
+                    tot3 += tsbr.getScore3();
+                    tot3 += tsbr.getScore4();
+                    tot3 += tsbr.getScore5();
+                    tot3 += tsbr.getScore6();
+                    tot3 += tsbr.getScore7();
+                    tot3 += tsbr.getScore8();
+                    tot3 += tsbr.getScore9();
+                    tot3 += tsbr.getScore10();
+                    tot3 += tsbr.getScore11();
+                    tot3 += tsbr.getScore12();
+                    tot3 += tsbr.getScore13();
+                    tot3 += tsbr.getScore14();
+                    tot3 += tsbr.getScore15();
+                    tot3 += tsbr.getScore16();
+                    tot3 += tsbr.getScore17();
+                    tot3 += tsbr.getScore18();
+                    //
+                    tot3Points += tsbr.getPoints1();
+                    tot3Points += tsbr.getPoints2();
+                    tot3Points += tsbr.getPoints3();
+                    tot3Points += tsbr.getPoints4();
+                    tot3Points += tsbr.getPoints5();
+                    tot3Points += tsbr.getPoints6();
+                    tot3Points += tsbr.getPoints7();
+                    tot3Points += tsbr.getPoints8();
+                    tot3Points += tsbr.getPoints9();
+                    tot3Points += tsbr.getPoints10();
+                    tot3Points += tsbr.getPoints11();
+                    tot3Points += tsbr.getPoints12();
+                    tot3Points += tsbr.getPoints13();
+                    tot3Points += tsbr.getPoints14();
+                    tot3Points += tsbr.getPoints15();
+                    tot3Points += tsbr.getPoints16();
+                    tot3Points += tsbr.getPoints17();
+                    tot3Points += tsbr.getPoints18();
+                    //
+                    leaderBoard.setScoreRound3(tot3);
+                    leaderBoard.setPointsRound3(tot3Points);
+                    tsbr.setTotalScore(tot3);
+                    tsbr.setTotalPoints(tot3Points);
+                    overallScore += tot3;
+                    overallPoints += tot3Points;
+
+                    em.merge(tsbr);
+                    break;
+                case 4:
+                    int tot4 = 0,
+                     tot4Points = 0;
+                    tot4 += tsbr.getScore1();
+                    tot4 += tsbr.getScore2();
+                    tot4 += tsbr.getScore3();
+                    tot4 += tsbr.getScore4();
+                    tot4 += tsbr.getScore5();
+                    tot4 += tsbr.getScore6();
+                    tot4 += tsbr.getScore7();
+                    tot4 += tsbr.getScore8();
+                    tot4 += tsbr.getScore9();
+                    tot4 += tsbr.getScore10();
+                    tot4 += tsbr.getScore11();
+                    tot4 += tsbr.getScore12();
+                    tot4 += tsbr.getScore13();
+                    tot4 += tsbr.getScore14();
+                    tot4 += tsbr.getScore15();
+                    tot4 += tsbr.getScore16();
+                    tot4 += tsbr.getScore17();
+                    tot4 += tsbr.getScore18();
+                    //
+                    tot4Points += tsbr.getPoints1();
+                    tot4Points += tsbr.getPoints2();
+                    tot4Points += tsbr.getPoints3();
+                    tot4Points += tsbr.getPoints4();
+                    tot4Points += tsbr.getPoints5();
+                    tot4Points += tsbr.getPoints6();
+                    tot4Points += tsbr.getPoints7();
+                    tot4Points += tsbr.getPoints8();
+                    tot4Points += tsbr.getPoints9();
+                    tot4Points += tsbr.getPoints10();
+                    tot4Points += tsbr.getPoints11();
+                    tot4Points += tsbr.getPoints12();
+                    tot4Points += tsbr.getPoints13();
+                    tot4Points += tsbr.getPoints14();
+                    tot4Points += tsbr.getPoints15();
+                    tot4Points += tsbr.getPoints16();
+                    tot4Points += tsbr.getPoints17();
+                    tot4Points += tsbr.getPoints18();
+                    //
+                    leaderBoard.setScoreRound4(tot4);
+                    leaderBoard.setPointsRound4(tot4Points);
+                    tsbr.setTotalScore(tot4);
+                    tsbr.setTotalPoints(tot4Points);
+                    overallScore += tot4;
+                    overallPoints += tot4Points;
+
+                    em.merge(tsbr);
+                    break;
+                case 5:
+                    int tot5 = 0,
+                     tot5Points = 0;
+                    tot5 += tsbr.getScore1();
+                    tot5 += tsbr.getScore2();
+                    tot5 += tsbr.getScore3();
+                    tot5 += tsbr.getScore4();
+                    tot5 += tsbr.getScore5();
+                    tot5 += tsbr.getScore6();
+                    tot5 += tsbr.getScore7();
+                    tot5 += tsbr.getScore8();
+                    tot5 += tsbr.getScore9();
+                    tot5 += tsbr.getScore10();
+                    tot5 += tsbr.getScore11();
+                    tot5 += tsbr.getScore12();
+                    tot5 += tsbr.getScore13();
+                    tot5 += tsbr.getScore14();
+                    tot5 += tsbr.getScore15();
+                    tot5 += tsbr.getScore16();
+                    tot5 += tsbr.getScore17();
+                    tot5 += tsbr.getScore18();
+                    //
+                    tot5Points += tsbr.getPoints1();
+                    tot5Points += tsbr.getPoints2();
+                    tot5Points += tsbr.getPoints3();
+                    tot5Points += tsbr.getPoints4();
+                    tot5Points += tsbr.getPoints5();
+                    tot5Points += tsbr.getPoints6();
+                    tot5Points += tsbr.getPoints7();
+                    tot5Points += tsbr.getPoints8();
+                    tot5Points += tsbr.getPoints9();
+                    tot5Points += tsbr.getPoints10();
+                    tot5Points += tsbr.getPoints11();
+                    tot5Points += tsbr.getPoints12();
+                    tot5Points += tsbr.getPoints13();
+                    tot5Points += tsbr.getPoints14();
+                    tot5Points += tsbr.getPoints15();
+                    tot5Points += tsbr.getPoints16();
+                    tot5Points += tsbr.getPoints17();
+                    tot5Points += tsbr.getPoints18();
+                    //
+                    leaderBoard.setScoreRound5(tot5);
+                    leaderBoard.setPointsRound5(tot5Points);
+                    tsbr.setTotalScore(tot5);
+                    tsbr.setTotalPoints(tot5Points);
+                    overallScore += tot5;
+                    overallPoints += tot5Points;
+
+                    em.merge(tsbr);
+                    break;
+                case 6:
+                    int tot6 = 0,
+                     tot6Points = 0;
+                    tot6 += tsbr.getScore1();
+                    tot6 += tsbr.getScore2();
+                    tot6 += tsbr.getScore3();
+                    tot6 += tsbr.getScore4();
+                    tot6 += tsbr.getScore5();
+                    tot6 += tsbr.getScore6();
+                    tot6 += tsbr.getScore7();
+                    tot6 += tsbr.getScore8();
+                    tot6 += tsbr.getScore9();
+                    tot6 += tsbr.getScore10();
+                    tot6 += tsbr.getScore11();
+                    tot6 += tsbr.getScore12();
+                    tot6 += tsbr.getScore13();
+                    tot6 += tsbr.getScore14();
+                    tot6 += tsbr.getScore15();
+                    tot6 += tsbr.getScore16();
+                    tot6 += tsbr.getScore17();
+                    tot6 += tsbr.getScore18();
+                    //
+                    tot6Points += tsbr.getPoints1();
+                    tot6Points += tsbr.getPoints2();
+                    tot6Points += tsbr.getPoints3();
+                    tot6Points += tsbr.getPoints4();
+                    tot6Points += tsbr.getPoints5();
+                    tot6Points += tsbr.getPoints6();
+                    tot6Points += tsbr.getPoints7();
+                    tot6Points += tsbr.getPoints8();
+                    tot6Points += tsbr.getPoints9();
+                    tot6Points += tsbr.getPoints10();
+                    tot6Points += tsbr.getPoints11();
+                    tot6Points += tsbr.getPoints12();
+                    tot6Points += tsbr.getPoints13();
+                    tot6Points += tsbr.getPoints14();
+                    tot6Points += tsbr.getPoints15();
+                    tot6Points += tsbr.getPoints16();
+                    tot6Points += tsbr.getPoints17();
+                    tot6Points += tsbr.getPoints18();
+                    //
+                    leaderBoard.setScoreRound6(tot6);
+                    leaderBoard.setPointsRound6(tot6Points);
+                    tsbr.setTotalScore(tot6);
+                    tsbr.setTotalPoints(tot6Points);
+                    overallScore += tot6;
+                    overallPoints += tot6Points;
+
+                    em.merge(tsbr);
+                    break;
+            }
+        }
+        leaderBoard.setTotalScore(overallScore);
+        leaderBoard.setTotalPoints(overallPoints);
+        try {
+            em.merge(leaderBoard);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unable to total scores", e);
+            throw new DataException("Unable to total & update scores\n" + getErrorString(e));
+        }
+    }
+
     public TourneyScoreByRound getTourneyScoreByRoundByID(int id) {
         TourneyScoreByRound tsbr = em.find(TourneyScoreByRound.class, id);
         return tsbr;
     }
-    
+
     public ResponseDTO updateTournamentScore(LeaderBoardDTO d) throws DataException {
         ResponseDTO r = new ResponseDTO();
         LeaderBoard s = em.find(LeaderBoard.class, d.getLeaderBoardID());
-        
+
         s.setScoreRound1(d.getScoreRound1());
         s.setScoreRound2(d.getScoreRound2());
         s.setScoreRound3(d.getScoreRound3());
@@ -1711,17 +2192,17 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public void updateGolfGroup(GolfGroupDTO group) throws DataException {
-        
+
         GolfGroup g = getGroupByID(group.getGolfGroupID());
         g.setGolfGroupName(group.getGolfGroupName());
         g.setEmail(group.getEmail());
         g.setCellphone(group.getCellphone());
-        
+
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated golf group: {0} ",
                     new Object[]{g.getGolfGroupName()});
         } catch (Exception e) {
@@ -1729,22 +2210,22 @@ public class DataUtil {
             throw new DataException(getErrorString(e));
         }
     }
-    
+
     public void removeParentInPlayer(PlayerDTO p) throws DataException {
         Player g = getPlayerByID(p.getPlayerID());
         g.setParent(null);
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated player: '{'0'}' {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update player", e);
             throw new DataException(getErrorString(e));
         }
     }
-    
+
     public void updatePlayer(PlayerDTO player) throws DataException {
-        
+
         Player g = getPlayerByID(player.getPlayerID());
         g.setCellphone(player.getCellphone());
         g.setEmail(player.getEmail());
@@ -1761,17 +2242,17 @@ public class DataUtil {
             Parent parent = getParentByID(player.getParentID());
             g.setParent(parent);
         }
-        
+
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated player: '{'0'}' {0} {1}", new Object[]{player.getFirstName(), player.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update player", e);
             throw new DataException(getErrorString(e));
         }
     }
-    
+
     public void updateParent(ParentDTO dto) throws DataException {
         Parent g = getParentByID(dto.getParentID());
         g.setCellphone(dto.getCellphone());
@@ -1781,19 +2262,19 @@ public class DataUtil {
         g.setMiddleName(dto.getMiddleName());
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated parent: '{'0'}' {0} {1}", new Object[]{dto.getFirstName(), dto.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update parent", e);
             throw new DataException(getErrorString(e));
         }
     }
-    
+
     public Scorer getScorerByID(int id) {
         Scorer s = em.find(Scorer.class, id);
         return s;
     }
-    
+
     public void updateScorer(ScorerDTO dto) throws DataException {
         Scorer g = getScorerByID(dto.getScorerID());
         g.setCellphone(dto.getCellphone());
@@ -1802,16 +2283,16 @@ public class DataUtil {
         g.setLastName(dto.getLastName());
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated scorer: '{'0'}' {0} {1}", new Object[]{dto.getFirstName(), dto.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update scorer", e);
             throw new DataException(getErrorString(e));
         }
     }
-    
+
     public void updateClubCourse(ClubCourseDTO dto) throws DataException {
-        
+
         ClubCourse g = getClubCourseByID(dto.getClubCourseID());
         g.setHoles(dto.getHoles());
         g.setPar(dto.getPar());
@@ -1833,7 +2314,7 @@ public class DataUtil {
         g.setParHole16(dto.getParHole16());
         g.setParHole17(dto.getParHole17());
         g.setParHole18(dto.getParHole18());
-        
+
         try {
             em.merge(g);
             logger.log(Level.INFO, "\n### Updated clubCourse: {0}",
@@ -1843,9 +2324,9 @@ public class DataUtil {
             throw new DataException(getErrorString(e));
         }
     }
-    
+
     public void updateClub(ClubDTO dto) throws DataException {
-        
+
         Club g = getClubByID(dto.getClubID());
         g.setTelephone(dto.getTelephone());
         g.setEmail(dto.getEmail());
@@ -1853,24 +2334,24 @@ public class DataUtil {
         g.setAddress(dto.getAddress());
         g.setLatitude(dto.getLatitude());
         g.setLongitude(dto.getLongitude());
-        
+
         if (dto.getProvinceID() > 0) {
             Province prov = getProvinceByID(dto.getProvinceID());
             g.setProvince(prov);
         }
-        
+
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated club: {0}", new Object[]{dto.getClubName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update club", e);
             throw new DataException(getErrorString(e));
         }
     }
-    
+
     public void updateAdmin(AdministratorDTO d) throws DataException {
-        
+
         Administrator g = em.find(Administrator.class, d.getAdministratorID());
         g.setCellphone(d.getCellphone());
         g.setEmail(d.getEmail());
@@ -1878,57 +2359,57 @@ public class DataUtil {
         g.setLastName(d.getLastName());
         try {
             em.merge(g);
-            
+
             logger.log(Level.INFO, "\n### Updated admin: {0}", new Object[]{d.getFirstName() + " " + d.getLastName()});
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update admin", e);
             throw new DataException(getErrorString(e));
         }
     }
-    
+
     public Agegroup getAgeGroupByID(int id) {
         Agegroup g = em.find(Agegroup.class, id);
         return g;
     }
-    
+
     public Administrator getAdministratorByID(int id) {
         Administrator g = em.find(Administrator.class, id);
         return g;
     }
-    
+
     public Club getClubByID(int id) {
         Club g = em.find(Club.class, id);
         return g;
     }
-    
+
     public Country getCountryByID(int id) {
         Country g = em.find(Country.class, id);
         return g;
     }
-    
+
     public Province getProvinceByID(int id) {
         Province g = em.find(Province.class, id);
         return g;
     }
-    
+
     public GolfGroup getGroupByID(int id) {
         GolfGroup g = em.find(GolfGroup.class, id);
         return g;
     }
-    
+
     public Player getPlayerByID(int id) {
         Player g = em.find(Player.class, id);
         return g;
     }
-    
+
     public Parent getParentByID(int id) {
-        
+
         Parent g = em.find(Parent.class, id);
         return g;
     }
-    
+
     public ResponseDTO removeTournamentPlayer(int tournamentID, int playerID) throws DataException {
-        
+
         ResponseDTO r = new ResponseDTO();
         try {
             Query q = em.createNamedQuery("TourneyScoreByRound.removeTourneyPlayer", TourneyScoreByRound.class);
@@ -1941,15 +2422,15 @@ public class DataUtil {
             qx.setParameter("pID", playerID);
             deleted = qx.executeUpdate();
             logger.log(Level.OFF, "Removed LeaderBoard: {0}", deleted);
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to remove Tournament player", e);
             throw new DataException("Failed to remove Tournament player\n" + getErrorString(e));
         }
-        
+
         return r;
     }
-    
+
     public ResponseDTO addTournamentPlayers(List<Integer> list, int tournamentID, PlatformUtil platformUtil) throws DataException {
         ResponseDTO r = new ResponseDTO();
         r.setLeaderBoardList(new ArrayList<LeaderBoardDTO>());
@@ -1972,7 +2453,7 @@ public class DataUtil {
                     Query z = em.createNamedQuery("TournamentCourse.findByTourney", TournamentCourse.class);
                     z.setParameter("id", leaderBoard.getTournament().getTournamentID());
                     List<TournamentCourse> tcList = z.getResultList();
-                    
+
                     for (TournamentCourse tc : tcList) {
                         TourneyScoreByRoundDTO dto = new TourneyScoreByRoundDTO();
                         dto.setGolfRound(tc.getRound());
@@ -1988,23 +2469,23 @@ public class DataUtil {
                     lbd.setTourneyScoreByRoundList(tsbrList);
                     r.getLeaderBoardList().add(lbd);
                     logger.log(Level.INFO, "Player added to tournament");
-                    
+
                 } catch (PersistenceException e) {
                     r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
                     r.setMessage("Duplicate detected. Record already exists");
                     platformUtil.addErrorStore(7, "Duplicate detected\n\n" + getErrorString(e), "DataUtil");
                 }
             }
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add Tournament players", e);
             throw new DataException("Failed to add Tournament players\n" + getErrorString(e));
         }
         return r;
     }
-    
+
     public ResponseDTO addTournamentPlayer(LeaderBoardDTO leaderBoardDTO, PlatformUtil platformUtil) throws DataException {
-        
+
         ResponseDTO r = new ResponseDTO();
         if (leaderBoardDTO.getTournamentID() == 0) {
             throw new DataException("Tournament ID is zero on attempt to add Tournament player");
@@ -2026,7 +2507,7 @@ public class DataUtil {
             Query z = em.createNamedQuery("TournamentCourse.findByTourney", TournamentCourse.class);
             z.setParameter("id", leaderBoardDTO.getTournamentID());
             List<TournamentCourse> tcList = z.getResultList();
-            
+
             for (TournamentCourse tc : tcList) {
                 TourneyScoreByRoundDTO dto = new TourneyScoreByRoundDTO();
                 dto.setGolfRound(tc.getRound());
@@ -2049,11 +2530,11 @@ public class DataUtil {
             for (LeaderBoard x : lbList) {
                 dtoList.add(new LeaderBoardDTO(x));
             }
-            
+
             zz = em.createNamedQuery("TourneyScoreByRound.getByTourney", TourneyScoreByRound.class);
             zz.setParameter("id", leaderBoardDTO.getTournamentID());
             List<TourneyScoreByRound> tsbList = zz.getResultList();
-            
+
             for (LeaderBoardDTO lb : dtoList) {
                 lb.setTourneyScoreByRoundList(new ArrayList<TourneyScoreByRoundDTO>());
                 for (TourneyScoreByRound tsbr : tsbList) {
@@ -2061,17 +2542,17 @@ public class DataUtil {
                         lb.getTourneyScoreByRoundList().add(new TourneyScoreByRoundDTO(tsbr));
                     }
                 }
-                
+
             }
             r.setLeaderBoardList(dtoList);
             r.setLeaderBoard(new LeaderBoardDTO(leaderBoard));
             r.getLeaderBoard().setTourneyScoreByRoundList(tsbrList);
-            
+
         } catch (PersistenceException e) {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("Duplicate detected. Record already exists");
             platformUtil.addErrorStore(7, "Duplicate detected\n\n" + getErrorString(e), "DataUtil");
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add Tournament player", e);
             throw new DataException("Failed to add Tournament player\n" + getErrorString(e));
@@ -2079,9 +2560,133 @@ public class DataUtil {
         }
         return r;
     }
-    
+
+    public ResponseDTO addTournamentTeams(List<Integer> list, int tournamentID, PlatformUtil platformUtil) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        r.setLeaderBoardTeamList(new ArrayList<LeaderBoardTeamDTO>());
+        try {
+            for (Integer lb : list) {
+                LeaderBoardTeam s = new LeaderBoardTeam();
+                s.setDateRegistered(new Date());
+                s.setTeam(em.find(Team.class, lb));
+                s.setTournament(getTournamentByID(tournamentID));
+                try {
+                    em.persist(s);
+                    logger.log(Level.INFO, "addTournamentTeam persisted ....");
+                    Query q = em.createQuery("select a from LeaderBoardTeam a where a.team.teamID = :pID and a.tournament.tournamentID = :tID");
+                    q.setParameter("pID", lb);
+                    q.setParameter("tID", tournamentID);
+                    q.setMaxResults(1);
+                    LeaderBoardTeam leaderBoard = (LeaderBoardTeam) q.getSingleResult();
+                    List<TourneyScoreByRoundTeamDTO> pList = new ArrayList<>();
+                    //
+                    Query z = em.createNamedQuery("TournamentCourse.findByTourney", TournamentCourse.class);
+                    z.setParameter("id", leaderBoard.getTournament().getTournamentID());
+                    List<TournamentCourse> tcList = z.getResultList();
+
+                    for (TournamentCourse tc : tcList) {
+                        TourneyScoreByRoundTeamDTO dto = new TourneyScoreByRoundTeamDTO();
+                        dto.setGolfRound(tc.getRound());
+                        dto.setClubCourse(new ClubCourseDTO(tc.getClubCourse()));
+                        dto.setHolesPerRound(s.getTournament().getHolesPerRound());
+                        dto.setPar(tc.getClubCourse().getPar());
+                        dto.setTournamentID(leaderBoard.getTournament().getTournamentID());
+                        dto.setLeaderBoardTeamID(leaderBoard.getLeaderBoardTeamID());
+                        pList.add(dto);
+                    }
+                    LeaderBoardTeamDTO lbd = new LeaderBoardTeamDTO(leaderBoard);
+                    List<TourneyScoreByRoundTeamDTO> tsbrList = addTournamentScoreByRoundTeam(leaderBoard, pList);
+                    lbd.setTourneyScoreByRoundTeamList(tsbrList);
+                    r.getLeaderBoardTeamList().add(lbd);
+                    logger.log(Level.INFO, "Team added to tournament");
+
+                } catch (PersistenceException e) {
+                    r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
+                    r.setMessage("Duplicate detected. Record already exists");
+                    platformUtil.addErrorStore(7, "Duplicate detected\n\n" + getErrorString(e), "DataUtil");
+                }
+            }
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to add Tournament players", e);
+            throw new DataException("Failed to add Tournament players\n" + getErrorString(e));
+        }
+        return r;
+    }
+
+    public ResponseDTO importPlayers(List<PlayerDTO> list, int golfGroupID) throws DataException {
+        ResponseDTO r = new ResponseDTO();
+        r.setPlayers(new ArrayList<PlayerDTO>());
+        List<Player> playerList = new ArrayList();
+        boolean isNewPlayer = false;
+        try {
+            for (PlayerDTO d : list) {
+                Player p = null;
+                Query q = em.createNamedQuery("Player.findByEmail", Player.class);
+                q.setParameter("email", d.getEmail());
+                q.setMaxResults(1);
+                try {
+                    p = (Player) q.getSingleResult();
+                    if (p == null) {
+                        isNewPlayer = true;
+                        p = new Player();
+                    }
+                } catch (NoResultException e) {
+                    p = new Player();
+                    isNewPlayer = true;
+                }
+                p.setCellphone(d.getCellphone());
+                if (d.getDateOfBirth() > 0) {
+                    p.setDateOfBirth(new Date(d.getDateOfBirth()));
+                }
+                p.setDateRegistered(new Date());
+                p.setEmail(d.getEmail());
+                p.setFirstName(d.getFirstName());
+                p.setLastName(d.getLastName());
+                p.setGender(d.getGender());
+                p.setPin(getRandomPin());
+                p.setYearJoined(d.getYearJoined());
+
+                if (isNewPlayer) {
+                    em.persist(p);
+                    q = em.createNamedQuery("Player.findByEmail", Player.class);
+                    q.setParameter("email", p.getEmail());
+                    q.setMaxResults(1);
+                    p = (Player) q.getSingleResult();
+                    playerList.add(p);
+                    log.log(Level.INFO, "Player imported to Group: {0} {1}",
+                            new Object[]{p.getFirstName(), p.getLastName()});
+                } else {
+                    em.merge(p);
+                    log.log(Level.INFO, "Player import updated, not new, to Group: {0} {1}",
+                            new Object[]{p.getFirstName(), p.getLastName()});
+                }
+            }
+            GolfGroup gg = getGroupByID(golfGroupID);
+            for (Player player : playerList) {
+                GolfGroupPlayer ggp = new GolfGroupPlayer();
+                ggp.setGolfGroup(gg);
+                ggp.setPlayer(player);
+                ggp.setDateRegistered(new Date());
+                em.persist(ggp);
+            }
+            Query q = em.createNamedQuery("Player.findByGolfGroup", Player.class);
+            q.setParameter("id", golfGroupID);
+            List<Player> pList = q.getResultList();
+            for (Player player : pList) {
+                r.getPlayers().add(new PlayerDTO(player));
+            }
+
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed", e);
+            throw new DataException("Failed to import players\n" + getErrorString(e));
+        }
+
+        return r;
+    }
+
     public ResponseDTO addTournament(TournamentDTO dto, PlatformUtil platformUtil) throws DataException {
-        
+
         ResponseDTO r = new ResponseDTO();
         Tournament t = new Tournament();
         if (dto.getClosingDate() > 0) {
@@ -2102,7 +2707,7 @@ public class DataUtil {
         t.setExampleFlag(dto.getExampleFlag());
         t.setUseAgeGroups(dto.getUseAgeGroups());
         t.setTournamentType(dto.getTournamentType());
-        
+
         try {
             em.persist(t);
             //add tournamentCourses - if only one course but > 1 round
@@ -2123,7 +2728,7 @@ public class DataUtil {
                     x.setClubCourse(cc);
                     em.persist(x);
                 }
-                
+
             } else {
                 //get club courses selected by user --- 
                 for (TournamentCourseDTO tc : dto.getTournamentCourses()) {
@@ -2142,14 +2747,14 @@ public class DataUtil {
                 dtoList.add(new TournamentDTO(tx));
             }
             r.setTournaments(dtoList);
-            
+
             logger.log(Level.INFO, "\n### Added Tournament {0} group: {1}",
                     new Object[]{t.getTourneyName(), t.getGolfGroup().getGolfGroupName()});
             platformUtil.addErrorStore(555, "Tournament added, rounds: " + t.getGolfRounds(), "DataUtil");
         } catch (PersistenceException e) {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("Duplicate detected. Record already exists");
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add Tournament", e);
             throw new DataException("Failed to add Tournament\n" + getErrorString(e));
@@ -2157,9 +2762,9 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO addParent(ParentDTO dto, int golfGroupID, PlatformUtil platformUtil) throws DataException {
-        
+
         ResponseDTO r = new ResponseDTO();
         Parent p = new Parent();
         p.setCellphone(dto.getCellphone());
@@ -2169,7 +2774,7 @@ public class DataUtil {
         p.setMiddleName(dto.getMiddleName());
         p.setParentType(dto.getParentType());
         p.setPin(dto.getPin());
-        
+
         try {
             em.persist(p);
             Query q = em.createNamedQuery("Parent.findByEmail", Parent.class);
@@ -2183,7 +2788,7 @@ public class DataUtil {
                 addGcmDevice(getGroupByID(golfGroupID), PARENT, p.getParentID(), dto.getGcmDevice(), platformUtil);
             }
             logger.log(Level.INFO, "\n### Added Parent {0}  {1}", new Object[]{p.getFirstName(), p.getLastName()});
-            
+
         } catch (PersistenceException e) {
             logger.log(Level.WARNING, " Parent GolfGroup", e);
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
@@ -2195,10 +2800,10 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO addGolfGroupParent(int parentID, int golfGroupID)
             throws DuplicateException, DataException {
-        
+
         ResponseDTO r = new ResponseDTO();
         GolfGroup group = getGroupByID(golfGroupID);
         GolfGroupParent gg = new GolfGroupParent();
@@ -2219,16 +2824,16 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO addGolfGroupPlayer(int playerID, int golfGroupID) throws DuplicateException, DataException {
         ResponseDTO r = new ResponseDTO();
         GolfGroup group = getGroupByID(golfGroupID);
-        
+
         GolfGroupPlayer gg = new GolfGroupPlayer();
         gg.setDateRegistered(new Date());
         gg.setGolfGroup(group);
         gg.setPlayer(getPlayerByID(playerID));
-        
+
         try {
             em.persist(gg);
             Query q = em.createNamedQuery("GolfGroupPlayer.findByGolfGroup", GolfGroupPlayer.class);
@@ -2244,7 +2849,7 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Duplicate GolfGroup player", e);
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("This player already belongs to the Group");
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add Golf Group Player", e);
             throw new DataException("Failed to add Golf Group Player\n" + getErrorString(e));
@@ -2252,7 +2857,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO addClub(ClubDTO d) throws DataException {
         ResponseDTO r = new ResponseDTO();
         Club club = new Club();
@@ -2265,7 +2870,7 @@ public class DataUtil {
         if (d.getProvinceID() > 0) {
             club.setProvince(getProvinceByID(d.getProvinceID()));
         }
-        
+
         try {
             em.persist(club);
             Query q = em.createNamedQuery("Club.findByNameInProvince", Club.class);
@@ -2305,22 +2910,22 @@ public class DataUtil {
             cDTO.getClubCourses().add(new ClubCourseDTO(ccList.get(0)));
             r.setClubs(new ArrayList<ClubDTO>());
             r.getClubs().add(cDTO);
-            
+
             logger.log(Level.INFO, "\n### Added Club and assoc. course {0}", c.getClubName() + " - " + c.getProvince().getProvinceName());
         } catch (PersistenceException e) {
             logger.log(Level.SEVERE, "***ERROR*** Duplicate Club", e);
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("This club already exists");
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add Club", e);
             throw new DataException("Failed to add Club\n" + getErrorString(e));
         } finally {
         }
         return r;
-        
+
     }
-    
+
     private String getRandomPin() {
         StringBuilder sb = new StringBuilder();
         Random rand = new Random(System.currentTimeMillis());
@@ -2336,7 +2941,7 @@ public class DataUtil {
         sb.append(rand.nextInt(9));
         return sb.toString();
     }
-    
+
     public ResponseDTO addPlayer(PlayerDTO d, int golfGroupID, PlatformUtil platformUtil) throws DataException {
         ResponseDTO r = new ResponseDTO();
         boolean isNewPlayer = false;
@@ -2359,7 +2964,7 @@ public class DataUtil {
             p.setFirstName(d.getFirstName());
             p.setLastName(d.getLastName());
             p.setMiddleName(d.getMiddleName());
-            
+
             p.setGender(d.getGender());
             p.setPin(getRandomPin());
             p.setYearJoined(d.getYearJoined());
@@ -2376,17 +2981,17 @@ public class DataUtil {
             } else {
                 em.merge(p);
             }
-            
+
             r = addGolfGroupPlayer(p.getPlayerID(), golfGroupID);
             r.setPlayers(new ArrayList<PlayerDTO>());
             r.getPlayers().add(new PlayerDTO(p));
-            
+
             logger.log(Level.INFO, "\n### Added Player {0} {1}", new Object[]{p.getFirstName(), p.getLastName()});
         } catch (PersistenceException e) {
             logger.log(Level.SEVERE, "Duplicate Player", e);
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("This player email already has an account");
-            
+
         } catch (DataException | DuplicateException e) {
             logger.log(Level.SEVERE, "Failed to add Player", e);
             throw new DataException("Failed to add Player\n" + getErrorString(e));
@@ -2394,7 +2999,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO addScorer(ScorerDTO d, int golfGroupID, PlatformUtil platformUtil) throws DataException {
         ResponseDTO r = new ResponseDTO();
         Scorer p = new Scorer();
@@ -2421,7 +3026,7 @@ public class DataUtil {
             logger.log(Level.SEVERE, "***ERROR*** Duplicate Scorer", e);
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("This Scorer email already has an account");
-            
+
         } catch (DataException e) {
             logger.log(Level.SEVERE, "Failed to add Scorer", e);
             throw new DataException("Failed to add Scorer\n" + getErrorString(e));
@@ -2429,7 +3034,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     public ResponseDTO addGolfGroupAdmin(AdministratorDTO d)
             throws DataException {
         ResponseDTO r = new ResponseDTO();
@@ -2440,12 +3045,12 @@ public class DataUtil {
         a.setLastName(d.getLastName());
         a.setPin(getPin());
         a.setSuperUserFlag(d.getSuperUserFlag());
-        
+
         if (d.getGolfGroupID() > 0) {
             GolfGroup gg = getGroupByID(d.getGolfGroupID());
             a.setGolfGroup(gg);
         }
-        
+
         try {
             em.persist(a);
             Query q = em.createNamedQuery("Administrator.findByEmail", Administrator.class);
@@ -2459,16 +3064,16 @@ public class DataUtil {
             logger.log(Level.WARNING, "***ERROR*** Duplicate GolfGroup admin", e);
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("This golf group or administrator email already has an account");
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add Admin", e);
             throw new DataException("Failed to add Admin\n" + getErrorString(e));
-            
+
         } finally {
         }
         return r;
     }
-    
+
     private String getPin() {
         Random rand = new Random(System.currentTimeMillis());
         StringBuilder sb = new StringBuilder();
@@ -2481,7 +3086,7 @@ public class DataUtil {
         logger.log(Level.OFF, "pin generated: {0}", sb.toString());
         return sb.toString();
     }
-    
+
     public ResponseDTO addGolfGroup(GolfGroupDTO d, AdministratorDTO admin, PlatformUtil platformUtil)
             throws DataException {
         ResponseDTO r = new ResponseDTO();
@@ -2491,7 +3096,7 @@ public class DataUtil {
         g.setEmail(d.getEmail());
         g.setGolfGroupName(d.getGolfGroupName());
         g.setCountry(getCountryByID(d.getCountryID()));
-        
+
         try {
             em.persist(g);
             Query q = em.createNamedQuery("GolfGroup.findByEmail", GolfGroup.class);
@@ -2504,7 +3109,7 @@ public class DataUtil {
             r.setGolfGroup(new GolfGroupDTO(gg));
             admin.setSuperUserFlag(1);
             admin.setGolfGroupID(r.getGolfGroup().getGolfGroupID());
-            
+
             ResponseDTO r2 = addGolfGroupAdmin(admin);
             r.setAdministrator(r2.getAdministrator());
             addInitialOrderOfMerit(gg);
@@ -2519,7 +3124,7 @@ public class DataUtil {
             }
             logger.log(Level.INFO, "\n### Added GolfGroup {0}", g.getGolfGroupName());
             platformUtil.addErrorStore(777, "GolfGroup registered", "DataUtil");
-            
+
         } catch (PersistenceException e) {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("This golf group or administrator email already has an account");
@@ -2529,7 +3134,7 @@ public class DataUtil {
         }
         return r;
     }
-    
+
     private void addInitialOrderOfMerit(GolfGroup gg) throws DataException {
         try {
             OrderOfMeritPoint p = new OrderOfMeritPoint();
@@ -2551,7 +3156,7 @@ public class DataUtil {
             throw new DataException("Failed to add initial orderOfMerit\n" + getErrorString(e));
         }
     }
-    
+
     private void addInitialAgeGroups(GolfGroup gg) throws DataException {
         try {
             Agegroup a1 = new Agegroup();
@@ -2611,7 +3216,7 @@ public class DataUtil {
             af1.setGender(2);
             af1.setGolfGroup(gg);
             em.persist(af1);
-            
+
             Agegroup af2 = new Agegroup();
             af2.setGroupName("Girls 8 - 10");
             af2.setAgeFrom(8);
@@ -2619,7 +3224,7 @@ public class DataUtil {
             af2.setGender(2);
             af2.setGolfGroup(gg);
             em.persist(af2);
-            
+
             Agegroup af3 = new Agegroup();
             af3.setGroupName("Girls 11 - 13");
             af3.setAgeFrom(11);
@@ -2627,7 +3232,7 @@ public class DataUtil {
             af3.setGender(2);
             af3.setGolfGroup(gg);
             em.persist(af3);
-            
+
             Agegroup af4 = new Agegroup();
             af4.setGroupName("Girls 14 - 16");
             af4.setAgeFrom(14);
@@ -2635,7 +3240,7 @@ public class DataUtil {
             af4.setGender(2);
             af4.setGolfGroup(gg);
             em.persist(af4);
-            
+
             Agegroup af5 = new Agegroup();
             af5.setGroupName("Girls 17 - 18");
             af5.setAgeFrom(17);
@@ -2643,18 +3248,18 @@ public class DataUtil {
             af5.setGender(2);
             af5.setGolfGroup(gg);
             em.persist(af5);
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add GolfGroup Age Groups", e);
             throw new DataException("Failed to add initial ageGroups\n" + getErrorString(e));
         }
     }
-    
+
     private void setAgeGroup(LeaderBoard lb, long tournamentStartDate) throws DataException {
-        
+
         LocalDateTime birthday = new LocalDateTime(lb.getPlayer().getDateOfBirth());
         LocalDateTime start = new LocalDateTime(tournamentStartDate);
-        
+
         Years years = Years.yearsBetween(birthday, start);
         int age = years.getYears();
 
@@ -2678,7 +3283,7 @@ public class DataUtil {
                 lb.setAge(age);
             }
             em.merge(lb);
-            
+
         } catch (NoResultException e) {
             logger.log(Level.WARNING, "AgeGroup not found, ignoring update");
         } catch (Exception e) {
@@ -2686,7 +3291,7 @@ public class DataUtil {
             throw new DataException("Failed to get ageGroup\n" + getErrorString(e));
         }
     }
-    
+
     public ResponseDTO deleteTournament(int tournamentID) throws DataException {
         ResponseDTO r = new ResponseDTO();
         try {
@@ -2694,12 +3299,12 @@ public class DataUtil {
             q.setParameter("id", tournamentID);
             int deleted = q.executeUpdate();
             logger.log(Level.INFO, "Tournament deleted, status: {0}", deleted);
-            
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to delete tournament", e);
             throw new DataException("Failed to delete tournament\n" + getErrorString(e));
         }
-        
+
         return r;
     }
     private static final Logger logger = Logger.getLogger("DataUtil");

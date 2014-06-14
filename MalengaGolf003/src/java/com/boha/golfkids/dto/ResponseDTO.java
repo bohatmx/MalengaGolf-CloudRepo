@@ -26,6 +26,7 @@ public class ResponseDTO {
     private List<TourneyScoreByRoundDTO> tourneyScoreByRoundList;
     private List<TournamentDTO> tournaments;
     private List<LeaderBoardDTO> leaderBoardList;
+    private List<LeaderBoardTeamDTO> leaderBoardTeamList;
     private List<CountryDTO> countries;
     private List<ProvinceDTO> provinces;
     private List<ClubDTO> clubs;
@@ -110,6 +111,14 @@ public class ResponseDTO {
   
     public int getStatusCode() {
         return statusCode;
+    }
+
+    public List<LeaderBoardTeamDTO> getLeaderBoardTeamList() {
+        return leaderBoardTeamList;
+    }
+
+    public void setLeaderBoardTeamList(List<LeaderBoardTeamDTO> leaderBoardTeamList) {
+        this.leaderBoardTeamList = leaderBoardTeamList;
     }
 
     public LeaderBoardDTO getLeaderBoard() {

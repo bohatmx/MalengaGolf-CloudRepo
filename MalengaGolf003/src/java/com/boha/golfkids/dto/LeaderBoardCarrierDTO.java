@@ -17,9 +17,18 @@ public class LeaderBoardCarrierDTO {
     private AgeGroupDTO ageGroup;
     
     private List<LeaderBoardDTO> leaderBoardList;
+    private List<LeaderBoardTeamDTO> leaderBoardTeamList;
 
     public AgeGroupDTO getAgeGroup() {
         return ageGroup;
+    }
+
+    public List<LeaderBoardTeamDTO> getLeaderBoardTeamList() {
+        return leaderBoardTeamList;
+    }
+
+    public void setLeaderBoardTeamList(List<LeaderBoardTeamDTO> leaderBoardTeamList) {
+        this.leaderBoardTeamList = leaderBoardTeamList;
     }
 
     public void setAgeGroup(AgeGroupDTO ageGroup) {

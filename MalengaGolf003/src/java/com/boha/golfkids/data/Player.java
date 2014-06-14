@@ -57,6 +57,9 @@ import javax.validation.constraints.Size;
             + "and b.golfGroup.golfGroupID = :id "
             + "order by p.lastName, p.firstName")})
 public class Player implements Serializable, Comparable<Player> {
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "player")
+    private List<TeamMember> teamMemberList;
     @Column(name = "gender")
     private Integer gender;
     @Column(name = "yearJoined")
@@ -254,6 +257,15 @@ public class Player implements Serializable, Comparable<Player> {
 
     public void setYearJoined(Integer yearJoined) {
         this.yearJoined = yearJoined;
+    }
+
+
+    public List<TeamMember> getTeamMemberList() {
+        return teamMemberList;
+    }
+
+    public void setTeamMemberList(List<TeamMember> teamMemberList) {
+        this.teamMemberList = teamMemberList;
     }
 
 }

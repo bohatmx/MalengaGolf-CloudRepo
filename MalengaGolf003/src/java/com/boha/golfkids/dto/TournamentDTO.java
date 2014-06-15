@@ -25,6 +25,7 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
     private long startDate;
     private String tourneyName, clubName;
     private int clubID;
+    private int scoringCommencedFlag;
     private int exampleFlag;
     private int useAgeGroups;
     private int clubCourseID, provinceID;
@@ -37,9 +38,11 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
         tournamentID = a.getTournamentID();
         tournamentType = a.getTournamentType();
         closedForScoringFlag = a.getClosedForScoringFlag();
+        scoringCommencedFlag = a.getScoringCommencedFlag();
         exampleFlag = a.getExampleFlag();
         useAgeGroups = a.getUseAgeGroups();
         closedForRegistrationFlag = a.getClosedForRegistrationFlag();
+        //
         if (a.getClosingDate() != null) {
             closingDate = a.getClosingDate().getTime();
         }
@@ -71,6 +74,14 @@ public class TournamentDTO implements Comparable<TournamentDTO> {
 
     public void setTournamentType(int tournamentType) {
         this.tournamentType = tournamentType;
+    }
+
+    public int getScoringCommencedFlag() {
+        return scoringCommencedFlag;
+    }
+
+    public void setScoringCommencedFlag(int scoringCommencedFlag) {
+        this.scoringCommencedFlag = scoringCommencedFlag;
     }
 
     

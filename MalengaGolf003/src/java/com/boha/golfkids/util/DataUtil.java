@@ -1163,7 +1163,7 @@ public class DataUtil {
         return r;
     }
 
-    public ResponseDTO updateTournamentScoreByRound(List<LeaderBoardDTO> list) throws DataException {
+    public ResponseDTO updateTournamentScoreByRoundx(List<LeaderBoardDTO> list) throws DataException {
         ResponseDTO r = new ResponseDTO();
         for (LeaderBoardDTO leaderboard : list) {
             LeaderBoard leaderBoard = getLeaderBoardByID(leaderboard.getLeaderBoardID());
@@ -1286,6 +1286,11 @@ public class DataUtil {
         ResponseDTO r = new ResponseDTO();
         LeaderBoard tps = getLeaderBoardByID(leaderboard.getLeaderBoardID());
         try {
+            Tournament tournament = tps.getTournament();
+            if (tournament.getScoringCommencedFlag() == 0) {
+                tournament.setScoringCommencedFlag(1);
+                em.merge(tournament);
+            }
             for (TourneyScoreByRoundDTO tsbr : leaderboard.getTourneyScoreByRoundList()) {
                 TourneyScoreByRound t = getTourneyScoreByRoundByID(tsbr.getTourneyScoreByRoundID());
                 t.setScoringComplete(tsbr.getScoringComplete());
@@ -1378,19 +1383,7 @@ public class DataUtil {
                 em.merge(tps);
             }
             r = getTournamentPlayers(leaderboard.getTournamentID());
-            //check if everybody done, close the tourney scoring
-            int incomplete = 0;
-            for (LeaderBoardDTO lb : r.getLeaderBoardList()) {
-                if (!lb.isScoringComplete()) {
-                    incomplete++;
-                }
-            }
-            if (incomplete == 0) {
-                Tournament t = tps.getTournament();
-                t.setClosedForScoringFlag(1);
-                em.merge(t);
-                logger.log(Level.INFO, "Tournament scoring closed: {0}", t.getTourneyName());
-            }
+
             logger.log(Level.INFO, "Player scores by hole updated");
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update score", e);
@@ -2671,15 +2664,14 @@ public class DataUtil {
                     updCount++;
                 }
             }
-              r.setMessage("Players added: " + count + " - updated: " + updCount);
-            
+            r.setMessage("Players added: " + count + " - updated: " + updCount);
+
 //            Query q = em.createNamedQuery("Player.findByGolfGroup", Player.class);
 //            q.setParameter("id", golfGroupID);
 //            List<Player> pList = q.getResultList();
 //            for (Player player : pList) {
 //                r.getPlayers().add(new PlayerDTO(player));
 //            }
-
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
             throw new DataException("Failed to import players\n" + getErrorString(e));

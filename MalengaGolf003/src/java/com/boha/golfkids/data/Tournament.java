@@ -108,6 +108,9 @@ public class Tournament implements Serializable {
     @Column(name = "tournamentType")
     private int tournamentType;
 
+    @Column(name = "scoringCommencedFlag")
+    private int scoringCommencedFlag;
+
     @Column(name = "closedForScoringFlag")
     private int closedForScoringFlag;
     
@@ -170,6 +173,14 @@ public class Tournament implements Serializable {
 
     public void setTournamentType(int tournamentType) {
         this.tournamentType = tournamentType;
+    }
+
+    public int getScoringCommencedFlag() {
+        return scoringCommencedFlag;
+    }
+
+    public void setScoringCommencedFlag(int scoringCommencedFlag) {
+        this.scoringCommencedFlag = scoringCommencedFlag;
     }
 
     public Date getClosingDate() {

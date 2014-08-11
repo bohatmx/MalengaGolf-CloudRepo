@@ -14,6 +14,7 @@ import java.util.List;
 public class PhotoUploadDTO {
 
     public static final String PLAYER_PREFIX = "player";
+    public static final String ADMINISTRATOR_PREFIX = "admin";
     public static final String PARENT_PREFIX = "parent";
     public static final String SCORER_PREFIX = "scorer";
     public static final String THUMB_PREFIX = "thumbnails";
@@ -21,7 +22,7 @@ public class PhotoUploadDTO {
     public static final int PICTURES_FULL_SIZE = 1;
     public static final int PICTURES_THUMBNAILS = 2;
 
-    private int golfGroupID, tournamentID, type, playerID, parentID, scorerID;
+    private int golfGroupID, tournamentID, type, playerID, parentID, scorerID, administratorID;
     private List<String> tags;
 
     public int getPlayerID() {
@@ -31,6 +32,16 @@ public class PhotoUploadDTO {
     public void setPlayerID(int playerID) {
         this.playerID = playerID;
     }
+
+    public int getAdministratorID() {
+        return administratorID;
+    }
+
+    public void setAdministratorID(int administratorID) {
+        this.administratorID = administratorID;
+    }
+
+   
 
     public int getParentID() {
         return parentID;

@@ -13,7 +13,7 @@ import java.util.List;
 public class ResponseDTO {
 
     private int statusCode, totalPages, totalClubs;
-    private String message, gcmRegistrationID;
+    private String message, gcmRegistrationID, sessionID;
     private LeaderBoardDTO leaderBoard;
     private PersonalPlayerDTO personalPlayer;
     private List<LeaderBoardCarrierDTO> leaderBoardCarriers;
@@ -44,6 +44,15 @@ public class ResponseDTO {
     private List<ErrorStoreDTO> errorStoreList;
     private String log;
 
+    public String getSessionID() {
+        return sessionID;
+    }
+
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
+    }
+
+    
     public String getLog() {
         return log;
     }

@@ -1,0 +1,24 @@
+{
+    "attributes": {
+        "vertical": {
+            "context": "div"
+        },
+        "unresolved": {
+            "context": "body"
+        }
+    },
+    "elements": {
+        "content": {},
+        "template": {},
+        "polymer-element": {},
+        "post-card": {},
+        "core-header-panel": {},
+        "paper-tabs": {},
+        "paper-tab": {},
+        "core-toolbar": {},
+        "core-icon-button": {},
+        "post-service": {},
+        "core-ajax": {},
+        "post-list": {}
+    }
+}

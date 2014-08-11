@@ -151,6 +151,7 @@ public class GolfAdminServlet extends HttpServlet {
 
                         break;
                     case RequestDTO.GET_LEADERBOARD:
+                        log.log(Level.INFO, "getting Leaderboard type is: {0}", dto.getTournamentType());
                         switch (dto.getTournamentType()) {
                             case RequestDTO.STROKE_PLAY_INDIVIDUAL:
                                 resp = leaderBoardUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);

@@ -128,7 +128,7 @@ public class PhotoServlet extends HttpServlet {
         PhotoUploadDTO dto = null;
         Gson gson = new Gson();
         File golfGroupDir = null, tournamentDir = null, playerDir = null,
-                parentDir = null, scorerDir = null;
+                parentDir = null, scorerDir = null, adminDir = null;
         try {
             ServletFileUpload upload = new ServletFileUpload();
             FileItemIterator iter = upload.getItemIterator(request);
@@ -153,8 +153,12 @@ public class PhotoServlet extends HttpServlet {
                                 if (dto.getScorerID() > 0) {
                                     scorerDir = createScorerDirectory(golfGroupDir, scorerDir);
                                 }
+                                if (dto.getAdministratorID() > 0) {
+                                    adminDir = createAdminDirectory(golfGroupDir, adminDir);
+                                }
                                 if (dto.getTournamentID() > 0) {
-                                    tournamentDir = createTournamentDirectory(golfGroupDir, tournamentDir, dto.getTournamentID());
+                                    tournamentDir = createTournamentDirectory(golfGroupDir, tournamentDir, 
+                                            dto.getTournamentID());
                                 }
                             }
                         } else {
@@ -169,7 +173,10 @@ public class PhotoServlet extends HttpServlet {
                     }
                     DateTime dt = new DateTime();
                     String suffix = "" + dt.getMillis() + ".jpg";
-                    if (dto.getTournamentID() == 0 && dto.getPlayerID() == 0 && dto.getParentID() == 0 && dto.getScorerID() == 0) {
+                    if (dto.getTournamentID() == 0 
+                            && dto.getPlayerID() == 0 
+                            && dto.getParentID() == 0 
+                            && dto.getScorerID() == 0) {
                         switch (dto.getType()) {
                             case PhotoUploadDTO.PICTURES_FULL_SIZE:
                                 imageFile = new File(golfGroupDir, "f" + suffix);
@@ -211,12 +218,24 @@ public class PhotoServlet extends HttpServlet {
                         }
                     }
                     if (dto.getScorerID() > 0) {
+                        logger.log(Level.OFF, "scorer photo about to download", dto.getScorerID());
                         switch (dto.getType()) {
                             case PhotoUploadDTO.PICTURES_FULL_SIZE:
                                 imageFile = new File(scorerDir, "f" + dto.getScorerID() + ".jpg");
                                 break;
                             case PhotoUploadDTO.PICTURES_THUMBNAILS:
                                 imageFile = new File(scorerDir, "t" + dto.getScorerID() + ".jpg");
+                                break;
+                        }
+                    }
+                    if (dto.getAdministratorID()> 0) {
+                        logger.log(Level.OFF, "admin photo about to download", dto.getAdministratorID());
+                        switch (dto.getType()) {
+                            case PhotoUploadDTO.PICTURES_FULL_SIZE:
+                                imageFile = new File(adminDir, "f" + dto.getAdministratorID() + ".jpg");
+                                break;
+                            case PhotoUploadDTO.PICTURES_THUMBNAILS:
+                                imageFile = new File(adminDir, "t" + dto.getAdministratorID() + ".jpg");
                                 break;
                         }
                     }
@@ -256,6 +275,17 @@ public class PhotoServlet extends HttpServlet {
 
         }
         return scorerDir;
+    }
+    private File createAdminDirectory(File golfGroupDir, File adminDir) {
+        logger.log(Level.INFO, "admin photo to be downloaded");
+        adminDir = new File(golfGroupDir, ADMIN_DIR);
+        if (!adminDir.exists()) {
+            adminDir.mkdir();
+            logger.log(Level.INFO, "admin  directory created - {0}",
+                    adminDir.getAbsolutePath());
+
+        }
+        return adminDir;
     }
 
     private File createParentDirectory(File golfGroupDir, File parentDir) {
@@ -320,6 +350,7 @@ public class PhotoServlet extends HttpServlet {
     public static final String PLAYER_DIR = "player";
     public static final String PARENT_DIR = "parent";
     public static final String SCORER_DIR = "scorer";
+    public static final String ADMIN_DIR = "admin";
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

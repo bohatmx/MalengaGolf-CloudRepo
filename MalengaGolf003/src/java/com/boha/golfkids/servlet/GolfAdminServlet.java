@@ -372,7 +372,6 @@ public class GolfAdminServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        log.log(Level.OFF, "################# POST REQUEST COMING IN ..........");
         processRequest(request, response);
     }
 

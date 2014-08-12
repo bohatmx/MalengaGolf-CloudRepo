@@ -477,7 +477,7 @@ public class DataUtil {
             Query y = em.createNamedQuery("TournamentCourse.findByGolfGroup", TournamentCourse.class);
             y.setParameter("id", golfGroupID);
             List<TournamentCourse> tcList = y.getResultList();
-            logger.log(Level.OFF, "TournamentCourses found: {0}", tcList.size());
+            //logger.log(Level.OFF, "TournamentCourses found: {0}", tcList.size());
             Query qx = em.createNamedQuery("LeaderBoard.countByTourney");
             qx.setParameter("id", golfGroupID);
             List<Object[]> resultsx = qx.getResultList();
@@ -546,7 +546,7 @@ public class DataUtil {
         for (Province p : list) {
             aList.add(new ProvinceDTO(p));
         }
-        logger.log(Level.OFF, "Province data retrieved: {0}", aList.size());
+        //logger.log(Level.OFF, "Province data retrieved: {0}", aList.size());
         return aList;
     }
 
@@ -555,7 +555,7 @@ public class DataUtil {
         for (Club player : list) {
             aList.add(new ClubDTO(player));
         }
-        logger.log(Level.OFF, "Club data retrieved: {0}", aList.size());
+        //logger.log(Level.OFF, "Club data retrieved: {0}", aList.size());
         return aList;
     }
 
@@ -564,7 +564,7 @@ public class DataUtil {
         for (Player player : list) {
             playerList.add(new PlayerDTO(player));
         }
-        logger.log(Level.OFF, "Player data retrieved: {0}", playerList.size());
+        //logger.log(Level.OFF, "Player data retrieved: {0}", playerList.size());
         return playerList;
     }
 
@@ -573,7 +573,7 @@ public class DataUtil {
         for (Tournament t : list) {
             aList.add(new TournamentDTO(t));
         }
-        logger.log(Level.OFF, "Tourney data retrieved: {0}", aList.size());
+        //logger.log(Level.OFF, "Tourney data retrieved: {0}", aList.size());
         return aList;
     }
 
@@ -582,7 +582,7 @@ public class DataUtil {
         for (Parent t : list) {
             aList.add(new ParentDTO(t));
         }
-        logger.log(Level.OFF, "Parent data retrieved: {0}", aList.size());
+        //logger.log(Level.OFF, "Parent data retrieved: {0}", aList.size());
         return aList;
     }
 
@@ -591,7 +591,7 @@ public class DataUtil {
         for (Scorer t : list) {
             aList.add(new ScorerDTO(t));
         }
-        logger.log(Level.OFF, "Scorer data retrieved: {0}", aList.size());
+        //logger.log(Level.OFF, "Scorer data retrieved: {0}", aList.size());
         return aList;
     }
 
@@ -600,7 +600,7 @@ public class DataUtil {
         for (Administrator t : list) {
             aList.add(new AdministratorDTO(t));
         }
-        logger.log(Level.OFF, "Admins data retrieved: {0}", aList.size());
+        //logger.log(Level.OFF, "Admins data retrieved: {0}", aList.size());
         return aList;
     }
 

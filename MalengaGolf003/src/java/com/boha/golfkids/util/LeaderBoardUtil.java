@@ -116,7 +116,7 @@ public class LeaderBoardUtil {
     }
 
     private boolean isTournamentScoringComplete(List<LeaderBoardCarrierDTO> list) {
-        
+
         for (LeaderBoardCarrierDTO carrier : list) {
             for (LeaderBoardDTO lb : carrier.getLeaderBoardList()) {
                 if (!lb.isScoringComplete()) {
@@ -124,9 +124,10 @@ public class LeaderBoardUtil {
                 }
             }
         }
-        
+
         return true;
     }
+
     private void removeWithdrawnPlayers(List<LeaderBoard> list) {
         int index = 0;
         HashMap<Integer, Integer> map = new HashMap<>();
@@ -135,19 +136,19 @@ public class LeaderBoardUtil {
                 if (!map.containsKey(index)) {
                     map.put(index, lb.getLeaderBoardID());
                 }
-                
+
             }
             index++;
         }
-        for (Map.Entry pairs : map.entrySet()) {           
+        for (Map.Entry pairs : map.entrySet()) {
             int leaderBoardID = (Integer) pairs.getValue();
             int u = getIndex(list, leaderBoardID);
             list.remove(u);
-                
-                
+
         }
-        
+
     }
+
     private int getIndex(List<LeaderBoard> list, int leaderBoardID) {
         int index = 0;
         for (LeaderBoard lb : list) {
@@ -158,6 +159,7 @@ public class LeaderBoardUtil {
         }
         return -1;
     }
+
     private List<LeaderBoardDTO> getLeaderBoardByAgeGroup(Tournament t, int ageGroupID) throws DataException {
         List<LeaderBoardDTO> lbList = new ArrayList<>();
         try {
@@ -217,7 +219,16 @@ public class LeaderBoardUtil {
             for (LeaderBoardDTO dto : lbList) {
                 setPoints(meritPoint, dto);
             }
+            //setPositions(lbList);
             r.setLeaderBoardList(lbList);
+//            //debug
+//            for (LeaderBoardDTO lb : r.getLeaderBoardList()) {
+//                StringBuilder sb = new StringBuilder();
+//                sb.append("Position: ").append(lb.getPosition()).append(" ");
+//                sb.append("score: ").append(lb.getTotalScore()).append(" ");
+//                sb.append("par: ").append(lb.getParStatus());
+//                log.log(Level.INFO, sb.toString());
+//            }
 
         } catch (Exception e) {
             log.log(Level.SEVERE, null, e);
@@ -226,6 +237,35 @@ public class LeaderBoardUtil {
         }
 
         return r;
+    }
+
+    private void setPositions(List<LeaderBoardDTO> list) {
+        int mPosition = 1;
+        int running = 1, score = 999;
+        for (LeaderBoardDTO lb : list) {
+            if (lb.isTied()) {
+                if (score == 999) {
+                    score = lb.getParStatus();
+                    mPosition = running;
+                    lb.setPosition(mPosition);
+                } else {
+                    if (score == lb.getParStatus()) {
+                        lb.setPosition(mPosition);
+                    } else {
+                        score = lb.getParStatus();
+                        mPosition = running;
+                        lb.setPosition(mPosition);
+                    }
+                }
+
+            } else {
+                score = 999;
+                lb.setPosition(running);
+            }
+
+            running++;
+        }
+
     }
 
     public ResponseDTO closeLeaderBoard(int tournamentID) throws DataException {
@@ -242,7 +282,7 @@ public class LeaderBoardUtil {
             Query y = em.createNamedQuery("TourneyScoreByRound.getByTourney", TourneyScoreByRound.class);
             y.setParameter("id", tournamentID);
             List<TourneyScoreByRound> tsbrList = y.getResultList();
-            
+
             Query xx = em.createNamedQuery("LeaderBoard.findByTournament", LeaderBoard.class);
             xx.setParameter("id", tournamentID);
             List<LeaderBoard> list = xx.getResultList();
@@ -255,15 +295,16 @@ public class LeaderBoardUtil {
                         em.merge(tsbr);
                     }
                 }
-                
+
             }
-         } catch (Exception e) {
+        } catch (Exception e) {
             log.log(Level.SEVERE, null, e);
             throw new DataException("Failed to get LeaderBoard\n"
                     + getErrorString(e));
         }
         return r;
     }
+
     private void setPointsPermanently(OrderOfMeritPoint meritPoint, LeaderBoard dto) throws DataException {
 
         if (dto.getPosition() == 1) {
@@ -309,7 +350,8 @@ public class LeaderBoardUtil {
         }
 
     }
-    private void processPosition1Permanently(OrderOfMeritPoint meritPoint, LeaderBoard dto)  {
+
+    private void processPosition1Permanently(OrderOfMeritPoint meritPoint, LeaderBoard dto) {
 
         if (dto.getTied() > 0) {
             if (dto.getWinnerFlag() > 0) {
@@ -322,9 +364,9 @@ public class LeaderBoardUtil {
             dto.setOrderOfMeritPoints(meritPoint.getWin());
         }
     }
+
     private void setPoints(OrderOfMeritPoint meritPoint, LeaderBoardDTO dto) throws DataException {
 
-       
         if (dto.getPosition() == 1) {
             processPosition1(meritPoint, dto);
             return;
@@ -333,7 +375,7 @@ public class LeaderBoardUtil {
             dto.setOrderOfMeritPoints(meritPoint.getRunnerUp());
             return;
         }
-        
+
         if (dto.getPosition() < 4) {
             dto.setOrderOfMeritPoints(meritPoint.getTop3());
             return;
@@ -344,7 +386,7 @@ public class LeaderBoardUtil {
         }
         if (dto.getPosition() < 11) {
             dto.setOrderOfMeritPoints(meritPoint.getTop10());
-             return;
+            return;
         }
         if (dto.getPosition() < 21) {
             dto.setOrderOfMeritPoints(meritPoint.getTop20());
@@ -366,9 +408,9 @@ public class LeaderBoardUtil {
             dto.setOrderOfMeritPoints(meritPoint.getTop100());
         } else {
             dto.setOrderOfMeritPoints(0);
-            log.log(Level.OFF, "points set to zero: {0}", 
-                    new Object[]{ 
-                    dto.getPlayer().getFirstName() + " " + dto.getPlayer().getLastName()});
+            log.log(Level.OFF, "points set to zero: {0}",
+                    new Object[]{
+                        dto.getPlayer().getFirstName() + " " + dto.getPlayer().getLastName()});
         }
 
     }
@@ -376,15 +418,16 @@ public class LeaderBoardUtil {
     private void updateOrderOfMeritPoints(LeaderBoard lb) throws DataException {
         try {
             em.merge(lb);
-            log.log(Level.INFO, "Updated orderOfMeritPoints: {0} {1} points: {2}", 
-                    new Object[]{lb.getPlayer().getFirstName(), lb.getPlayer().getLastName(), 
+            log.log(Level.INFO, "Updated orderOfMeritPoints: {0} {1} points: {2}",
+                    new Object[]{lb.getPlayer().getFirstName(), lb.getPlayer().getLastName(),
                         lb.getOrderOfMeritPoints()});
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to update orderOfMeritPoints", e);
             throw new DataException("Failed to update orderOfMeritPoints\n" + getErrorString(e));
         }
     }
-    private void processPosition1(OrderOfMeritPoint meritPoint, LeaderBoardDTO dto)  {
+
+    private void processPosition1(OrderOfMeritPoint meritPoint, LeaderBoardDTO dto) {
 
         if (dto.isTied()) {
             if (dto.getWinnerFlag() > 0) {
@@ -441,7 +484,7 @@ public class LeaderBoardUtil {
         if (e.toString() != null) {
             sb.append(e.toString()).append("\n\n");
         }
-        
+
         StackTraceElement[] s = e.getStackTrace();
         if (s.length > 0) {
             StackTraceElement ss = s[0];
@@ -451,12 +494,12 @@ public class LeaderBoardUtil {
             sb.append("Class: ").append(cls).append("\n");
             sb.append("Method: ").append(method).append("\n");
             sb.append("Line Number: ").append(line).append("\n");
-        } 
+        }
         //
         return sb.toString();
     }
 
-    private void setPositions(List<LeaderBoardDTO> list) {
+    private void setPositionsOLD(List<LeaderBoardDTO> list) {
 
         int mPosition = 1;
         int running = 1, score = 999;

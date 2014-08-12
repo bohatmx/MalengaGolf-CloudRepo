@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class RequestDTO {
 
-    private String email, pin, gcmRegistrationID;
+    private String email, pin, gcmRegistrationID, sessionID;
     private int golfGroupID, appUserID, tournamentType;
     private int tournamentID, playerID, countryID, provinceID, clubCourseID;
     private TeamDTO team;
@@ -119,6 +119,7 @@ public class RequestDTO {
 
     public static final int GET_CLUBS_NEARBY = 119;
     public static final int GET_CLUBS_IN_STATE = 120;
+    public static final int REGISTER_FOR_TOURNAMENT_UPDATES = 121;
 
     public static final int PICTURES_FULL_SIZE = 1;
     public static final int PICTURES_THUMBNAILS = 2;
@@ -136,6 +137,14 @@ public class RequestDTO {
 
     private List<LeaderBoardDTO> leaderBoardList;
     private List<ImportPlayerDTO> importPlayers;
+
+    public String getSessionID() {
+        return sessionID;
+    }
+
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
+    }
 
     public List<ImportPlayerDTO> getImportPlayers() {
         return importPlayers;

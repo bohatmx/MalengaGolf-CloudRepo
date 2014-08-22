@@ -271,8 +271,5 @@ public class GolfGroup implements Serializable {
         this.teamList = teamList;
     }
 
-   
-
-  
     
 }

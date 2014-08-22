@@ -37,6 +37,8 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "AppUser.findByDateRegistered", query = "SELECT a FROM AppUser a WHERE a.dateRegistered "
             + "= :dateRegistered")})
 public class AppUser implements Serializable {
+    @OneToMany(mappedBy = "appUser")
+    private List<LeaderboardViewer> leaderboardViewerList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "appUser")
     private List<GcmDevice> gcmDeviceList;
     private static final long serialVersionUID = 1L;
@@ -116,6 +118,14 @@ public class AppUser implements Serializable {
 
     public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
         this.gcmDeviceList = gcmDeviceList;
+    }
+
+    public List<LeaderboardViewer> getLeaderboardViewerList() {
+        return leaderboardViewerList;
+    }
+
+    public void setLeaderboardViewerList(List<LeaderboardViewer> leaderboardViewerList) {
+        this.leaderboardViewerList = leaderboardViewerList;
     }
     
 }

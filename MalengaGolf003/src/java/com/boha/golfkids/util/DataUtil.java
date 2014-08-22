@@ -19,6 +19,7 @@ import com.boha.golfkids.data.GolfGroupParent;
 import com.boha.golfkids.data.GolfGroupPlayer;
 import com.boha.golfkids.data.LeaderBoard;
 import com.boha.golfkids.data.LeaderBoardTeam;
+import com.boha.golfkids.data.LeaderboardViewer;
 import com.boha.golfkids.data.OrderOfMeritPoint;
 import com.boha.golfkids.data.Parent;
 import com.boha.golfkids.data.Player;
@@ -87,7 +88,7 @@ public class DataUtil {
     @PersistenceContext
     EntityManager em;
 
-    static final int ADMIN = 1, PLAYER = 2, SCORER = 3, PARENT = 4, VOLUNTEER = 5, APP_USER = 6;
+    public static final int ADMIN = 1, PLAYER = 2, SCORER = 3, PARENT = 4, VOLUNTEER = 5, APP_USER = 6;
 
     public ResponseDTO deleteSample(int golfGroupID, int countryID) throws Exception {
         ResponseDTO w = new ResponseDTO();
@@ -154,6 +155,106 @@ public class DataUtil {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "################ Failed to add device");
             throw new DataException("Failed to add device\n"
+                    + getErrorString(e));
+        }
+    }
+
+    public void addTournamentViewer(int tournamentID, int ID, int type, String sessionID) throws DataException {
+        logger.log(Level.INFO, "addViewer, tournamentID: {0} "
+                + " ID: {1} type: {2} sessionID: {3}", 
+                new Object[]{tournamentID, ID, type, sessionID});
+        try {
+            Tournament t = em.find(Tournament.class, tournamentID);
+            Query q = null;
+            LeaderboardViewer viewer = null;
+            switch (type) {
+                case APP_USER:
+                    q = em.createNamedQuery("LeaderboardViewer.findByAppUser", LeaderboardViewer.class);
+                    q.setParameter("tid", tournamentID);
+                    q.setParameter("id", ID);
+                    try {
+                        viewer = (LeaderboardViewer) q.getSingleResult();
+                        viewer.setSessionDate(new Date());
+                        viewer.setSessionID(sessionID);
+                        if (!viewer.getSessionID().equals(sessionID)) {
+                            em.merge(viewer);
+                        }
+                    } catch (NoResultException e) {
+                        viewer = new LeaderboardViewer();
+                        viewer.setTournament(t);
+                        viewer.setAppUser(em.find(AppUser.class, ID));
+                        viewer.setSessionDate(new Date());
+                        viewer.setSessionID(sessionID);
+                        em.persist(viewer);
+                    }
+                    break;
+                case ADMIN:
+                    q = em.createNamedQuery("LeaderboardViewer.findByAdmin", LeaderboardViewer.class);
+                    q.setParameter("tid", tournamentID);
+                    q.setParameter("id", ID);
+                    try {
+                        viewer = (LeaderboardViewer) q.getSingleResult();
+                        viewer.setSessionDate(new Date());
+                        viewer.setSessionID(sessionID);
+                        if (!viewer.getSessionID().equals(sessionID)) {
+                            em.merge(viewer);
+                        }
+                    } catch (NoResultException e) {
+                        viewer = new LeaderboardViewer();
+                        viewer.setTournament(t);
+                        viewer.setAdministrator(em.find(Administrator.class, ID));
+                        viewer.setSessionDate(new Date());
+                        viewer.setSessionID(sessionID);
+                        em.persist(viewer);
+                    }
+                    break;
+                case SCORER:
+                    q = em.createNamedQuery("LeaderboardViewer.findByScorer", LeaderboardViewer.class);
+                    q.setParameter("tid", tournamentID);
+                    q.setParameter("id", ID);
+                    try {
+                        viewer = (LeaderboardViewer) q.getSingleResult();
+                        viewer.setSessionDate(new Date());
+                        viewer.setSessionID(sessionID);
+                        if (!viewer.getSessionID().equals(sessionID)) {
+                            em.merge(viewer);
+                        }
+                    } catch (NoResultException e) {
+                        viewer = new LeaderboardViewer();
+                        viewer.setTournament(t);
+                        viewer.setScorer(em.find(Scorer.class, ID));
+                        viewer.setSessionDate(new Date());
+                        viewer.setSessionID(sessionID);
+                        em.persist(viewer);
+                    }
+                    break;
+                case PLAYER:
+                    q = em.createNamedQuery("LeaderboardViewer.findByPlayer", LeaderboardViewer.class);
+                    q.setParameter("tid", tournamentID);
+                    q.setParameter("id", ID);
+                    try {
+                        viewer = (LeaderboardViewer) q.getSingleResult();
+                        viewer.setSessionDate(new Date());
+                        viewer.setSessionID(sessionID);
+                        if (!viewer.getSessionID().equals(sessionID)) {
+                            em.merge(viewer);
+                        }
+                    } catch (NoResultException e) {
+                        viewer = new LeaderboardViewer();
+                        viewer.setTournament(t);
+                        viewer.setPlayer(em.find(Player.class, ID));
+                        viewer.setSessionDate(new Date());
+                        viewer.setSessionID(sessionID);
+                        em.persist(viewer);
+                    }
+                    break;
+
+            }
+
+            logger.log(Level.INFO, "LeaderboardViewer  added or updated");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to add LeaderboardViewer", e);
+            throw new DataException("Failed to add LeaderboardViewer\n"
                     + getErrorString(e));
         }
     }
@@ -564,7 +665,6 @@ public class DataUtil {
         for (Player player : list) {
             playerList.add(new PlayerDTO(player));
         }
-        //logger.log(Level.OFF, "Player data retrieved: {0}", playerList.size());
         return playerList;
     }
 
@@ -928,6 +1028,9 @@ public class DataUtil {
 
     public ResponseDTO signInScorer(String email,
             String pin, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws LoginException, DataException {
+        logger.log(Level.OFF, "signInScorer email: {0} pin: {1}", 
+                new Object[]{email, pin});
+        
         ResponseDTO r = new ResponseDTO();
         try {
             Query q = em.createNamedQuery("Scorer.login", Scorer.class);

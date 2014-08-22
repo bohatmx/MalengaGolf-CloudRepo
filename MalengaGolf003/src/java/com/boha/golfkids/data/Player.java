@@ -57,13 +57,16 @@ import javax.validation.constraints.Size;
             + "and b.golfGroup.golfGroupID = :id "
             + "order by p.lastName, p.firstName")})
 public class Player implements Serializable, Comparable<Player> {
+    @Column(name = "gender")
+    private Integer gender;
+    @Column(name = "yearJoined")
+    private Integer yearJoined;
+   
+    @OneToMany(mappedBy = "player")
+    private List<LeaderboardViewer> leaderboardViewerList;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "player")
     private List<TeamMember> teamMemberList;
-    @Column(name = "gender")
-    private int gender;
-    @Column(name = "yearJoined")
-    private int yearJoined;
     @OneToMany(mappedBy = "player")
     private List<GcmDevice> gcmDeviceList;
 
@@ -243,21 +246,6 @@ public class Player implements Serializable, Comparable<Player> {
         this.gcmDeviceList = gcmDeviceList;
     }
 
-    public int getGender() {
-        return gender;
-    }
-
-    public void setGender(int gender) {
-        this.gender = gender;
-    }
-
-    public int getYearJoined() {
-        return yearJoined;
-    }
-
-    public void setYearJoined(int yearJoined) {
-        this.yearJoined = yearJoined;
-    }
 
 
     public List<TeamMember> getTeamMemberList() {
@@ -266,6 +254,30 @@ public class Player implements Serializable, Comparable<Player> {
 
     public void setTeamMemberList(List<TeamMember> teamMemberList) {
         this.teamMemberList = teamMemberList;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Integer getYearJoined() {
+        return yearJoined;
+    }
+
+    public void setYearJoined(Integer yearJoined) {
+        this.yearJoined = yearJoined;
+    }
+
+    public List<LeaderboardViewer> getLeaderboardViewerList() {
+        return leaderboardViewerList;
+    }
+
+    public void setLeaderboardViewerList(List<LeaderboardViewer> leaderboardViewerList) {
+        this.leaderboardViewerList = leaderboardViewerList;
     }
 
 }

@@ -13,8 +13,8 @@ import java.util.List;
 public class RequestDTO {
 
     private String email, pin, gcmRegistrationID, sessionID;
-    private int golfGroupID, appUserID, tournamentType;
-    private int tournamentID, playerID, countryID, provinceID, clubCourseID;
+    private int golfGroupID, appUserID, tournamentType, viewerType;
+    private int tournamentID, playerID, scorerID, administratorID, countryID, provinceID, clubCourseID;
     private TeamDTO team;
     private ImportPlayerDTO importPlayer;
     private TourneyScoreByRoundTeamDTO tourneyScoreByRoundTeam;
@@ -119,7 +119,12 @@ public class RequestDTO {
 
     public static final int GET_CLUBS_NEARBY = 119;
     public static final int GET_CLUBS_IN_STATE = 120;
-    public static final int REGISTER_FOR_TOURNAMENT_UPDATES = 121;
+    
+    public static final int REGISTER_ADMIN_FOR_TOURNAMENT_UPDATES = 121;
+    public static final int REGISTER_APPUSER_FOR_TOURNAMENT_UPDATES = 122;
+    public static final int REGISTER_SCORER_FOR_TOURNAMENT_UPDATES = 123;
+    public static final int REGISTER_PLAYER_FOR_TOURNAMENT_UPDATES = 124;
+    public static final int PUSH_LEADERBOARD = 999;
 
     public static final int PICTURES_FULL_SIZE = 1;
     public static final int PICTURES_THUMBNAILS = 2;
@@ -138,6 +143,31 @@ public class RequestDTO {
     private List<LeaderBoardDTO> leaderBoardList;
     private List<ImportPlayerDTO> importPlayers;
 
+    public int getViewerType() {
+        return viewerType;
+    }
+
+    public void setViewerType(int viewerType) {
+        this.viewerType = viewerType;
+    }
+
+    public int getScorerID() {
+        return scorerID;
+    }
+
+    public void setScorerID(int scorerID) {
+        this.scorerID = scorerID;
+    }
+
+    public int getAdministratorID() {
+        return administratorID;
+    }
+
+    public void setAdministratorID(int administratorID) {
+        this.administratorID = administratorID;
+    }
+
+    
     public String getSessionID() {
         return sessionID;
     }

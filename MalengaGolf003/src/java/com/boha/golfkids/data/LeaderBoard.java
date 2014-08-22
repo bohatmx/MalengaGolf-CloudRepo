@@ -34,8 +34,8 @@ import javax.validation.constraints.NotNull;
 @Table(name = "leaderBoard")
 @NamedQueries({
     @NamedQuery(name = "LeaderBoard.findByTournament",
-            query = "SELECT l FROM LeaderBoard l "
-            + "where l.tournament.tournamentID = :id"),
+            query = "SELECT l FROM LeaderBoard l where l.tournament.tournamentID = :id "
+                    + "order by l.player.lastName, l.player.firstName"),
 
     @NamedQuery(name = "LeaderBoard.findByPlayer",
             query = "SELECT l FROM LeaderBoard l "

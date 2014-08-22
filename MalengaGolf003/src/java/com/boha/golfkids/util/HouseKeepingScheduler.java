@@ -1,4 +1,3 @@
-
 package com.boha.golfkids.util;
 
 import java.io.File;
@@ -15,12 +14,13 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class HouseKeepingScheduler {
-    
-    @Schedule(minute="*/30",hour = "*")
+
+    @Schedule(minute = "*/30", hour = "*")
     public void cleanUp() {
         startDiskCleanup();
     }
- private void startDiskCleanup() {
+
+    private void startDiskCleanup() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\n\n### ##########################################################################\n");
         sb.append("### MalengaGolf Disk Cleanup STARTED: ").append(new Date()).append("\n");
@@ -43,9 +43,13 @@ public class HouseKeepingScheduler {
                 }
             }
         }
+
         log.log(Level.INFO, "### MalengaGolf HouseKeeping cleaned up {0} temporary files", count);
         try {
-            platformUtil.addErrorStore(133, "MGGolf temporary files cleaned up", "HouseKeeper");
+            if (count > 10) {
+                platformUtil.addErrorStore(PlatformUtil.SIGNIFICANT_EVENT,
+                        "MGGolf temporary files cleaned up: " + count, "HouseKeeper");
+            }
         } catch (Exception e) {
 
         }

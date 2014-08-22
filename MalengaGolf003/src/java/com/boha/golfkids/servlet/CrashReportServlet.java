@@ -89,7 +89,7 @@ public class CrashReportServlet extends HttpServlet {
                 e.setGolfGroup(gg);
             }
         } catch (Exception ex) {
-            log.log(Level.OFF, "no custom data found", ex);
+            log.log(Level.OFF, "no custom data found");
         }
 
         dataUtil.addAndroidError(e);

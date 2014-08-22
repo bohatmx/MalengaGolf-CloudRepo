@@ -50,12 +50,14 @@ public class PlatformUtil {
             t.setStatusCode(statusCode);
             t.setOrigin(origin);
             em.persist(t);
-            log.log(Level.INFO, "####### ErrorStore row added, origin {0} message: {1}",
+            log.log(Level.INFO, "####### ErrorStore row added, origin {0} \nmessage: {1}",
                     new Object[]{origin, message});
         } catch (Exception e) {
             log.log(Level.SEVERE, "####### Failed to add errorStore from " + origin + "\n" + message, e);
         }
     }
     static final int THRESHOLD_SECONDS = 5;
+    public static final int ERROR_DATABASE = 111, ERROR_SERVER = 112,
+            SIGNIFICANT_EVENT = 0, ERROR_WEBSOCKET = 113, ERROR_UNKNOWN_REQUEST = 114;
     static final Logger log = Logger.getLogger(PlatformUtil.class.getName());
 }

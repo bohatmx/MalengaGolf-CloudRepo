@@ -47,6 +47,8 @@ import javax.validation.constraints.Size;
 })
 public class Administrator implements Serializable {
     @OneToMany(mappedBy = "administrator")
+    private List<LeaderboardViewer> leaderboardViewerList;
+    @OneToMany(mappedBy = "administrator")
     private List<GcmDevice> gcmDeviceList;
     private static final long serialVersionUID = 1L;
     
@@ -167,6 +169,14 @@ public class Administrator implements Serializable {
 
     public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
         this.gcmDeviceList = gcmDeviceList;
+    }
+
+    public List<LeaderboardViewer> getLeaderboardViewerList() {
+        return leaderboardViewerList;
+    }
+
+    public void setLeaderboardViewerList(List<LeaderboardViewer> leaderboardViewerList) {
+        this.leaderboardViewerList = leaderboardViewerList;
     }
     
 }

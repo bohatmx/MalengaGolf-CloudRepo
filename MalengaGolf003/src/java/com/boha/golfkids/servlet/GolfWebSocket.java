@@ -5,6 +5,7 @@
  */
 package com.boha.golfkids.servlet;
 
+import com.boha.golfkids.data.LeaderboardViewer;
 import com.boha.golfkids.dto.AgeGroupDTO;
 import com.boha.golfkids.dto.CountryDTO;
 import com.boha.golfkids.dto.RequestDTO;
@@ -16,7 +17,6 @@ import com.boha.golfkids.util.DataUtil;
 import com.boha.golfkids.util.GZipUtility;
 import com.boha.golfkids.util.LeaderBoardPointsUtil;
 import com.boha.golfkids.util.LeaderBoardUtil;
-import com.boha.golfkids.util.MGGolfSession;
 import com.boha.golfkids.util.PlatformUtil;
 import com.boha.golfkids.util.WorkerBee;
 import com.google.gson.Gson;
@@ -32,6 +32,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateful;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -57,20 +60,49 @@ public class GolfWebSocket {
     WorkerBee workerBee;
     @EJB
     LeaderBoardPointsUtil leaderBoardPointsUtil;
+    @PersistenceContext
+    EntityManager em;
+
+    static final String SOURCE = "GolfWebSocket";
 //TODO - clean up expired sessions!!!!
-    public static final Set<MGGolfSession> peers
-            = Collections.synchronizedSet(new HashSet<MGGolfSession>());
+    public static final Set<Session> peers
+            = Collections.synchronizedSet(new HashSet<Session>());
 
     public void sendLeaderBoard(ResponseDTO resp, int tournamentID)
             throws IOException, Exception {
-        if (resp == null) throw new Exception("Response data is NULL");
-         for (MGGolfSession mg : peers) {
-            if (tournamentID == mg.getTournamentID()) {
-                ByteBuffer bb = getZippedResponse(resp);
-                mg.getSession().getBasicRemote().sendBinary(bb);
-                log.log(Level.INFO, "LeaderBoard sent for tournament ID: {0} sessionID: {1}", new Object[]{tournamentID, mg.getSession().getId()});
-            }
+        if (resp == null) {
+            throw new Exception("Response data is NULL");
         }
+        Query q = em.createNamedQuery("LeaderboardViewer.findByTournament", LeaderboardViewer.class);
+        q.setParameter("tid", tournamentID);
+        List<LeaderboardViewer> list = q.getResultList();
+        log.log(Level.INFO, "##### Leaderboard viewers found: {0}", list.size());
+        int count = 0;
+        for (LeaderboardViewer lbv : list) {
+            for (Session session : peers) {
+                if (session.getId().equalsIgnoreCase(lbv.getSessionID())) {
+                    session.getBasicRemote().sendBinary(getZippedResponse(resp));
+                    count++;
+                    if (lbv.getAdministrator() != null) {
+                        log.log(Level.WARNING, "Leaderboard sent to admin: {0} {1}", new Object[]{lbv.getAdministrator().getFirstName(), lbv.getAdministrator().getLastName()});
+                    }
+                    if (lbv.getAppUser() != null) {
+                        log.log(Level.WARNING, "Leaderboard sent to appUser: {0} id: {1}",
+                                new Object[]{lbv.getAppUser().getEmail(), lbv.getAppUser().getAppUserID()});
+                    }
+                    if (lbv.getScorer() != null) {
+                        log.log(Level.WARNING, "Leaderboard sent to scorer: {0} {1}",
+                                new Object[]{lbv.getScorer().getFirstName(), lbv.getScorer().getLastName()});
+                    }
+                    if (lbv.getPlayer() != null) {
+                        log.log(Level.WARNING, "Leaderboard sent to player: {0} {1}",
+                                new Object[]{lbv.getPlayer().getFirstName(), lbv.getPlayer().getLastName()});
+                    }
+                }
+            }
+
+        }
+        log.log(Level.WARNING, "##### Leaderboards pushed to devices: {0}", count);
     }
 
     private ByteBuffer getZippedResponse(ResponseDTO resp)
@@ -94,18 +126,25 @@ public class GolfWebSocket {
         try {
             RequestDTO dto = gson.fromJson(message, RequestDTO.class);
             switch (dto.getRequestType()) {
-                case RequestDTO.REGISTER_FOR_TOURNAMENT_UPDATES:
-                    for (MGGolfSession s : peers) {
-                        if (dto.getSessionID() != null) {
-                            if (dto.getSessionID().equalsIgnoreCase(s.getSession().getId())) {
-                                s.setTournamentID(dto.getTournamentID());
-                                resp.setMessage("User registered for tournament updates");
-                                log.log(Level.INFO, "User session registered for updates");
-                                break;
-                            }
-                        }
-                    }
-
+                case RequestDTO.REGISTER_ADMIN_FOR_TOURNAMENT_UPDATES:
+                    dataUtil.addTournamentViewer(dto.getTournamentID(),
+                            dto.getAdministratorID(), DataUtil.ADMIN, dto.getSessionID());
+                    resp.setMessage("Admin added as viewer");
+                    break;
+                case RequestDTO.REGISTER_APPUSER_FOR_TOURNAMENT_UPDATES:
+                    dataUtil.addTournamentViewer(dto.getTournamentID(),
+                            dto.getAppUserID(), DataUtil.APP_USER, dto.getSessionID());
+                    resp.setMessage("Appuser added as viewer");
+                    break;
+                case RequestDTO.REGISTER_SCORER_FOR_TOURNAMENT_UPDATES:
+                    dataUtil.addTournamentViewer(dto.getTournamentID(),
+                            dto.getScorerID(), DataUtil.SCORER, dto.getSessionID());
+                    resp.setMessage("Scorer added as viewer");
+                    break;
+                case RequestDTO.REGISTER_PLAYER_FOR_TOURNAMENT_UPDATES:
+                    dataUtil.addTournamentViewer(dto.getTournamentID(),
+                            dto.getPlayerID(), DataUtil.PLAYER, dto.getSessionID());
+                    resp.setMessage("Player added as viewer");
                     break;
                 case RequestDTO.IMPORT_PLAYERS:
                     resp = dataUtil.importPlayers(dto.getImportPlayers(), dto.getGolfGroupID());
@@ -121,19 +160,32 @@ public class GolfWebSocket {
                     resp.setTournaments(list);
                     break;
                 case RequestDTO.SIGNIN_APP_USER:
-                    resp = dataUtil.signInAppUser(dto.getEmail(), dto.getGcmDevice(), platformUtil);
+                    resp = dataUtil.signInAppUser(dto.getEmail(),
+                            dto.getGcmDevice(), platformUtil);
+                    platformUtil.addErrorStore(PlatformUtil.SIGNIFICANT_EVENT,
+                            "Leaderboard app user signed in", SOURCE);
                     break;
                 case RequestDTO.REGISTER_APP_USER:
-                    resp = dataUtil.addAppUser(dto.getGolfGroupID(), dto.getEmail(), platformUtil);
+                    resp = dataUtil.addAppUser(dto.getGolfGroupID(),
+                            dto.getEmail(), platformUtil);
                     break;
                 case RequestDTO.SIGN_IN_SCORER:
-                    resp = dataUtil.signInScorer(dto.getEmail(), dto.getPin(), dto.getGcmDevice(), platformUtil);
+                    resp = dataUtil.signInScorer(dto.getEmail(),
+                            dto.getPin(), dto.getGcmDevice(), platformUtil);
+                    platformUtil.addErrorStore(PlatformUtil.SIGNIFICANT_EVENT,
+                            "Scorer app user signed in", SOURCE);
                     break;
                 case RequestDTO.SIGN_IN_PLAYER:
-                    resp = dataUtil.signInPlayer(dto.getEmail(), dto.getPin(), dto.getGcmDevice(), platformUtil);
+                    resp = dataUtil.signInPlayer(dto.getEmail(),
+                            dto.getPin(), dto.getGcmDevice(), platformUtil);
+                    platformUtil.addErrorStore(PlatformUtil.SIGNIFICANT_EVENT,
+                            "Player app user signed in", SOURCE);
                     break;
                 case RequestDTO.ADMIN_LOGIN:
-                    resp = dataUtil.signInAdministrator(dto.getEmail(), dto.getPin(), dto.getGcmDevice(), platformUtil);
+                    resp = dataUtil.signInAdministrator(dto.getEmail(),
+                            dto.getPin(), dto.getGcmDevice(), platformUtil);
+                    platformUtil.addErrorStore(PlatformUtil.SIGNIFICANT_EVENT,
+                            "Administrator app user signed in", SOURCE);
                     break;
                 case RequestDTO.GET_ERROR_REPORTS:
                     resp = dataUtil.getMalengaGolfEvents(0, 0);
@@ -189,34 +241,60 @@ public class GolfWebSocket {
                             resp = leaderBoardPointsUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
                             break;
                     }
-                    if (dto.getSessionID() != null) {
-                        for (MGGolfSession s : peers) {
-                            if (dto.getSessionID().equalsIgnoreCase(s.getSession().getId())) {
-                                s.setTournamentID(dto.getTournamentID());
-                                resp.setMessage("User registered for tournament updates");
-                                log.log(Level.INFO, "## User registered for LeaderBoard, tournamentID: {0}", dto.getTournamentID());
-                                break;
-                            }
-                        }
+                    if (dto.getAdministratorID() > 0) {
+                        dataUtil.addTournamentViewer(dto.getTournamentID(),
+                                dto.getAdministratorID(), DataUtil.ADMIN, dto.getSessionID());
+                        resp.setMessage("Admin added as viewer");
+                        log.log(Level.OFF, "Admin added as viewer, tournamentID: {0}",
+                                dto.getTournamentID());
                     }
+                    if (dto.getAppUserID() > 0) {
+                        dataUtil.addTournamentViewer(dto.getTournamentID(),
+                                dto.getAppUserID(), DataUtil.APP_USER, dto.getSessionID());
+                        resp.setMessage("Appuser added as viewer");
+                        log.log(Level.OFF, "AppUser added as viewer, tournamentID: {0}",
+                                dto.getTournamentID());
+
+                    }
+                    if (dto.getScorerID() > 0) {
+                        dataUtil.addTournamentViewer(dto.getTournamentID(),
+                                dto.getScorerID(), DataUtil.SCORER, dto.getSessionID());
+                        resp.setMessage("Scorer added as viewer");
+                        log.log(Level.OFF, "Scorer added as viewer, tournamentID: {0}",
+                                dto.getTournamentID());
+
+                    }
+                    if (dto.getPlayerID() > 0) {
+                        dataUtil.addTournamentViewer(dto.getTournamentID(),
+                                dto.getPlayerID(), DataUtil.PLAYER, dto.getSessionID());
+                        resp.setMessage("Player added as viewer");
+                        log.log(Level.OFF, "Player added as viewer, tournamentID: {0}",
+                                dto.getTournamentID());
+                    }
+
                     break;
 
                 case RequestDTO.UPDATE_TOURNAMENT_SCORES:
                     resp = dataUtil.updateTournamentScoreByRound(dto.getLeaderBoard());
                     ResponseDTO xx = null;
-                    switch (dto.getTournamentType()) {
-                        case RequestDTO.STROKE_PLAY_INDIVIDUAL:
-                            xx = leaderBoardUtil.getTournamentLeaderBoard(dto.getLeaderBoard().getTournamentID(), dataUtil);
-                            break;
-                        case RequestDTO.STABLEFORD_INDIVIDUAL:
-                            xx = leaderBoardPointsUtil.getTournamentLeaderBoard(dto.getLeaderBoard().getTournamentID(), dataUtil);
-                            break;
-                        default:
-                            xx = leaderBoardUtil.getTournamentLeaderBoard(dto.getLeaderBoard().getTournamentID(), dataUtil);
-                            break;
+                    Query q = em.createNamedQuery("LeaderboardViewer.findByTournament", LeaderboardViewer.class);
+                    q.setParameter("tid", dto.getLeaderBoard().getTournamentID());
+                    List<LeaderboardViewer> vlist = q.getResultList();
+                    log.log(Level.OFF, "### Leaderboard viewers found for PUSH: {0}", vlist.size());
+                    if (!vlist.isEmpty()) {
+                        switch (dto.getTournamentType()) {
+                            case RequestDTO.STROKE_PLAY_INDIVIDUAL:
+                                xx = leaderBoardUtil.getTournamentLeaderBoard(dto.getLeaderBoard().getTournamentID(), dataUtil);
+                                break;
+                            case RequestDTO.STABLEFORD_INDIVIDUAL:
+                                xx = leaderBoardPointsUtil.getTournamentLeaderBoard(dto.getLeaderBoard().getTournamentID(), dataUtil);
+                                break;
+                            default:
+                                xx = leaderBoardUtil.getTournamentLeaderBoard(dto.getLeaderBoard().getTournamentID(), dataUtil);
+                                break;
+                        }
+                        sendLeaderBoard(xx, dto.getLeaderBoard().getTournamentID());
                     }
-                    
-                    sendLeaderBoard(xx, dto.getLeaderBoard().getTournamentID());
                     break;
                 case RequestDTO.UPDATE_TOURNAMENT_SCORE_TOTALS:
                     resp = dataUtil.updateTournamentScore(dto.getLeaderBoard());
@@ -253,6 +331,9 @@ public class GolfWebSocket {
                 case RequestDTO.ADD_GOLF_GROUP:
                     resp = dataUtil.addGolfGroup(dto.getGolfGroup(),
                             dto.getAdministrator(), platformUtil);
+                    platformUtil.addErrorStore(PlatformUtil.SIGNIFICANT_EVENT,
+                            "Golf Group registered: "
+                            + dto.getGolfGroup().getGolfGroupName(), SOURCE);
                     break;
                 case RequestDTO.UPDATE_GOLF_GROUP:
                     dataUtil.updateGolfGroup(dto.getGolfGroup());
@@ -324,20 +405,26 @@ public class GolfWebSocket {
                     resp = dataUtil.getVideoClips(dto.getGolfGroupID());
                     break;
                 default:
-                    platformUtil.addErrorStore(7, "Request Type specified not on", "GolfAdminServlet");
+                    platformUtil.addErrorStore(PlatformUtil.ERROR_UNKNOWN_REQUEST,
+                            "Request Type specified not on", SOURCE);
                     resp.setStatusCode(7);
                     resp.setMessage("Request Type specified not on");
                     break;
             }
 
         } catch (DataException ex) {
-            resp.setStatusCode(111);
+            resp.setStatusCode(PlatformUtil.ERROR_DATABASE);
             resp.setMessage("Data service failed to process your request");
-            log.log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, "Database related failure", ex);
+            platformUtil.addErrorStore(PlatformUtil.ERROR_DATABASE,
+                    "Database related failure:\n"
+                    + ex.description, SOURCE);
         } catch (Exception ex) {
-            resp.setStatusCode(112);
+            resp.setStatusCode(PlatformUtil.ERROR_SERVER);
             resp.setMessage("Service failed to process your request");
             log.log(Level.SEVERE, null, ex);
+            platformUtil.addErrorStore(PlatformUtil.ERROR_SERVER,
+                    "Server generic failure\n" + ex.getMessage(), SOURCE);
         }
         ByteBuffer bb = null;
         try {
@@ -351,16 +438,14 @@ public class GolfWebSocket {
     @OnOpen
     public void onOpen(Session session) {
 
-        MGGolfSession m = new MGGolfSession();
-        m.setSession(session);
-        peers.add(m);
+        peers.add(session);
         try {
             ResponseDTO r = new ResponseDTO();
             r.setSessionID(session.getId());
             session.getBasicRemote().sendText(gson.toJson(r));
             log.log(Level.WARNING, "onOpen...sent session id: {0}", session.getId());
         } catch (IOException ex) {
-            log.log(Level.SEVERE, "Failed to open websocket session", ex);
+            log.log(Level.SEVERE, "Failed to send websocket sessionID", ex);
         } catch (Exception ex) {
             log.log(Level.SEVERE, null, ex);
         }
@@ -370,8 +455,8 @@ public class GolfWebSocket {
     public void onClose(Session session
     ) {
         log.log(Level.WARNING, "onClose - remove session: {0}", session.getId());
-        for (MGGolfSession mGGolfSession : peers) {
-            if (session.getId().equalsIgnoreCase(mGGolfSession.getSession().getId())) {
+        for (Session mGGolfSession : peers) {
+            if (session.getId().equalsIgnoreCase(mGGolfSession.getId())) {
                 peers.remove(mGGolfSession);
                 break;
             }
@@ -381,6 +466,8 @@ public class GolfWebSocket {
     @OnError
     public void onError(Throwable t) {
         log.log(Level.SEVERE, null, t);
+        platformUtil.addErrorStore(PlatformUtil.ERROR_WEBSOCKET,
+                "WebScocket related failure\n" + t.getMessage(), "GolfWebSocket");
     }
     static final Gson gson = new Gson();
     static final Logger log = Logger.getLogger(GolfWebSocket.class.getName());

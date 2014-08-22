@@ -6,6 +6,8 @@ package com.boha.golfkids.dto;
 
 import com.boha.golfkids.data.Player;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Years;
 
@@ -33,24 +35,30 @@ public class PlayerDTO {
     private GcmDeviceDTO gcmDevice;
 
     public PlayerDTO(Player a) {
-        playerID = a.getPlayerID();
-        cellphone = a.getCellphone();
-        exampleFlag = a.getExampleFlag();
-        if (a.getDateOfBirth() != null) {
-            dateOfBirth = a.getDateOfBirth().getTime();
+        try {
+            playerID = a.getPlayerID();
+            cellphone = a.getCellphone();
+            exampleFlag = a.getExampleFlag();
+            if (a.getDateOfBirth() != null) {
+                dateOfBirth = a.getDateOfBirth().getTime();
+            }
+            dateRegistered = a.getDateRegistered().getTime();
+            email = a.getEmail();
+            firstName = a.getFirstName();
+            gender = a.getGender();
+            lastName = a.getLastName();
+            middleName = a.getMiddleName();
+            pin = a.getPin();
+            if (a.getYearJoined() != null) {
+                yearJoined = a.getYearJoined();
+            }
+            if (a.getParent() != null) {
+                parentID = a.getParent().getParentID();
+            }
+            setPlayerAge(dateOfBirth);
+        } catch (Exception e) {
+            Logger.getLogger("PlayerDTO").log(Level.INFO, "Problem", e);
         }
-        dateRegistered = a.getDateRegistered().getTime();
-        email = a.getEmail();
-        firstName = a.getFirstName();
-        gender = a.getGender();
-        lastName = a.getLastName();
-        middleName = a.getMiddleName();
-        pin = a.getPin();
-        yearJoined = a.getYearJoined();
-        if (a.getParent() != null) {
-            parentID = a.getParent().getParentID();
-        }
-        setPlayerAge(dateOfBirth);
     }
 
     private void setPlayerAge(long date) {
@@ -58,7 +66,8 @@ public class PlayerDTO {
         LocalDateTime start = new LocalDateTime();
         Years years = Years.yearsBetween(birthday, start);
         age = years.getYears();
-     }
+    }
+
     public int getParentID() {
         return parentID;
     }
@@ -90,7 +99,6 @@ public class PlayerDTO {
     public void setScores(List<LeaderBoardDTO> scores) {
         this.scores = scores;
     }
-
 
     public int getPlayerID() {
         return playerID;
@@ -196,5 +204,5 @@ public class PlayerDTO {
     public void setExampleFlag(int exampleFlag) {
         this.exampleFlag = exampleFlag;
     }
-    
+
 }

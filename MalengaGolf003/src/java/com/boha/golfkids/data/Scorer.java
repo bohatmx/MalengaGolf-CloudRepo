@@ -50,6 +50,9 @@ import javax.validation.constraints.Size;
             query = "SELECT s FROM Scorer s where s.golfGroup.golfGroupID = :id "
                     + "order by s.lastName, s.firstName")})
 public class Scorer implements Serializable {
+    
+    @OneToMany(mappedBy = "scorer")
+    private List<LeaderboardViewer> leaderboardViewerList;
    
     
     @OneToMany(mappedBy = "scorer")
@@ -201,6 +204,15 @@ public class Scorer implements Serializable {
 
     public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
         this.gcmDeviceList = gcmDeviceList;
+    }
+
+
+    public List<LeaderboardViewer> getLeaderboardViewerList() {
+        return leaderboardViewerList;
+    }
+
+    public void setLeaderboardViewerList(List<LeaderboardViewer> leaderboardViewerList) {
+        this.leaderboardViewerList = leaderboardViewerList;
     }
 
     

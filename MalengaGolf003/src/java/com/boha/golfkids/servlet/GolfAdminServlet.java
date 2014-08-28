@@ -51,8 +51,7 @@ public class GolfAdminServlet extends HttpServlet {
     WorkerBee workerBee;
     @EJB
     LeaderBoardPointsUtil leaderBoardPointsUtil;
-    @EJB
-    GolfWebSocket golfWebSocket;
+    
 
     /**
      *
@@ -81,22 +80,7 @@ public class GolfAdminServlet extends HttpServlet {
                     + "---> GolfAdminServlet started ... requestType: {0}", dto.getRequestType());
             try {
                 switch (dto.getRequestType()) {
-                    case RequestDTO.PUSH_LEADERBOARD:
-                        switch (dto.getTournamentType()) {
-                            case RequestDTO.STROKE_PLAY_INDIVIDUAL:
-                                resp = leaderBoardUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
-                                break;
-                            case RequestDTO.STABLEFORD_INDIVIDUAL:
-                                resp = leaderBoardPointsUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
-                                break;
-
-                        }
-
-                        golfWebSocket.sendLeaderBoard(resp, dto.getTournamentID());
-                        resp = new ResponseDTO();
-                        resp.setMessage("Fake push of leaderBoard for tournament: " + dto.getTournamentID());
-                        log.log(Level.OFF, "########### fake push executed");
-                        break;
+                    
                     case RequestDTO.IMPORT_PLAYERS:
                         resp = dataUtil.importPlayers(dto.getImportPlayers(), dto.getGolfGroupID());
                         break;

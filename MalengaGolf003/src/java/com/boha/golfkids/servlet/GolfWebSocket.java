@@ -8,6 +8,7 @@ package com.boha.golfkids.servlet;
 import com.boha.golfkids.data.LeaderboardViewer;
 import com.boha.golfkids.dto.AgeGroupDTO;
 import com.boha.golfkids.dto.CountryDTO;
+import com.boha.golfkids.dto.LeaderBoardDTO;
 import com.boha.golfkids.dto.RequestDTO;
 import com.boha.golfkids.dto.ResponseDTO;
 import com.boha.golfkids.dto.TournamentDTO;
@@ -68,13 +69,15 @@ public class GolfWebSocket {
     public static final Set<Session> peers
             = Collections.synchronizedSet(new HashSet<Session>());
 
-    public void sendLeaderBoard(ResponseDTO resp, int tournamentID)
+    public void sendUpdatedScore(LeaderBoardDTO lb)
             throws IOException, Exception {
-        if (resp == null) {
+        if (lb == null) {
             throw new Exception("Response data is NULL");
         }
+        ResponseDTO resp = new ResponseDTO();
+        resp.setLeaderBoard(lb);
         Query q = em.createNamedQuery("LeaderboardViewer.findByTournament", LeaderboardViewer.class);
-        q.setParameter("tid", tournamentID);
+        q.setParameter("tid", lb.getTournamentID());
         List<LeaderboardViewer> list = q.getResultList();
         log.log(Level.INFO, "##### Leaderboard viewers found: {0}", list.size());
         int count = 0;
@@ -84,25 +87,25 @@ public class GolfWebSocket {
                     session.getBasicRemote().sendBinary(getZippedResponse(resp));
                     count++;
                     if (lbv.getAdministrator() != null) {
-                        log.log(Level.WARNING, "Leaderboard sent to admin: {0} {1}", new Object[]{lbv.getAdministrator().getFirstName(), lbv.getAdministrator().getLastName()});
+                        log.log(Level.WARNING, "Updated score sent to admin: {0} {1}", new Object[]{lbv.getAdministrator().getFirstName(), lbv.getAdministrator().getLastName()});
                     }
                     if (lbv.getAppUser() != null) {
-                        log.log(Level.WARNING, "Leaderboard sent to appUser: {0} id: {1}",
+                        log.log(Level.WARNING, "Updated score sent to appUser: {0} id: {1}",
                                 new Object[]{lbv.getAppUser().getEmail(), lbv.getAppUser().getAppUserID()});
                     }
                     if (lbv.getScorer() != null) {
-                        log.log(Level.WARNING, "Leaderboard sent to scorer: {0} {1}",
+                        log.log(Level.WARNING, "Updated score sent to scorer: {0} {1}",
                                 new Object[]{lbv.getScorer().getFirstName(), lbv.getScorer().getLastName()});
                     }
                     if (lbv.getPlayer() != null) {
-                        log.log(Level.WARNING, "Leaderboard sent to player: {0} {1}",
+                        log.log(Level.WARNING, "Updated score sent to player: {0} {1}",
                                 new Object[]{lbv.getPlayer().getFirstName(), lbv.getPlayer().getLastName()});
                     }
                 }
             }
 
         }
-        log.log(Level.WARNING, "##### Leaderboards pushed to devices: {0}", count);
+        log.log(Level.WARNING, "##### Updated score pushed to devices: {0}", count);
     }
 
     private ByteBuffer getZippedResponse(ResponseDTO resp)
@@ -276,25 +279,16 @@ public class GolfWebSocket {
 
                 case RequestDTO.UPDATE_TOURNAMENT_SCORES:
                     resp = dataUtil.updateTournamentScoreByRound(dto.getLeaderBoard());
-                    ResponseDTO xx = null;
-                    Query q = em.createNamedQuery("LeaderboardViewer.findByTournament", LeaderboardViewer.class);
-                    q.setParameter("tid", dto.getLeaderBoard().getTournamentID());
-                    List<LeaderboardViewer> vlist = q.getResultList();
-                    log.log(Level.OFF, "### Leaderboard viewers found for PUSH: {0}", vlist.size());
-                    if (!vlist.isEmpty()) {
-                        switch (dto.getTournamentType()) {
-                            case RequestDTO.STROKE_PLAY_INDIVIDUAL:
-                                xx = leaderBoardUtil.getTournamentLeaderBoard(dto.getLeaderBoard().getTournamentID(), dataUtil);
-                                break;
-                            case RequestDTO.STABLEFORD_INDIVIDUAL:
-                                xx = leaderBoardPointsUtil.getTournamentLeaderBoard(dto.getLeaderBoard().getTournamentID(), dataUtil);
-                                break;
-                            default:
-                                xx = leaderBoardUtil.getTournamentLeaderBoard(dto.getLeaderBoard().getTournamentID(), dataUtil);
-                                break;
+                    LeaderBoardDTO x = null;
+                    for (LeaderBoardDTO lb : resp.getLeaderBoardList()) {
+                        if (lb.getLeaderBoardID() == dto.getLeaderBoard().getLeaderBoardID()) {
+                            x = lb;
                         }
-                        sendLeaderBoard(xx, dto.getLeaderBoard().getTournamentID());
                     }
+                    if (x != null) {
+                        sendUpdatedScore(x);
+                    }
+
                     break;
                 case RequestDTO.UPDATE_TOURNAMENT_SCORE_TOTALS:
                     resp = dataUtil.updateTournamentScore(dto.getLeaderBoard());

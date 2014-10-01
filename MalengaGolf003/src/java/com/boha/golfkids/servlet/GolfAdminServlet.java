@@ -309,7 +309,7 @@ public class GolfAdminServlet extends HttpServlet {
                         response.getOutputStream().close();
                         log.log(Level.OFF, "### Zipped Length of Response: {0} -  "
                                 + "unzipped length: {1}", new Object[]{zipped.length(), json.length()});
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         log.log(Level.SEVERE, "Zipping problem - probably the zipper cannot find the zipped file", e);
                         try (PrintWriter out = response.getWriter()) {
                             response.setContentType("application/json;charset=UTF-8");

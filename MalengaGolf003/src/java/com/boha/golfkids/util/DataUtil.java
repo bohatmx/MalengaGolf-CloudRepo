@@ -118,53 +118,84 @@ public class DataUtil {
         return w;
     }
 
-    private void addGcmDevice(GolfGroup gg, int type, int id, GcmDeviceDTO dev, PlatformUtil platformUtil) throws DataException {
-        logger.log(Level.INFO, "...adding GCM device ");
+    private boolean addGcmDevice(GolfGroup gg, int type, int id,
+            GcmDeviceDTO dev, PlatformUtil platformUtil) throws DataException {
+        logger.log(Level.INFO, "...........adding or updating GCM device to database");
+        GcmDevice g = null;
+        boolean OK = false;
         try {
-            GcmDevice g = new GcmDevice();
-            g.setGolfGroup(gg);
-            g.setDateRegistered(new Date());
-            g.setManufacturer(dev.getManufacturer());
-            g.setModel(dev.getModel());
-            g.setSerial(dev.getSerial());
-            g.setGcmRegistrationID(dev.getGcmRegistrationID());
-            switch (type) {
-                case ADMIN:
-                    g.setAdministrator(getAdministratorByID(id));
-                    break;
-                case PLAYER:
-                    g.setPlayer(getPlayerByID(id));
-                    break;
-                case SCORER:
-                    g.setScorer(getScorerByID(id));
-                    break;
-                case PARENT:
-                    g.setParent(getParentByID(id));
-                    break;
-                case VOLUNTEER:
-                    //TODO - sort volunteer relationship
-                    break;
-                case APP_USER:
-                    g.setAppUser(em.find(AppUser.class, id));
-                    break;
+            Query q = em.createNamedQuery("GcmDevice.findByGolfGroupModelSerial",GcmDevice.class);
+            q.setParameter("model", dev.getModel());
+            q.setParameter("serial", dev.getSerial());
+            q.setParameter("id", gg.getGolfGroupID());
+            try {
+                g = (GcmDevice) q.getSingleResult();
+
+            } catch (NoResultException e) {
 
             }
-            em.persist(g);
-            logger.log(Level.INFO, "GCM Device added: {0}", g.getModel());
-            platformUtil.addErrorStore(444, "GCM device added " + dev.getModel(), "DataUtil");
+            if (g == null) {
+                g = new GcmDevice();
+                g.setGolfGroup(gg);
+                g.setDateRegistered(new Date());
+                g.setManufacturer(dev.getManufacturer());
+                g.setModel(dev.getModel());
+                g.setSerial(dev.getSerial());
+                g.setAndroidVersion(dev.getAndroidVersion());
+                g.setGcmRegistrationID(dev.getGcmRegistrationID());
+                switch (type) {
+                    case ADMIN:
+                        g.setAdministrator(getAdministratorByID(id));
+                        break;
+                    case PLAYER:
+                        g.setPlayer(getPlayerByID(id));
+                        break;
+                    case SCORER:
+                        g.setScorer(getScorerByID(id));
+                        break;
+                    case PARENT:
+                        g.setParent(getParentByID(id));
+                        break;
+                    case VOLUNTEER:
+                        //TODO - sort volunteer relationship
+                        break;
+                    case APP_USER:
+                        g.setAppUser(em.find(AppUser.class, id));
+                        break;
+
+                }
+                em.persist(g);
+
+            } else {
+                g.setGcmRegistrationID(dev.getGcmRegistrationID());
+                g.setDateRegistered(new Date());
+                g.setAndroidVersion(dev.getAndroidVersion());
+                em.merge(g);
+            }
+
+            logger.log(Level.INFO, "####### GCM Device added or updated: {0} gcm id: {1}",
+                    new Object[]{g.getModel(), g.getGcmRegistrationID()});
+            platformUtil.addErrorStore(444, "GCM device added/updated " + dev.getModel(),
+                    "DataUtil");
+            OK = true;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "################ Failed to add device");
-            throw new DataException("Failed to add device\n"
+            logger.log(Level.SEVERE, "################ Failed to add/update device", e);
+            throw new DataException("Failed to add/update device\n"
                     + getErrorString(e));
         }
+        return OK;
     }
 
-    public void addTournamentViewer(int tournamentID, int ID, int type, String sessionID) throws DataException {
-        logger.log(Level.INFO, "addViewer, tournamentID: {0} "
-                + " ID: {1} type: {2} sessionID: {3}", 
+    public int addTournamentViewer(int tournamentID, int ID, int type, String sessionID) throws DataException {
+        logger.log(Level.INFO, "attempt to add Viewer, tournamentID: {0} "
+                + " ID: {1} type: {2} sessionID: {3}",
                 new Object[]{tournamentID, ID, type, sessionID});
         try {
             Tournament t = em.find(Tournament.class, tournamentID);
+            if (t.getClosedForScoringFlag() > 0) {
+                logger.log(Level.OFF, "#### Tournament closed. Viewer not added/updated");
+                return 0;
+            }
             Query q = null;
             LeaderboardViewer viewer = null;
             switch (type) {
@@ -257,6 +288,7 @@ public class DataUtil {
             throw new DataException("Failed to add LeaderboardViewer\n"
                     + getErrorString(e));
         }
+        return 1;
     }
 
     public void addAndroidError(ErrorStoreAndroid err) throws DataException {
@@ -516,18 +548,19 @@ public class DataUtil {
             Query q = em.createNamedQuery("LeaderBoard.findByTournament", LeaderBoard.class);
             q.setParameter("id", tournamentID);
             List<LeaderBoard> list = q.getResultList();
-            List<LeaderBoardDTO> dto = new ArrayList<>();
+            List<LeaderBoardDTO> dtoList = new ArrayList<>();
             for (LeaderBoard tps : list) {
                 if (tps.getWithDrawn() > 0) {
                     continue;
                 }
-                dto.add(new LeaderBoardDTO(tps));
+                dtoList.add(new LeaderBoardDTO(tps));
             }
+            logger.log(Level.INFO, "LeaderBoards for tourney: {0}", dtoList.size());
             Query qx = em.createNamedQuery("TourneyScoreByRound.getByTourney", TourneyScoreByRound.class);
             qx.setParameter("id", tournamentID);
             List<TourneyScoreByRound> xList = qx.getResultList();
 
-            for (LeaderBoardDTO tps : dto) {
+            for (LeaderBoardDTO tps : dtoList) {
                 tps.setTourneyScoreByRoundList(new ArrayList<TourneyScoreByRoundDTO>());
                 for (TourneyScoreByRound tbr : xList) {
                     if (tbr.getLeaderBoard().getLeaderBoardID() == tps.getLeaderBoardID()) {
@@ -535,7 +568,8 @@ public class DataUtil {
                     }
                 }
             }
-            r.setLeaderBoardList(dto);
+            r.setLeaderBoardList(dtoList);
+            logger.log(Level.OFF, "LeaderBoard items returned: {0}", r.getLeaderBoardList().size());
 
         } catch (Exception e) {
             logger.log(Level.INFO, "Failed to get Tourney players");
@@ -934,7 +968,12 @@ public class DataUtil {
             r.setAdministrator(new AdministratorDTO(a));
             r.setGolfGroup(new GolfGroupDTO(a.getGolfGroup()));
             if (gcmDevice != null) {
-                addGcmDevice(a.getGolfGroup(), ADMIN, a.getAdministratorID(), gcmDevice, platformUtil);
+                boolean OK = addGcmDevice(a.getGolfGroup(), ADMIN, a.getAdministratorID(), gcmDevice, platformUtil);
+                if (OK) {
+                    r.setMessage("GCMDevice added/updated on Database");
+                } else {
+                    r.setMessage("Failed to add/update GCMDevice");
+                }
             }
         } catch (NoResultException e) {
             logger.log(Level.WARNING, null, e);
@@ -1028,9 +1067,9 @@ public class DataUtil {
 
     public ResponseDTO signInScorer(String email,
             String pin, GcmDeviceDTO gcmDevice, PlatformUtil platformUtil) throws LoginException, DataException {
-        logger.log(Level.OFF, "signInScorer email: {0} pin: {1}", 
+        logger.log(Level.OFF, "signInScorer email: {0} pin: {1}",
                 new Object[]{email, pin});
-        
+
         ResponseDTO r = new ResponseDTO();
         try {
             Query q = em.createNamedQuery("Scorer.login", Scorer.class);
@@ -1487,7 +1526,7 @@ public class DataUtil {
             }
             r = getTournamentPlayers(leaderboard.getTournamentID());
 
-            logger.log(Level.INFO, "Player scores by hole updated");
+            logger.log(Level.INFO, "Player scores by hole updated, return list: {0}", r.getLeaderBoardList().size());
         } catch (Exception e) {
             logger.log(Level.INFO, "Unable to update score", e);
             throw new DataException("Unable to update score\n" + getErrorString(e));
@@ -2648,7 +2687,7 @@ public class DataUtil {
         } catch (PersistenceException e) {
             r.setStatusCode(ResponseDTO.DUPLICATE_EXCEPTION);
             r.setMessage("Duplicate detected. Record already exists");
-            platformUtil.addErrorStore(7, "Duplicate detected\n\n" + getErrorString(e), "DataUtil");
+            //platformUtil.addErrorStore(7, "Duplicate detected\n\n" + getErrorString(e), "DataUtil");
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to add Tournament player", e);

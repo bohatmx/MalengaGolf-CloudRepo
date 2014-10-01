@@ -58,15 +58,15 @@ public class Tournament implements Serializable {
     
     
     @Column(name = "closedForScoringFlag")
-    private Integer closedForScoringFlag;
+    private int closedForScoringFlag;
     @Column(name = "closedForRegistrationFlag")
-    private Integer closedForRegistrationFlag;
+    private int closedForRegistrationFlag;
     @Column(name = "useAgeGroups")
-    private Integer useAgeGroups;
+    private int useAgeGroups;
     @Column(name = "exampleFlag")
-    private Integer exampleFlag;
+    private int exampleFlag;
     @Column(name = "scoringCommencedFlag")
-    private Integer scoringCommencedFlag;
+    private int scoringCommencedFlag;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<LeaderboardViewer> leaderboardViewerList;
    
@@ -285,43 +285,43 @@ public class Tournament implements Serializable {
         this.leaderBoardTeamList = leaderBoardTeamList;
     }
 
-    public Integer getClosedForScoringFlag() {
+    public int getClosedForScoringFlag() {
         return closedForScoringFlag;
     }
 
-    public void setClosedForScoringFlag(Integer closedForScoringFlag) {
+    public void setClosedForScoringFlag(int closedForScoringFlag) {
         this.closedForScoringFlag = closedForScoringFlag;
     }
 
-    public Integer getClosedForRegistrationFlag() {
+    public int getClosedForRegistrationFlag() {
         return closedForRegistrationFlag;
     }
 
-    public void setClosedForRegistrationFlag(Integer closedForRegistrationFlag) {
+    public void setClosedForRegistrationFlag(int closedForRegistrationFlag) {
         this.closedForRegistrationFlag = closedForRegistrationFlag;
     }
 
-    public Integer getUseAgeGroups() {
+    public int getUseAgeGroups() {
         return useAgeGroups;
     }
 
-    public void setUseAgeGroups(Integer useAgeGroups) {
+    public void setUseAgeGroups(int useAgeGroups) {
         this.useAgeGroups = useAgeGroups;
     }
 
-    public Integer getExampleFlag() { 
+    public int getExampleFlag() { 
         return exampleFlag;
     }
 
-    public void setExampleFlag(Integer exampleFlag) {
+    public void setExampleFlag(int exampleFlag) {
         this.exampleFlag = exampleFlag;
     }
 
-    public Integer getScoringCommencedFlag() {
+    public int getScoringCommencedFlag() {
         return scoringCommencedFlag;
     }
 
-    public void setScoringCommencedFlag(Integer scoringCommencedFlag) {
+    public void setScoringCommencedFlag(int scoringCommencedFlag) {
         this.scoringCommencedFlag = scoringCommencedFlag;
     }
 

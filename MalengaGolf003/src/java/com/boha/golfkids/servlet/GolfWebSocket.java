@@ -13,6 +13,7 @@ import com.boha.golfkids.dto.RequestDTO;
 import com.boha.golfkids.dto.ResponseDTO;
 import com.boha.golfkids.dto.TournamentDTO;
 import com.boha.golfkids.util.CloudMessagingRegistrar;
+import com.boha.golfkids.util.CloudMsgUtil;
 import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;
 import com.boha.golfkids.util.GZipUtility;
@@ -61,6 +62,8 @@ public class GolfWebSocket {
     WorkerBee workerBee;
     @EJB
     LeaderBoardPointsUtil leaderBoardPointsUtil;
+    @EJB
+    CloudMsgUtil cloudMsgUtil;
     @PersistenceContext
     EntityManager em;
 
@@ -69,10 +72,9 @@ public class GolfWebSocket {
     public static final Set<Session> peers
             = Collections.synchronizedSet(new HashSet<Session>());
 
-    public void sendUpdatedScore(LeaderBoardDTO lb)
-            throws IOException, Exception {
+    public void sendUpdatedScore(LeaderBoardDTO lb) {
         if (lb == null) {
-            throw new Exception("Response data is NULL");
+            return;
         }
         ResponseDTO resp = new ResponseDTO();
         resp.setLeaderBoard(lb);
@@ -84,42 +86,34 @@ public class GolfWebSocket {
         for (LeaderboardViewer lbv : list) {
             for (Session session : peers) {
                 if (session.getId().equalsIgnoreCase(lbv.getSessionID())) {
-                    session.getBasicRemote().sendBinary(getZippedResponse(resp));
-                    count++;
-                    if (lbv.getAdministrator() != null) {
-                        log.log(Level.WARNING, "Updated score sent to admin: {0} {1}", new Object[]{lbv.getAdministrator().getFirstName(), lbv.getAdministrator().getLastName()});
-                    }
-                    if (lbv.getAppUser() != null) {
-                        log.log(Level.WARNING, "Updated score sent to appUser: {0} id: {1}",
-                                new Object[]{lbv.getAppUser().getEmail(), lbv.getAppUser().getAppUserID()});
-                    }
-                    if (lbv.getScorer() != null) {
-                        log.log(Level.WARNING, "Updated score sent to scorer: {0} {1}",
-                                new Object[]{lbv.getScorer().getFirstName(), lbv.getScorer().getLastName()});
-                    }
-                    if (lbv.getPlayer() != null) {
-                        log.log(Level.WARNING, "Updated score sent to player: {0} {1}",
-                                new Object[]{lbv.getPlayer().getFirstName(), lbv.getPlayer().getLastName()});
+                    try {
+                        session.getBasicRemote().sendBinary
+                            (getZippedResponse(resp));
+                        count++;
+                        if (lbv.getAdministrator() != null) {
+                            log.log(Level.WARNING, "Updated score sent to admin: {0} {1}", 
+                                    new Object[]{lbv.getAdministrator().getFirstName(), lbv.getAdministrator().getLastName()});
+                        }
+                        if (lbv.getAppUser() != null) {
+                            log.log(Level.WARNING, "Updated score sent to appUser: {0} id: {1}",
+                                    new Object[]{lbv.getAppUser().getEmail(), lbv.getAppUser().getAppUserID()});
+                        }
+                        if (lbv.getScorer() != null) {
+                            log.log(Level.WARNING, "Updated score sent to scorer: {0} {1}",
+                                    new Object[]{lbv.getScorer().getFirstName(), lbv.getScorer().getLastName()});
+                        }
+                        if (lbv.getPlayer() != null) {
+                            log.log(Level.WARNING, "Updated score sent to player: {0} {1}",
+                                    new Object[]{lbv.getPlayer().getFirstName(), lbv.getPlayer().getLastName()});
+                        }
+                    } catch (Exception ex) {
+                        Logger.getLogger(GolfWebSocket.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
 
         }
         log.log(Level.WARNING, "##### Updated score pushed to devices: {0}", count);
-    }
-
-    private ByteBuffer getZippedResponse(ResponseDTO resp)
-            throws Exception {
-        File file = GZipUtility.getZipped(gson.toJson(resp));
-        byte[] bFile = new byte[(int) file.length()];
-        FileInputStream fileInputStream = null;
-
-        //convert file into array of bytes
-        fileInputStream = new FileInputStream(file);
-        fileInputStream.read(bFile);
-        fileInputStream.close();
-        ByteBuffer buf = ByteBuffer.wrap(bFile);
-        return buf;
     }
 
     @OnMessage
@@ -244,35 +238,45 @@ public class GolfWebSocket {
                             resp = leaderBoardPointsUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
                             break;
                     }
+                    log.log(Level.OFF, "LeaderBoard items: {0} for id: {1}", new Object[]{resp.getLeaderBoardList().size(), dto.getTournamentID()});
                     if (dto.getAdministratorID() > 0) {
-                        dataUtil.addTournamentViewer(dto.getTournamentID(),
+                        int x = dataUtil.addTournamentViewer(dto.getTournamentID(),
                                 dto.getAdministratorID(), DataUtil.ADMIN, dto.getSessionID());
-                        resp.setMessage("Admin added as viewer");
-                        log.log(Level.OFF, "Admin added as viewer, tournamentID: {0}",
-                                dto.getTournamentID());
+                        if (x == 1) {
+                            resp.setMessage("Admin added as viewer");
+                            log.log(Level.OFF, "Admin added as viewer, tournamentID: {0}",
+                                    dto.getTournamentID());
+                        }
                     }
                     if (dto.getAppUserID() > 0) {
-                        dataUtil.addTournamentViewer(dto.getTournamentID(),
+                        int y = dataUtil.addTournamentViewer(dto.getTournamentID(),
                                 dto.getAppUserID(), DataUtil.APP_USER, dto.getSessionID());
-                        resp.setMessage("Appuser added as viewer");
-                        log.log(Level.OFF, "AppUser added as viewer, tournamentID: {0}",
-                                dto.getTournamentID());
+                        if (y == 1) {
+                            resp.setMessage("Appuser added as viewer");
+                            log.log(Level.OFF, "AppUser added as viewer, tournamentID: {0}",
+                                    dto.getTournamentID());
+                        }
 
                     }
                     if (dto.getScorerID() > 0) {
-                        dataUtil.addTournamentViewer(dto.getTournamentID(),
+                        int z = dataUtil.addTournamentViewer(dto.getTournamentID(),
                                 dto.getScorerID(), DataUtil.SCORER, dto.getSessionID());
-                        resp.setMessage("Scorer added as viewer");
-                        log.log(Level.OFF, "Scorer added as viewer, tournamentID: {0}",
-                                dto.getTournamentID());
+                        
+                        if (z == 1) {
+                            resp.setMessage("Scorer added as viewer");
+                            log.log(Level.OFF, "Scorer added as viewer, tournamentID: {0}",
+                                    dto.getTournamentID());
+                        }
 
                     }
                     if (dto.getPlayerID() > 0) {
-                        dataUtil.addTournamentViewer(dto.getTournamentID(),
+                        int t = dataUtil.addTournamentViewer(dto.getTournamentID(),
                                 dto.getPlayerID(), DataUtil.PLAYER, dto.getSessionID());
-                        resp.setMessage("Player added as viewer");
-                        log.log(Level.OFF, "Player added as viewer, tournamentID: {0}",
-                                dto.getTournamentID());
+                        if (t == 1) {
+                            resp.setMessage("Player added as viewer");
+                            log.log(Level.OFF, "Player added as viewer, tournamentID: {0}",
+                                    dto.getTournamentID());
+                        }
                     }
 
                     break;
@@ -280,13 +284,24 @@ public class GolfWebSocket {
                 case RequestDTO.UPDATE_TOURNAMENT_SCORES:
                     resp = dataUtil.updateTournamentScoreByRound(dto.getLeaderBoard());
                     LeaderBoardDTO x = null;
+
                     for (LeaderBoardDTO lb : resp.getLeaderBoardList()) {
                         if (lb.getLeaderBoardID() == dto.getLeaderBoard().getLeaderBoardID()) {
                             x = lb;
                         }
                     }
+                    if (dto.getAdministratorID() > 0) {
+                        dataUtil.addTournamentViewer(dto.getLeaderBoard().getTournamentID(),
+                                dto.getAdministratorID(), DataUtil.ADMIN, dto.getSessionID());
+                    }
+                    if (dto.getScorerID() > 0) {
+                        dataUtil.addTournamentViewer(dto.getLeaderBoard().getTournamentID(),
+                                dto.getScorerID(), DataUtil.SCORER, dto.getSessionID());
+                    }
                     if (x != null) {
+                        resp.setLeaderBoardUpdateRecord(true);
                         sendUpdatedScore(x);
+                        cloudMsgUtil.sendScoreUpdate(x, platformUtil);
                     }
 
                     break;
@@ -420,6 +435,7 @@ public class GolfWebSocket {
             platformUtil.addErrorStore(PlatformUtil.ERROR_SERVER,
                     "Server generic failure\n" + ex.getMessage(), SOURCE);
         }
+        //pack the response object before sending
         ByteBuffer bb = null;
         try {
             bb = getZippedResponse(resp);
@@ -462,6 +478,20 @@ public class GolfWebSocket {
         log.log(Level.SEVERE, null, t);
         platformUtil.addErrorStore(PlatformUtil.ERROR_WEBSOCKET,
                 "WebScocket related failure\n" + t.getMessage(), "GolfWebSocket");
+    }
+    private ByteBuffer getZippedResponse(ResponseDTO resp)
+            throws Exception {
+        File file = GZipUtility.getZipped(gson.toJson(resp));
+        byte[] bFile = new byte[(int) file.length()];
+        FileInputStream fileInputStream = null;
+        //convert file into array of bytes
+        fileInputStream = new FileInputStream(file);
+        fileInputStream.read(bFile);
+        fileInputStream.close();
+        ByteBuffer buf = ByteBuffer.wrap(bFile);
+        
+        file.delete();
+        return buf;
     }
     static final Gson gson = new Gson();
     static final Logger log = Logger.getLogger(GolfWebSocket.class.getName());

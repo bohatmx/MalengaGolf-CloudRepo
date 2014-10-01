@@ -15,6 +15,7 @@ public class ResponseDTO {
     private int statusCode, totalPages, totalClubs;
     private String message, gcmRegistrationID, sessionID;
     private LeaderBoardDTO leaderBoard;
+    private boolean leaderBoardUpdateRecord;
     private PersonalPlayerDTO personalPlayer;
     private List<LeaderBoardCarrierDTO> leaderBoardCarriers;
     private List<PersonalPlayerDTO> personalPlayerList;
@@ -59,6 +60,14 @@ public class ResponseDTO {
 
     public void setLog(String log) {
         this.log = log;
+    }
+
+    public boolean isLeaderBoardUpdateRecord() {
+        return leaderBoardUpdateRecord;
+    }
+
+    public void setLeaderBoardUpdateRecord(boolean leaderBoardUpdateRecord) {
+        this.leaderBoardUpdateRecord = leaderBoardUpdateRecord;
     }
     
     //

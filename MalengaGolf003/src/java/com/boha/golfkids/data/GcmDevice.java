@@ -31,13 +31,26 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "gcmDevice")
 @NamedQueries({
-    @NamedQuery(name = "GcmDevice.findAll", query = "SELECT g FROM GcmDevice g"),
-    @NamedQuery(name = "GcmDevice.findByGcmDeviceID", query = "SELECT g FROM GcmDevice g WHERE g.gcmDeviceID = :gcmDeviceID"),
-    @NamedQuery(name = "GcmDevice.findByManufacturer", query = "SELECT g FROM GcmDevice g WHERE g.manufacturer = :manufacturer"),
-    @NamedQuery(name = "GcmDevice.findByModel", query = "SELECT g FROM GcmDevice g WHERE g.model = :model"),
-    @NamedQuery(name = "GcmDevice.findBySerial", query = "SELECT g FROM GcmDevice g WHERE g.serial = :serial"),
-    @NamedQuery(name = "GcmDevice.findByProduct", query = "SELECT g FROM GcmDevice g WHERE g.product = :product"),
-    @NamedQuery(name = "GcmDevice.findByDateRegistered", query = "SELECT g FROM GcmDevice g WHERE g.dateRegistered = :dateRegistered")})
+    @NamedQuery(name = "GcmDevice.findByGolfGroupModelSerial", 
+            query = "SELECT g FROM GcmDevice g "
+                    + "where g.golfGroup.golfGroupID = :id "
+                    + "and g.model = :model "
+                    + "and g.serial = :serial"),
+    @NamedQuery(name = "GcmDevice.findByAppUser", 
+            query = "SELECT g FROM GcmDevice g WHERE g.appUser.appUserID = :id"),
+    @NamedQuery(name = "GcmDevice.findByPlayer", 
+            query = "SELECT g FROM GcmDevice g WHERE g.player.playerID = :id"),
+    @NamedQuery(name = "GcmDevice.findByManufacturer", 
+            query = "SELECT g FROM GcmDevice g WHERE g.manufacturer = :manufacturer"),
+    @NamedQuery(name = "GcmDevice.findByModel", 
+            query = "SELECT g FROM GcmDevice g WHERE g.model = :model"),
+    @NamedQuery(name = "GcmDevice.findByRegistrationID", 
+            query = "SELECT g FROM GcmDevice g WHERE g.gcmRegistrationID = :id"),
+    
+    @NamedQuery(name = "GcmDevice.findByAdministrator", 
+            query = "SELECT g FROM GcmDevice g WHERE g.administrator.administratorID = :id"),
+    @NamedQuery(name = "GcmDevice.findByScorer", 
+            query = "SELECT g FROM GcmDevice g WHERE g.scorer.scorerID = :id")})
 public class GcmDevice implements Serializable {
     @JoinColumn(name = "appUserID", referencedColumnName = "appUserID")
     @ManyToOne(optional = false)
@@ -63,6 +76,9 @@ public class GcmDevice implements Serializable {
     @Size(max = 255)
     @Column(name = "gcmRegistrationID")
     private String gcmRegistrationID;
+    @Size(max = 50)
+    @Column(name = "androidVersion")
+    private String androidVersion;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateRegistered")
@@ -106,6 +122,14 @@ public class GcmDevice implements Serializable {
 
     public String getGcmRegistrationID() {
         return gcmRegistrationID;
+    }
+
+    public String getAndroidVersion() {
+        return androidVersion;
+    }
+
+    public void setAndroidVersion(String androidVersion) {
+        this.androidVersion = androidVersion;
     }
 
     public void setGcmRegistrationID(String gcmRegistrationID) {

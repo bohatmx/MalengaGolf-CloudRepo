@@ -60,19 +60,20 @@ public class LeaderBoardDTO implements Comparable<LeaderBoardDTO> {
 
     private void setBasics(LeaderBoard a) {
         leaderBoardID = a.getLeaderBoardID();
-        tournamentType = a.getTournament().getTournamentType();
         age = a.getAge();
-
         withDrawn = a.getWithDrawn();
         winnerFlag = a.getWinnerFlag();
         player = new PlayerDTO(a.getPlayer());
         position = a.getPosition();
         parStatus = a.getParStatus();
+        
         Tournament t = a.getTournament();
+        tournamentType = t.getTournamentType();
         startDate = t.getStartDate().getTime();
         tournamentID = t.getTournamentID();
         holesPerRound = t.getHolesPerRound();
         clubName = t.getClub().getClubName();
+        
         orderOfMeritPoints = a.getOrderOfMeritPoints();
 
         if (a.getAgeGroup() != null) {

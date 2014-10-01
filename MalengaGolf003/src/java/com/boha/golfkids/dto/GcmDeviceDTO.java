@@ -5,8 +5,6 @@
  */
 package com.boha.golfkids.dto;
 
-import com.boha.golfkids.data.GcmDevice;
-
 /**
  *
  * @author aubreyM
@@ -18,6 +16,7 @@ public class GcmDeviceDTO {
     private String model;
     private String serial;
     private String product;
+    private String androidVersion;
     private long dateRegistered;
     private int parentID;
     private int playerID;
@@ -28,6 +27,14 @@ public class GcmDeviceDTO {
 
     public int getGcmDeviceID() {
         return gcmDeviceID;
+    }
+
+    public String getAndroidVersion() {
+        return androidVersion;
+    }
+
+    public void setAndroidVersion(String androidVersion) {
+        this.androidVersion = androidVersion;
     }
 
     public void setGcmDeviceID(int gcmDeviceID) {

@@ -16,6 +16,7 @@ import com.boha.golfkids.util.CloudMessagingRegistrar;
 import com.boha.golfkids.util.CloudMsgUtil;
 import com.boha.golfkids.util.DataException;
 import com.boha.golfkids.util.DataUtil;
+import com.boha.golfkids.util.FileUtility;
 import com.boha.golfkids.util.GZipUtility;
 import com.boha.golfkids.util.LeaderBoardPointsUtil;
 import com.boha.golfkids.util.LeaderBoardUtil;
@@ -87,11 +88,10 @@ public class GolfWebSocket {
             for (Session session : peers) {
                 if (session.getId().equalsIgnoreCase(lbv.getSessionID())) {
                     try {
-                        session.getBasicRemote().sendBinary
-                            (getZippedResponse(resp));
+                        session.getBasicRemote().sendBinary(getZippedResponse(resp));
                         count++;
                         if (lbv.getAdministrator() != null) {
-                            log.log(Level.WARNING, "Updated score sent to admin: {0} {1}", 
+                            log.log(Level.WARNING, "Updated score sent to admin: {0} {1}",
                                     new Object[]{lbv.getAdministrator().getFirstName(), lbv.getAdministrator().getLastName()});
                         }
                         if (lbv.getAppUser() != null) {
@@ -261,7 +261,7 @@ public class GolfWebSocket {
                     if (dto.getScorerID() > 0) {
                         int z = dataUtil.addTournamentViewer(dto.getTournamentID(),
                                 dto.getScorerID(), DataUtil.SCORER, dto.getSessionID());
-                        
+
                         if (z == 1) {
                             resp.setMessage("Scorer added as viewer");
                             log.log(Level.OFF, "Scorer added as viewer, tournamentID: {0}",
@@ -413,6 +413,24 @@ public class GolfWebSocket {
                 case RequestDTO.GET_VIDEO_CLIPS_BY_GOLF_GROUP:
                     resp = dataUtil.getVideoClips(dto.getGolfGroupID());
                     break;
+                case RequestDTO.GET_TOURNAMENT_PICTURES:
+                    resp.setImageFileNames(FileUtility.getImageFilesTournament(
+                            dto.getGolfGroupID(), dto.getTournamentID(), 
+                            RequestDTO.PICTURES_FULL_SIZE));
+                    break;
+                case RequestDTO.GET_TOURNAMENT_THUMBNAILS:
+                    resp.setImageFileNames(FileUtility.getImageFilesTournament(
+                            dto.getGolfGroupID(), dto.getTournamentID(), 
+                            RequestDTO.PICTURES_THUMBNAILS));
+                    break;
+                case RequestDTO.GET_GOLFGROUP_PICTURES:
+                    resp.setImageFileNames(FileUtility.getImageFilesGolfGroup(
+                            dto.getGolfGroupID(), RequestDTO.PICTURES_FULL_SIZE));
+                    break;
+                case RequestDTO.GET_GOLFGROUP_THUMBNAILS:
+                    resp.setImageFileNames(FileUtility.getImageFilesGolfGroup(
+                            dto.getGolfGroupID(), RequestDTO.PICTURES_THUMBNAILS));
+                    break;
                 default:
                     platformUtil.addErrorStore(PlatformUtil.ERROR_UNKNOWN_REQUEST,
                             "Request Type specified not on", SOURCE);
@@ -479,6 +497,7 @@ public class GolfWebSocket {
         platformUtil.addErrorStore(PlatformUtil.ERROR_WEBSOCKET,
                 "WebScocket related failure\n" + t.getMessage(), "GolfWebSocket");
     }
+
     private ByteBuffer getZippedResponse(ResponseDTO resp)
             throws Exception {
         File file = GZipUtility.getZipped(gson.toJson(resp));
@@ -489,7 +508,7 @@ public class GolfWebSocket {
         fileInputStream.read(bFile);
         fileInputStream.close();
         ByteBuffer buf = ByteBuffer.wrap(bFile);
-        
+
         file.delete();
         return buf;
     }

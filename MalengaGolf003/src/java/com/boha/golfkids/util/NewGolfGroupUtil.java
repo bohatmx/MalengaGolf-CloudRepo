@@ -106,7 +106,7 @@ public class NewGolfGroupUtil {
         generateExampleTournament(false, gg, pList, club.getClubID(), "Sample Tournament #4", 4, false, 18, GENDER_GIRLS, dataUtil, platformUtil);
 
         generateExampleTournament(false, gg, pList, club.getClubID(), "Sample Tournament #5", 3, false, 9, 0, dataUtil, platformUtil);
-        generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #6", 6, false, 18, GENDER_BOYS, dataUtil, platformUtil);
+        //generateExampleTournament(true, gg, pList, club.getClubID(), "Sample Tournament #6", 6, false, 18, GENDER_BOYS, dataUtil, platformUtil);
 
         getPictureFiles(gg, pList);
 

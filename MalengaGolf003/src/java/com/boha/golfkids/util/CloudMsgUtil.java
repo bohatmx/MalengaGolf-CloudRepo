@@ -36,7 +36,7 @@ public class CloudMsgUtil {
 
     @PersistenceContext
     EntityManager em;
-    private static final int RETRIES = 5;
+    private static final int RETRIES = 5, MAX_GCM_MESSAGES = 1000;
     public static final String API_KEY = CloudMessagingRegistrar.API_KEY;
     static final Gson gson = new Gson();
 
@@ -80,38 +80,34 @@ public class CloudMsgUtil {
          LOG.log(Level.INFO, "GCM devices found: {0}", deviceList.size());
         //send a max 100 messages to google at a time
         String txJSON = gson.toJson(lb);
-        if (deviceList.size() < 101) {
+        if (deviceList.size() < (MAX_GCM_MESSAGES + 1)) {
             int ret = sendMessage(txJSON, deviceList, platformUtil);
-            LOG.log(Level.INFO, "GCM message return code (100 or fewer msgs): {0}", ret);
+            resp.setStatusCode(ret);
+            LOG.log(Level.INFO, "GCM message return code ({0} or fewer msgs): {1}", 
+                    new Object[]{MAX_GCM_MESSAGES, ret});
             return resp;
         }
 
         List<GcmDevice> pageList = new ArrayList<>();
-        if (deviceList.size() < 101) {
-            int ok = sendMessage(txJSON, deviceList, platformUtil);
-            resp.setStatusCode(ok);
-            LOG.log(Level.INFO, "GCM message return code - (pack of < 101 msgs): {0}", ok);
-            return resp;
-        } 
-        int pages = deviceList.size() / 100;
-        int rem = deviceList.size() % 100;
+        int pages = deviceList.size() / MAX_GCM_MESSAGES;
+        int rem = deviceList.size() % MAX_GCM_MESSAGES;
         if (rem > 0) {
             pages++;
         }
 
         for (int i = 0; i < pages; i++) {
             pageList = new ArrayList<>();
-            for (int j = 0; j < 100; j++) {
+            for (int j = 0; j < MAX_GCM_MESSAGES; j++) {
                 if (i == 0) {
                     pageList.add(deviceList.get(j));
                 } else {
-                    int index = (i * 100) + j;
+                    int index = (i * MAX_GCM_MESSAGES) + j;
                     pageList.add(deviceList.get(index));
                 }
             }
             int ret = sendMessage(txJSON, pageList, platformUtil);
             resp.setStatusCode(ret);
-            LOG.log(Level.INFO, "GCM message return code - (pack of 100 msgs): {0}", ret);
+            LOG.log(Level.INFO, "GCM message return code - (1 pack of 1000 msgs): {0}", ret);
         }
 
         return resp;

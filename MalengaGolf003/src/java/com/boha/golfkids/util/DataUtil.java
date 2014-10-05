@@ -3243,7 +3243,12 @@ public class DataUtil {
         a.setEmail(d.getEmail());
         a.setFirstName(d.getFirstName());
         a.setLastName(d.getLastName());
-        a.setPin(getPin());
+        if (d.getPin() != null) {
+            a.setPin(d.getPin());
+        } else {
+            a.setPin(getPin());
+        }
+        
         a.setSuperUserFlag(d.getSuperUserFlag());
 
         if (d.getGolfGroupID() > 0) {

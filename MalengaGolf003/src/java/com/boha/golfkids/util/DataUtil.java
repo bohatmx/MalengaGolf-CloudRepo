@@ -124,7 +124,7 @@ public class DataUtil {
         GcmDevice g = null;
         boolean OK = false;
         try {
-            Query q = em.createNamedQuery("GcmDevice.findByGolfGroupModelSerial",GcmDevice.class);
+            Query q = em.createNamedQuery("GcmDevice.findByGolfGroupModelSerial", GcmDevice.class);
             q.setParameter("model", dev.getModel());
             q.setParameter("serial", dev.getSerial());
             q.setParameter("id", gg.getGolfGroupID());
@@ -3248,7 +3248,7 @@ public class DataUtil {
         } else {
             a.setPin(getPin());
         }
-        
+
         a.setSuperUserFlag(d.getSuperUserFlag());
 
         if (d.getGolfGroupID() > 0) {
@@ -3295,22 +3295,29 @@ public class DataUtil {
     public ResponseDTO addGolfGroup(GolfGroupDTO d, AdministratorDTO admin, PlatformUtil platformUtil)
             throws DataException {
         ResponseDTO r = new ResponseDTO();
-        GolfGroup g = new GolfGroup();
-        g.setCellphone(d.getCellphone());
-        g.setDateRegistered(new Date());
-        g.setEmail(d.getEmail());
-        g.setGolfGroupName(d.getGolfGroupName());
-        g.setCountry(getCountryByID(d.getCountryID()));
-
-        try {
-            em.persist(g);
-            Query q = em.createNamedQuery("GolfGroup.findByEmail", GolfGroup.class);
+        GolfGroup gg = null;
+        Query q = em.createNamedQuery("GolfGroup.findByEmail", GolfGroup.class);
+        try {           
             q.setMaxResults(1);
             q.setParameter("email", d.getEmail());
-            GolfGroup gg = (GolfGroup) q.getSingleResult();
-            if (gg == null) {
-                throw new DataException("Failed to add or get golfgroup after insert");
-            }
+            gg = (GolfGroup) q.getSingleResult();
+            r.setStatusCode(ADMIN);
+            r.setMessage("This email already manages for another Golf Group. Please use a different email address");
+            return r;
+        } catch (NoResultException e) {
+
+        }
+        gg = new GolfGroup();
+        gg.setCellphone(d.getCellphone());
+        gg.setDateRegistered(new Date());
+        gg.setEmail(d.getEmail());
+        gg.setGolfGroupName(d.getGolfGroupName());
+        gg.setCountry(getCountryByID(d.getCountryID()));
+
+        try {
+            em.persist(gg);
+            gg = (GolfGroup) q.getSingleResult();
+            
             r.setGolfGroup(new GolfGroupDTO(gg));
             admin.setSuperUserFlag(1);
             admin.setGolfGroupID(r.getGolfGroup().getGolfGroupID());
@@ -3327,7 +3334,7 @@ public class DataUtil {
                     logger.log(Level.WARNING, "#### GCM device not added...", e);
                 }
             }
-            logger.log(Level.INFO, "\n### Added GolfGroup {0}", g.getGolfGroupName());
+            logger.log(Level.INFO, "\n### Added GolfGroup {0}", gg.getGolfGroupName());
             platformUtil.addErrorStore(777, "GolfGroup registered", "DataUtil");
 
         } catch (PersistenceException e) {

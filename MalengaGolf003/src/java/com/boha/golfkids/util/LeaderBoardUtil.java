@@ -96,6 +96,7 @@ public class LeaderBoardUtil {
             for (Agegroup ag : ageList) {
                 List<LeaderBoardDTO> list = getLeaderBoardByAgeGroup(t, ag.getAgeGroupID());
                 LeaderBoardCarrierDTO carrier = new LeaderBoardCarrierDTO();
+                
                 carrier.setAgeGroup(new AgeGroupDTO(ag));
                 carrier.setLeaderBoardList(list);
                 r.getLeaderBoardCarriers().add(carrier);

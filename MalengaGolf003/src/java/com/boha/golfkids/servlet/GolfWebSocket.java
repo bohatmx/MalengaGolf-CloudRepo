@@ -238,7 +238,6 @@ public class GolfWebSocket {
                             resp = leaderBoardPointsUtil.getTournamentLeaderBoard(dto.getTournamentID(), dataUtil);
                             break;
                     }
-                    log.log(Level.OFF, "LeaderBoard items: {0} for id: {1}", new Object[]{resp.getLeaderBoardList().size(), dto.getTournamentID()});
                     if (dto.getAdministratorID() > 0) {
                         int x = dataUtil.addTournamentViewer(dto.getTournamentID(),
                                 dto.getAdministratorID(), DataUtil.ADMIN, dto.getSessionID());
@@ -415,12 +414,12 @@ public class GolfWebSocket {
                     break;
                 case RequestDTO.GET_TOURNAMENT_PICTURES:
                     resp.setImageFileNames(FileUtility.getImageFilesTournament(
-                            dto.getGolfGroupID(), dto.getTournamentID(), 
+                            dto.getGolfGroupID(), dto.getTournamentID(),
                             RequestDTO.PICTURES_FULL_SIZE));
                     break;
                 case RequestDTO.GET_TOURNAMENT_THUMBNAILS:
                     resp.setImageFileNames(FileUtility.getImageFilesTournament(
-                            dto.getGolfGroupID(), dto.getTournamentID(), 
+                            dto.getGolfGroupID(), dto.getTournamentID(),
                             RequestDTO.PICTURES_THUMBNAILS));
                     break;
                 case RequestDTO.GET_GOLFGROUP_PICTURES:

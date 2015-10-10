@@ -48,7 +48,6 @@ import javax.validation.constraints.Size;
 
 })
 public class Province implements Serializable {
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "latitude")
     private Double latitude;
     @Column(name = "longitude")
@@ -150,5 +149,6 @@ public class Province implements Serializable {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
+
     
 }

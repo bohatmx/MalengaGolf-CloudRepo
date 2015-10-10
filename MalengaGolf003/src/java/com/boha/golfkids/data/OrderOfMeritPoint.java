@@ -31,7 +31,7 @@ import javax.validation.constraints.NotNull;
             query = "SELECT o FROM OrderOfMeritPoint o where o.golfGroup.golfGroupID = :id")
 })
 public class OrderOfMeritPoint implements Serializable {
-   
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "top3")

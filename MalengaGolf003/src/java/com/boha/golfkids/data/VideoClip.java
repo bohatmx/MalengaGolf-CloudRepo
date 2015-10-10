@@ -45,6 +45,7 @@ import javax.validation.constraints.Size;
             + "or v.golfGroup.golfGroupID = :gID "
             + "order by v.videoDate desc"),})
 public class VideoClip implements Serializable {
+    
     @Column(name = "length")
     private Integer length;
 

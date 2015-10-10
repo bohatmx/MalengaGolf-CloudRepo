@@ -38,6 +38,7 @@ import javax.validation.constraints.Size;
             query = "SELECT e FROM ErrorStoreAndroid e WHERE e.errorDate BETWEEN :from AND :to order by e.errorDate desc")
 })
 public class ErrorStoreAndroid implements Serializable {
+   
     @JoinColumn(name = "golfGroupID", referencedColumnName = "golfGroupID")
     @ManyToOne(optional = false)
     private GolfGroup golfGroup;

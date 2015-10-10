@@ -19,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -29,6 +30,7 @@ import javax.persistence.Table;
 @NamedQueries({
     @NamedQuery(name = "TournamentVolunteer.findAll", query = "SELECT t FROM TournamentVolunteer t")})
 public class TournamentVolunteer implements Serializable {
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

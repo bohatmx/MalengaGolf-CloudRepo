@@ -46,6 +46,7 @@ import javax.validation.constraints.Size;
 
 })
 public class Administrator implements Serializable {
+   
     @OneToMany(mappedBy = "administrator")
     private List<LeaderboardViewer> leaderboardViewerList;
     @OneToMany(mappedBy = "administrator")

@@ -57,6 +57,7 @@ import javax.validation.constraints.Size;
             + "and b.golfGroup.golfGroupID = :id "
             + "order by p.lastName, p.firstName")})
 public class Player implements Serializable, Comparable<Player> {
+   
     @Column(name = "gender")
     private Integer gender;
     @Column(name = "yearJoined")
@@ -279,5 +280,6 @@ public class Player implements Serializable, Comparable<Player> {
     public void setLeaderboardViewerList(List<LeaderboardViewer> leaderboardViewerList) {
         this.leaderboardViewerList = leaderboardViewerList;
     }
+
 
 }

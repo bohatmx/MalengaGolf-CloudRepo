@@ -36,6 +36,7 @@ import javax.validation.constraints.NotNull;
                     + "where t.tournament.tournamentID = :id")
     })
 public class TournamentCourse implements Serializable {
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

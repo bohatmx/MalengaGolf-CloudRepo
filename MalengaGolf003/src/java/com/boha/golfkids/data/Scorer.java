@@ -215,5 +215,6 @@ public class Scorer implements Serializable {
         this.leaderboardViewerList = leaderboardViewerList;
     }
 
+
     
 }

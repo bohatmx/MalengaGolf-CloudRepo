@@ -9,6 +9,7 @@ package com.boha.golfkids.data;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,6 +42,9 @@ import javax.validation.constraints.Size;
 
 })
 public class PersonalPlayer implements Serializable {
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personalPlayer")
+    private List<PersonalScoreByHole> personalScoreByHoleList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -172,6 +176,14 @@ public class PersonalPlayer implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.PersonalPlayer[ personalPlayerID=" + personalPlayerID + " ]";
+    }
+
+    public List<PersonalScoreByHole> getPersonalScoreByHoleList() {
+        return personalScoreByHoleList;
+    }
+
+    public void setPersonalScoreByHoleList(List<PersonalScoreByHole> personalScoreByHoleList) {
+        this.personalScoreByHoleList = personalScoreByHoleList;
     }
     
 }

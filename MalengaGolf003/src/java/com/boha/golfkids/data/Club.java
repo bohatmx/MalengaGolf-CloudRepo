@@ -59,6 +59,9 @@ import javax.validation.constraints.Size;
      for miles, use 3959
  */
 public class Club implements Serializable {
+    
+    @Column(name = "distance")
+    private Double distance;
 
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "club")
@@ -104,7 +107,6 @@ public class Club implements Serializable {
     private Province province;
 
  
-    private double distance;
     public Club() {
     }
 
@@ -118,10 +120,6 @@ public class Club implements Serializable {
 
     public void setClubID(int clubID) {
         this.clubID = clubID;
-    }
-
-    public double getDistance() {
-        return distance;
     }
 
     public void setDistance(double distance) {
@@ -227,6 +225,14 @@ public class Club implements Serializable {
 
     public void setClubCourseList(List<ClubCourse> clubCourseList) {
         this.clubCourseList = clubCourseList;
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
     }
 
 }

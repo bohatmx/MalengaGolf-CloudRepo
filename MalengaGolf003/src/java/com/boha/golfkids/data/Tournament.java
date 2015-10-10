@@ -57,16 +57,17 @@ import javax.validation.constraints.Size;
 public class Tournament implements Serializable {
     
     
+  
     @Column(name = "closedForScoringFlag")
-    private int closedForScoringFlag;
+    private Integer closedForScoringFlag;
     @Column(name = "closedForRegistrationFlag")
-    private int closedForRegistrationFlag;
+    private Integer closedForRegistrationFlag;
     @Column(name = "useAgeGroups")
-    private int useAgeGroups;
+    private Integer useAgeGroups;
     @Column(name = "exampleFlag")
-    private int exampleFlag;
+    private Integer exampleFlag;
     @Column(name = "scoringCommencedFlag")
-    private int scoringCommencedFlag;
+    private Integer scoringCommencedFlag;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<LeaderboardViewer> leaderboardViewerList;
    
@@ -284,53 +285,52 @@ public class Tournament implements Serializable {
     public void setLeaderBoardTeamList(List<LeaderBoardTeam> leaderBoardTeamList) {
         this.leaderBoardTeamList = leaderBoardTeamList;
     }
-
-    public int getClosedForScoringFlag() {
-        return closedForScoringFlag;
-    }
-
-    public void setClosedForScoringFlag(int closedForScoringFlag) {
-        this.closedForScoringFlag = closedForScoringFlag;
-    }
-
-    public int getClosedForRegistrationFlag() {
-        return closedForRegistrationFlag;
-    }
-
-    public void setClosedForRegistrationFlag(int closedForRegistrationFlag) {
-        this.closedForRegistrationFlag = closedForRegistrationFlag;
-    }
-
-    public int getUseAgeGroups() {
-        return useAgeGroups;
-    }
-
-    public void setUseAgeGroups(int useAgeGroups) {
-        this.useAgeGroups = useAgeGroups;
-    }
-
-    public int getExampleFlag() { 
-        return exampleFlag;
-    }
-
-    public void setExampleFlag(int exampleFlag) {
-        this.exampleFlag = exampleFlag;
-    }
-
-    public int getScoringCommencedFlag() {
-        return scoringCommencedFlag;
-    }
-
-    public void setScoringCommencedFlag(int scoringCommencedFlag) {
-        this.scoringCommencedFlag = scoringCommencedFlag;
-    }
-
     public List<LeaderboardViewer> getLeaderboardViewerList() {
         return leaderboardViewerList;
     }
-
     public void setLeaderboardViewerList(List<LeaderboardViewer> leaderboardViewerList) {
         this.leaderboardViewerList = leaderboardViewerList;
+    }
+
+  
+    public Integer getClosedForScoringFlag() { 
+        return closedForScoringFlag;
+    }
+
+    public void setClosedForScoringFlag(Integer closedForScoringFlag) {
+        this.closedForScoringFlag = closedForScoringFlag;
+    }
+
+    public Integer getClosedForRegistrationFlag() {
+        return closedForRegistrationFlag;
+    }
+
+    public void setClosedForRegistrationFlag(Integer closedForRegistrationFlag) {
+        this.closedForRegistrationFlag = closedForRegistrationFlag;
+    }
+
+    public Integer getUseAgeGroups() {
+        return useAgeGroups;
+    }
+
+    public void setUseAgeGroups(Integer useAgeGroups) {
+        this.useAgeGroups = useAgeGroups;
+    }
+
+    public Integer getExampleFlag() { 
+        return exampleFlag;
+    }
+
+    public void setExampleFlag(Integer exampleFlag) {
+        this.exampleFlag = exampleFlag;
+    }
+
+    public Integer getScoringCommencedFlag() {
+        return scoringCommencedFlag;
+    }
+
+    public void setScoringCommencedFlag(Integer scoringCommencedFlag) {
+        this.scoringCommencedFlag = scoringCommencedFlag;
     }
     
 

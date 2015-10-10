@@ -80,39 +80,40 @@ import javax.validation.constraints.NotNull;
 public class LeaderBoard implements Serializable {
 
     @Column(name = "winnerFlag")
-    private int winnerFlag;
+    private Integer winnerFlag;
     @Column(name = "tied")
-    private int tied;
+    private Integer tied;
     @Column(name = "scoreRound2")
-    private int scoreRound2;
+    private Integer scoreRound2;
     @Column(name = "scoreRound3")
-    private int scoreRound3;
+    private Integer scoreRound3;
     @Column(name = "scoreRound4")
-    private int scoreRound4;
-    @Column(name = "scoreRound5")
-    private int scoreRound5;
-    @Column(name = "scoreRound6")
-    private int scoreRound6;
+    private Integer scoreRound4;
     
+    @Column(name = "scoreRound5")
+    private Integer scoreRound5;
+    @Column(name = "scoreRound6")
+    private Integer scoreRound6;
     @Column(name = "pointsRound2")
-    private int pointsRound2;
+    private Integer pointsRound2;
     @Column(name = "pointsRound3")
-    private int pointsRound3;
+    private Integer pointsRound3;
     @Column(name = "pointsRound4")
-    private int pointsRound4;
+    private Integer pointsRound4;
     @Column(name = "pointsRound5")
-    private int pointsRound5;
-    @Column(name = "pointsRound6")
-    private int pointsRound6;
-    @Column(name = "totalPoints")
-    private int totalPoints;
+    private Integer pointsRound5;
    
+    @Column(name = "pointsRound6")
+    private Integer pointsRound6;
+    @Column(name = "totalPoints")
+    private Integer totalPoints;
+    
     @Column(name = "age")
-    private int age;
+    private Integer age;
     @Column(name = "scoringComplete")
-    private int scoringComplete;
+    private Integer scoringComplete;
     @Column(name = "withDrawn")
-    private int withDrawn;
+    private Integer withDrawn;
     @Column(name = "pointsRound1")
     private int pointsRound1;
     
@@ -277,131 +278,132 @@ public class LeaderBoard implements Serializable {
         this.pointsRound1 = pointsRound1;
     }
 
-    public int getWinnerFlag() {
+    public Integer getWinnerFlag() {
         return winnerFlag;
     }
 
-    public void setWinnerFlag(int winnerFlag) {
+    public void setWinnerFlag(Integer winnerFlag) {
         this.winnerFlag = winnerFlag;
     }
 
-    public int getTied() {
+    public Integer getTied() {
         return tied;
     }
 
-    public void setTied(int tied) {
+    public void setTied(Integer tied) {
         this.tied = tied;
     }
 
-    public int getScoreRound2() {
+    public Integer getScoreRound2() {
         return scoreRound2;
     }
 
-    public void setScoreRound2(int scoreRound2) {
+    public void setScoreRound2(Integer scoreRound2) {
         this.scoreRound2 = scoreRound2;
     }
 
-    public int getScoreRound3() {
+    public Integer getScoreRound3() {
         return scoreRound3;
     }
 
-    public void setScoreRound3(int scoreRound3) {
+    public void setScoreRound3(Integer scoreRound3) {
         this.scoreRound3 = scoreRound3;
     }
 
-    public int getScoreRound4() {
+    public Integer getScoreRound4() {
         return scoreRound4;
     }
 
-    public void setScoreRound4(int scoreRound4) {
+    public void setScoreRound4(Integer scoreRound4) {
         this.scoreRound4 = scoreRound4;
     }
 
-    public int getScoreRound5() {
+    public Integer getScoreRound5() {
         return scoreRound5;
     }
 
-    public void setScoreRound5(int scoreRound5) {
+    public void setScoreRound5(Integer scoreRound5) {
         this.scoreRound5 = scoreRound5;
     }
 
-    public int getScoreRound6() {
+    public Integer getScoreRound6() {
         return scoreRound6;
     }
 
-    public void setScoreRound6(int scoreRound6) {
+    public void setScoreRound6(Integer scoreRound6) {
         this.scoreRound6 = scoreRound6;
     }
 
-    public int getPointsRound2() {
+    public Integer getPointsRound2() {
         return pointsRound2;
     }
 
-    public void setPointsRound2(int pointsRound2) {
+    public void setPointsRound2(Integer pointsRound2) {
         this.pointsRound2 = pointsRound2;
     }
 
-    public int getPointsRound3() {
+    public Integer getPointsRound3() {
         return pointsRound3;
     }
 
-    public void setPointsRound3(int pointsRound3) {
+    public void setPointsRound3(Integer pointsRound3) {
         this.pointsRound3 = pointsRound3;
     }
 
-    public int getPointsRound4() {
+    public Integer getPointsRound4() {
         return pointsRound4;
     }
 
-    public void setPointsRound4(int pointsRound4) {
+    public void setPointsRound4(Integer pointsRound4) {
         this.pointsRound4 = pointsRound4;
     }
 
-    public int getPointsRound5() {
+    public Integer getPointsRound5() {
         return pointsRound5;
     }
 
-    public void setPointsRound5(int pointsRound5) {
+    public void setPointsRound5(Integer pointsRound5) {
         this.pointsRound5 = pointsRound5;
     }
 
-    public int getPointsRound6() {
+    public Integer getPointsRound6() {
         return pointsRound6;
     }
 
-    public void setPointsRound6(int pointsRound6) {
+    public void setPointsRound6(Integer pointsRound6) {
         this.pointsRound6 = pointsRound6;
     }
 
-    public int getTotalPoints() {
+    public Integer getTotalPoints() {
         return totalPoints;
     }
 
-    public void setTotalPoints(int totalPoints) {
+    public void setTotalPoints(Integer totalPoints) {
         this.totalPoints = totalPoints;
     }
 
-    public int getAge() {
+
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 
-    public int getScoringComplete() {
+    public Integer getScoringComplete() {
         return scoringComplete;
     }
 
-    public void setScoringComplete(int scoringComplete) {
+    public void setScoringComplete(Integer scoringComplete) {
         this.scoringComplete = scoringComplete;
     }
 
-    public int getWithDrawn() {
+    public Integer getWithDrawn() {
         return withDrawn;
     }
 
-    public void setWithDrawn(int withDrawn) {
+    public void setWithDrawn(Integer withDrawn) {
         this.withDrawn = withDrawn;
     }
 

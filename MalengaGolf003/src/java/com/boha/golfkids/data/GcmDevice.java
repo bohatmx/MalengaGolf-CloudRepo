@@ -231,5 +231,6 @@ public class GcmDevice implements Serializable {
         this.appUser = appUser;
     }
 
+  
     
 }

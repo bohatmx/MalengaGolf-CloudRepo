@@ -36,20 +36,46 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "LeaderBoardTeam.findAll", query = "SELECT l FROM LeaderBoardTeam l")
    })
 public class LeaderBoardTeam implements Serializable {
+    @Column(name = "winnerFlag")
+    private Integer winnerFlag;
+    @Column(name = "tied")
+    private Integer tied;
+    @Column(name = "scoreRound2")
+    private Integer scoreRound2;
+    @Column(name = "scoreRound3")
+    private Integer scoreRound3;
+    @Column(name = "scoreRound4")
+    private Integer scoreRound4;
+    @Column(name = "scoreRound5")
+    private Integer scoreRound5;
+    @Column(name = "scoreRound6")
+    private Integer scoreRound6;
+    @Column(name = "pointsRound2")
+    private Integer pointsRound2;
+    @Column(name = "pointsRound3")
+    private Integer pointsRound3;
+    @Column(name = "pointsRound4")
+    private Integer pointsRound4;
+    @Column(name = "pointsRound5")
+    private Integer pointsRound5;
+    @Column(name = "pointsRound6")
+    private Integer pointsRound6;
+    @Column(name = "totalPoints")
+    private Integer totalPoints;
+    @Column(name = "scoringComplete")
+    private Integer scoringComplete;
+    @Column(name = "withDrawn")
+    private Integer withDrawn;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "leaderBoardTeamID")
     private int leaderBoardTeamID;
-    @Column(name = "winnerFlag")
-    private int winnerFlag;
     @Basic(optional = false)
     @NotNull
     @Column(name = "position")
     private int position;
-    @Column(name = "tied")
-    private int tied;
     @Basic(optional = false)
     @NotNull
     @Column(name = "parStatus")
@@ -58,16 +84,6 @@ public class LeaderBoardTeam implements Serializable {
     @NotNull
     @Column(name = "scoreRound1")
     private int scoreRound1;
-    @Column(name = "scoreRound2")
-    private int scoreRound2;
-    @Column(name = "scoreRound3")
-    private int scoreRound3;
-    @Column(name = "scoreRound4")
-    private int scoreRound4;
-    @Column(name = "scoreRound5")
-    private int scoreRound5;
-    @Column(name = "scoreRound6")
-    private int scoreRound6;
     @Basic(optional = false)
     @NotNull
     @Column(name = "totalScore")
@@ -76,18 +92,6 @@ public class LeaderBoardTeam implements Serializable {
     @NotNull
     @Column(name = "pointsRound1")
     private int pointsRound1;
-    @Column(name = "pointsRound2")
-    private int pointsRound2;
-    @Column(name = "pointsRound3")
-    private int pointsRound3;
-    @Column(name = "pointsRound4")
-    private int pointsRound4;
-    @Column(name = "pointsRound5")
-    private int pointsRound5;
-    @Column(name = "pointsRound6")
-    private int pointsRound6;
-    @Column(name = "totalPoints")
-    private int totalPoints;
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
@@ -95,10 +99,6 @@ public class LeaderBoardTeam implements Serializable {
     @NotNull
     @Column(name = "orderOfMeritPoints")
     private int orderOfMeritPoints;
-    @Column(name = "scoringComplete")
-    private int scoringComplete;
-    @Column(name = "withDrawn")
-    private int withDrawn;
     @JoinColumn(name = "teamID", referencedColumnName = "teamID")
     @ManyToOne(optional = false)
     private Team team;
@@ -133,13 +133,6 @@ public class LeaderBoardTeam implements Serializable {
         this.leaderBoardTeamID = leaderBoardTeamID;
     }
 
-    public int getWinnerFlag() {
-        return winnerFlag;
-    }
-
-    public void setWinnerFlag(int winnerFlag) {
-        this.winnerFlag = winnerFlag;
-    }
 
     public int getPosition() {
         return position;
@@ -149,13 +142,6 @@ public class LeaderBoardTeam implements Serializable {
         this.position = position;
     }
 
-    public int getTied() {
-        return tied;
-    }
-
-    public void setTied(int tied) {
-        this.tied = tied;
-    }
 
     public int getParStatus() {
         return parStatus;
@@ -173,45 +159,6 @@ public class LeaderBoardTeam implements Serializable {
         this.scoreRound1 = scoreRound1;
     }
 
-    public int getScoreRound2() {
-        return scoreRound2;
-    }
-
-    public void setScoreRound2(int scoreRound2) {
-        this.scoreRound2 = scoreRound2;
-    }
-
-    public int getScoreRound3() {
-        return scoreRound3;
-    }
-
-    public void setScoreRound3(int scoreRound3) {
-        this.scoreRound3 = scoreRound3;
-    }
-
-    public int getScoreRound4() {
-        return scoreRound4;
-    }
-
-    public void setScoreRound4(int scoreRound4) {
-        this.scoreRound4 = scoreRound4;
-    }
-
-    public int getScoreRound5() {
-        return scoreRound5;
-    }
-
-    public void setScoreRound5(int scoreRound5) {
-        this.scoreRound5 = scoreRound5;
-    }
-
-    public int getScoreRound6() {
-        return scoreRound6;
-    }
-
-    public void setScoreRound6(int scoreRound6) {
-        this.scoreRound6 = scoreRound6;
-    }
 
     public int getTotalScore() {
         return totalScore;
@@ -229,53 +176,6 @@ public class LeaderBoardTeam implements Serializable {
         this.pointsRound1 = pointsRound1;
     }
 
-    public int getPointsRound2() {
-        return pointsRound2;
-    }
-
-    public void setPointsRound2(int pointsRound2) {
-        this.pointsRound2 = pointsRound2;
-    }
-
-    public int getPointsRound3() {
-        return pointsRound3;
-    }
-
-    public void setPointsRound3(int pointsRound3) {
-        this.pointsRound3 = pointsRound3;
-    }
-
-    public int getPointsRound4() {
-        return pointsRound4;
-    }
-
-    public void setPointsRound4(int pointsRound4) {
-        this.pointsRound4 = pointsRound4;
-    }
-
-    public int getPointsRound5() {
-        return pointsRound5;
-    }
-
-    public void setPointsRound5(int pointsRound5) {
-        this.pointsRound5 = pointsRound5;
-    }
-
-    public int getPointsRound6() {
-        return pointsRound6;
-    }
-
-    public void setPointsRound6(int pointsRound6) {
-        this.pointsRound6 = pointsRound6;
-    }
-
-    public int getTotalPoints() {
-        return totalPoints;
-    }
-
-    public void setTotalPoints(int totalPoints) {
-        this.totalPoints = totalPoints;
-    }
 
     public Date getDateRegistered() {
         return dateRegistered;
@@ -293,21 +193,6 @@ public class LeaderBoardTeam implements Serializable {
         this.orderOfMeritPoints = orderOfMeritPoints;
     }
 
-    public int getScoringComplete() {
-        return scoringComplete;
-    }
-
-    public void setScoringComplete(int scoringComplete) {
-        this.scoringComplete = scoringComplete;
-    }
-
-    public int getWithDrawn() {
-        return withDrawn;
-    }
-
-    public void setWithDrawn(int withDrawn) {
-        this.withDrawn = withDrawn;
-    }
 
     public Team getTeam() {
         return team;
@@ -340,6 +225,126 @@ public class LeaderBoardTeam implements Serializable {
     @Override
     public String toString() {
         return "com.boha.golfkids.data.LeaderBoardTeam[ leaderBoardTeamID=" + leaderBoardTeamID + " ]";
+    }
+
+    public Integer getWinnerFlag() {
+        return winnerFlag;
+    }
+
+    public void setWinnerFlag(Integer winnerFlag) {
+        this.winnerFlag = winnerFlag;
+    }
+
+    public Integer getTied() {
+        return tied;
+    }
+
+    public void setTied(Integer tied) {
+        this.tied = tied;
+    }
+
+    public Integer getScoreRound2() {
+        return scoreRound2;
+    }
+
+    public void setScoreRound2(Integer scoreRound2) {
+        this.scoreRound2 = scoreRound2;
+    }
+
+    public Integer getScoreRound3() {
+        return scoreRound3;
+    }
+
+    public void setScoreRound3(Integer scoreRound3) {
+        this.scoreRound3 = scoreRound3;
+    }
+
+    public Integer getScoreRound4() {
+        return scoreRound4;
+    }
+
+    public void setScoreRound4(Integer scoreRound4) {
+        this.scoreRound4 = scoreRound4;
+    }
+
+    public Integer getScoreRound5() {
+        return scoreRound5;
+    }
+
+    public void setScoreRound5(Integer scoreRound5) {
+        this.scoreRound5 = scoreRound5;
+    }
+
+    public Integer getScoreRound6() {
+        return scoreRound6;
+    }
+
+    public void setScoreRound6(Integer scoreRound6) {
+        this.scoreRound6 = scoreRound6;
+    }
+
+    public Integer getPointsRound2() {
+        return pointsRound2;
+    }
+
+    public void setPointsRound2(Integer pointsRound2) {
+        this.pointsRound2 = pointsRound2;
+    }
+
+    public Integer getPointsRound3() {
+        return pointsRound3;
+    }
+
+    public void setPointsRound3(Integer pointsRound3) {
+        this.pointsRound3 = pointsRound3;
+    }
+
+    public Integer getPointsRound4() {
+        return pointsRound4;
+    }
+
+    public void setPointsRound4(Integer pointsRound4) {
+        this.pointsRound4 = pointsRound4;
+    }
+
+    public Integer getPointsRound5() {
+        return pointsRound5;
+    }
+
+    public void setPointsRound5(Integer pointsRound5) {
+        this.pointsRound5 = pointsRound5;
+    }
+
+    public Integer getPointsRound6() {
+        return pointsRound6;
+    }
+
+    public void setPointsRound6(Integer pointsRound6) {  
+        this.pointsRound6 = pointsRound6;
+    }
+
+    public Integer getTotalPoints() {
+        return totalPoints;
+    }
+
+    public void setTotalPoints(Integer totalPoints) {
+        this.totalPoints = totalPoints;
+    }
+
+    public Integer getScoringComplete() {   
+        return scoringComplete;
+    }
+
+    public void setScoringComplete(Integer scoringComplete) {
+        this.scoringComplete = scoringComplete;
+    }
+
+    public Integer getWithDrawn() {
+        return withDrawn;
+    }
+
+    public void setWithDrawn(Integer withDrawn) {
+        this.withDrawn = withDrawn;
     }
     
 }

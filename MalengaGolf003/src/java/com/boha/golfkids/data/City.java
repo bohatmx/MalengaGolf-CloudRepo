@@ -38,7 +38,7 @@ import javax.validation.constraints.Size;
                     + "order by c.cityName")
     })
 public class City implements Serializable {
-    
+     
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -136,6 +136,5 @@ public class City implements Serializable {
     public String toString() {
         return "com.boha.golfkids.data.City[ cityID=" + cityID + " ]";
     }
-
     
 }
